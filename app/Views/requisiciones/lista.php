@@ -85,10 +85,6 @@
     <script>
         //Aqui van los js
         let table = new DataTable('#tbl_requisicon');
-        $.alert({
-            title: 'Alert!',
-            content: 'Simple alert!',
-        });
     </script>
 </body>
 

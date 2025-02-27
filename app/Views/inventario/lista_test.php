@@ -43,13 +43,11 @@
                                         <table class="table table-sm" id="tbl_requisicon">
                                             <thead>
                                                 <tr>
-                                                    <th>Nombre</th>
-                                                    <th>Celular</th>
-                                                    <th>CURP</th>
-                                                    <th>No. de Licencia</th>
-                                                    <th>Fecha de expiración</th>
-                                                    <th>Fecha de contratación</th>
-                                                    <th></th>
+                                                    <th>ID Variante</th>
+                                                    <th>Nombre General</th>
+                                                    <th>Características</th>
+                                                    <th>Categoría</th>
+                                                    <th>Stock Total</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="table-border-bottom-0 table-striped table-hover">
@@ -84,7 +82,36 @@
     <?= $js; ?>
     <script>
         //Aqui van los js
-        let table = new DataTable('#tbl_requisicon');
+        $(document).ready(function() {
+            $('#tbl_requisicon').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: 'data-table', // Asegúrate de que esta URL es correcta
+                    type: 'POST',
+                    dataSrc: 'data',
+                    error: function(xhr, error, thrown) {
+                        console.error('Error en DataTables AJAX:', xhr.responseText);
+                    }
+                },
+                columns: [{
+                        data: 'id_variante'
+                    },
+                    {
+                        data: 'nombre_general'
+                    },
+                    {
+                        data: 'caracteristicas'
+                    },
+                    {
+                        data: 'categoria'
+                    },
+                    {
+                        data: 'stock_total'
+                    }
+                ]
+            });
+        });
     </script>
 </body>
 

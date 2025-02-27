@@ -10,3 +10,9 @@ $routes->get('/', 'Home::index');
 
 $routes->get('template', 'TemplateController::lista');
 
+
+#Rutas pra inventario
+$routes->get('inventario/lista', 'InventarioController::lista');
+#Peticiones AJAX
+$routes->post('inventario/data-table', 'InventarioController::obtenerInventario');
+

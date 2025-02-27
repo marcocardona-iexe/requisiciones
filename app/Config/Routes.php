@@ -16,3 +16,9 @@ $routes->get('inventario/lista', 'InventarioController::lista');
 #Peticiones AJAX
 $routes->post('inventario/data-table', 'InventarioController::obtenerInventario');
 
+
+
+#Rutas para las requisiciones
+$routes->get('requisiciones/lista', 'RequisicionesController::lista');
+#Peticiones AJAX
+$routes->post('requisiciones/data-table', 'RequisicionesController::obtenerRequisiciones');

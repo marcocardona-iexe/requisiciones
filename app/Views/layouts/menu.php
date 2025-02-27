@@ -28,9 +28,9 @@
              <span class="menu-header-text">Requisiciones</span>
          </li>
          <li class="menu-item">
-             <a href="<?= base_url('usuarios/lista') ?>" class="menu-link">
+             <a href="<?= base_url('/template') ?>" class="menu-link">
                  <i class='bx bx-user'></i>
-                 <div data-i18n="Accordion">Lista</div>
+                 <div data-i18n="Accordion">Inventario</div>
              </a>
          </li>
          <li class="menu-item">

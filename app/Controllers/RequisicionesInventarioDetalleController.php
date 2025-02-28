@@ -24,7 +24,7 @@ class RequisicionesInventarioDetalleController extends BaseController
         return view('template/lista', $data);
     }
 
-    public function obtenerDetalleRequisicion($idRequisicion)
+    public function obtener_detalle_requisicion($idRequisicion)
     {
         $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
 
@@ -38,6 +38,8 @@ class RequisicionesInventarioDetalleController extends BaseController
 
         // Obtener los detalles desde el modelo
         $detalles = $requisicionesInventarioDetalleModel->obtenerDetalleRequisicion($idRequisicion);
+        var_dump($detalles);
+        die;
 
         if (empty($detalles)) {
             return $this->response->setJSON([

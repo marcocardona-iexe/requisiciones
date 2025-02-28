@@ -60,7 +60,11 @@ class InventarioController extends BaseController
 
     public function guardar()
     {
-        $request = service('request');
-        $data = $request->getPost();
+        $json = $this->request->getJSON();
+        if ($json) {
+            echo true;
+        } else {
+            echo false;
+        }
     }
 }

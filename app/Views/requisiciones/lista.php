@@ -83,74 +83,73 @@
     <?= $js; ?>
     <script>
         $(document).ready(function() {
-            $(document).ready(function() {
-                $('#tbl_requisicones').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: 'data-table', // Asegura que la URL es correcta
-                        type: 'POST',
-                        error: function(xhr, error, thrown) {
-                            console.error('Error en DataTables AJAX:', xhr.responseText);
-                        }
+            $('#tbl_requisicones').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: 'data-table', // Asegura que la URL es correcta
+                    type: 'POST',
+                    error: function(xhr, error, thrown) {
+                        console.error('Error en DataTables AJAX:', xhr.responseText);
+                    }
+                },
+                columns: [{
+                        data: "id"
                     },
-                    columns: [{
-                            data: "id"
+                    {
+                        data: "created_at",
+                        className: "dt-left"
+                    },
+                    {
+                        data: null,
+                        className: "dt-left",
+                        render: function(data, type, row) {
+                            console.log(data);
+                            let labelstatus = "";
+                            switch (data.id_estatus) {
+                                case "1":
+                                    labelstatus = `<span class="badge bg-warning text-dark">Nueva</span>`;
+                                    break;
+                                case "2":
+                                    labelstatus = `<span class="badge bg-primary">Validado Parcial</span>`;
+                                    break;
+                                case "3":
+                                    labelstatus = `<span class="badge bg-info text-dark">Autorizada</span>`;
+                                    break;
+                                case "4":
+                                    labelstatus = `<span class="badge bg-success">Comprado</span>`;
+                                    break;
+                                case "5":
+                                    labelstatus = `<span class="badge bg-danger">Cancelado</span>`;
+                                    break;
+                            }
+                            return `${labelstatus}`;
                         },
-                        {
-                            data: "created_at",
-                            className: "dt-left"
-                        },
-                        {
-                            data: null,
-                            className: "dt-left",
-                            render: function(data, type, row) {
-                                console.log(data);
-                                let labelstatus = "";
-                                switch (data.id_estatus) {
-                                    case "1":
-                                        labelstatus = `<span class="badge bg-warning text-dark">Nueva</span>`;
-                                        break;
-                                    case "2":
-                                        labelstatus = `<span class="badge bg-primary">Validado Parcial</span>`;
-                                        break;
-                                    case "3":
-                                        labelstatus = `<span class="badge bg-info text-dark">Autorizada</span>`;
-                                        break;
-                                    case "4":
-                                        labelstatus = `<span class="badge bg-success">Comprado</span>`;
-                                        break;
-                                    case "5":
-                                        labelstatus = `<span class="badge bg-danger">Cancelado</span>`;
-                                        break;
-                                }
-                                return `${labelstatus}`;
-                            },
-                        },
-                        {
-                            data: "justificacion"
-                        },
-                        {
-                            data: "comentario_estatus"
-                        },
-                        {
-                            data: null,
-                            render: function(data, type, row) {
-                                switch (data.id_estatus) {
-                                    case "1":
-                                        return `
+                    },
+                    {
+                        data: "justificacion"
+                    },
+                    {
+                        data: "comentario_estatus"
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            switch (data.id_estatus) {
+                                case "1":
+                                    return `
                                         <div class="btn-group" role="group">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class='bx bxs-paste'></i> Acciones
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <li><a class="dropdown-item" href="#"><i class='bx bx-list-ul'></i> Ver solicitud</a></li>
+                                                <li class="ver_solicitud" data-id='${data.id}'><a class="dropdown-item" href="#" ><i class='bx bx-list-ul'></i> Ver solicitud</a></li>
                                                 <li><a class="dropdown-item" href="#"><i class='bx bx-trash'></i> Cancelar solicitud</a></li>
                                             </ul>
                                         </div>`;
-                                        break;
-                                    case "2":
-                                        return `
+                                    break;
+                                case "2":
+                                    return `
                                         <div class="btn-group" role="group">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class='bx bxs-paste'></i> Acciones
@@ -160,40 +159,242 @@
                                                 <li><a class="dropdown-item" href="#"><i class='bx bx-trash'></i> Cancelar solicitud</a></li>
                                             </ul>
                                         </div>`;
-                                        break;
-                                    case "3":
-                                        return `<button type="button" class="btn btn-success btn-sm"><i class='bx bx-cart-alt' ></i> Comprar</button>
+                                    break;
+                                case "3":
+                                    return `<button type="button" class="btn btn-success btn-sm"><i class='bx bx-cart-alt' ></i> Comprar</button>
 `;
-                                        break;
-                                    case "4":
-                                        return `<button type="button" class="btn btn-secondary btn-sm"><i class='bx bx-list-ul' ></i> Ver compra</button>`;
-                                        break;
-                                    case "5":
-                                        return `<button type="button" class="btn btn-secondary btn-sm"><i class='bx bx-list-ul' ></i> Ver detalle</button>`;
-                                        break;
-                                }
-                            },
-                        },
-                    ],
-                    language: {
-                        processing: "Procesando...",
-                        search: "Buscar:",
-                        lengthMenu: "Mostrar _MENU_ registros",
-                        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                        infoEmpty: "No hay registros disponibles",
-                        infoFiltered: "(filtrado de _MAX_ registros en total)",
-                        loadingRecords: "Cargando...",
-                        zeroRecords: "No se encontraron resultados",
-                        emptyTable: "No hay datos disponibles en la tabla",
-                        paginate: {
-                            first: "Primero",
-                            previous: "Anterior",
-                            next: "Siguiente",
-                            last: "Último",
+                                    break;
+                                case "4":
+                                    return `<button type="button" class="btn btn-secondary btn-sm"><i class='bx bx-list-ul' ></i> Ver compra</button>`;
+                                    break;
+                                case "5":
+                                    return `<button type="button" class="btn btn-secondary btn-sm"><i class='bx bx-list-ul' ></i> Ver detalle</button>`;
+                                    break;
+                            }
                         },
                     },
+                ],
+                language: {
+                    processing: "Procesando...",
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "No hay registros disponibles",
+                    infoFiltered: "(filtrado de _MAX_ registros en total)",
+                    loadingRecords: "Cargando...",
+                    zeroRecords: "No se encontraron resultados",
+                    emptyTable: "No hay datos disponibles en la tabla",
+                    paginate: {
+                        first: "Primero",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        last: "Último",
+                    },
+                },
+            });
+
+
+            $(document).on("click", ".ver_solicitud", function() {
+                let id_requisicion = $(this).attr("data-id");
+                alert(id_requisicion);
+                $.confirm({
+                    title: null,
+                    columnClass: "col-md-10 col-md-offset-1",
+                    content: function() {
+                        var self = this;
+                        return $.ajax({
+                                url: "obtener-detalle-requisicion/" + id_requisicion,
+                                dataType: "json",
+                                method: "GET",
+                            })
+                            .done(function(response) {
+                                console.log(response);
+
+                                if ($.isArray(response)) {
+                                    self.setContent(buildTableArticulos(response));
+                                    let $tableContainer = $(self.$content).find(".container-table-articulos");
+                                    $tableContainer.DataTable();
+                                } else {
+                                    self.setContent("Servicio no disponible, <br> Vuelve a intentarlo.");
+                                }
+                            })
+                            .fail(function() {
+                                self.setContent("Something went wrong.");
+                            });
+                    },
+                    type: "blue",
+                    typeAnimated: true,
+                    buttons: {
+                        validar: {
+                            text: "Validación Parcial",
+                            btnClass: "btn-info",
+                            action: function() {
+
+                                let productos = [];
+                                let comentarios = $("#comentarios").val();
+                                let verificarValidado = false;
+
+                                $(".articulos-validar").each(function() {
+
+                                    let validado = $(this).prop("checked") ? 1 : 0;
+                                    productos.push({
+                                        idDetalle: $(this).data("id"),
+                                        validado: validado,
+                                    });
+
+                                    if (validado === 1) {
+                                        verificarValidado = true;
+                                    }
+
+                                });
+
+                                if (verificarValidado == false) {
+
+                                    alert("Seleccione almenos un validado ...");
+                                    return false;
+
+                                }
+
+                                if (comentarios == "") {
+
+                                    alert("Escriba algo en el comentario ...");
+                                    return false;
+
+                                }
+
+                                let data = {
+                                    idRequisicion,
+                                    productos: productos,
+                                    comentarios: comentarios
+                                };
+
+                                let $btn = this.$$validar;
+                                //$btn.html(`${spinnner} `).prop("disabled", true);
+
+
+                                $("#letrero").html(`
+
+                        <b style="line-height: 30px;margin-top: 8px;font-weight: 500;">Procesar validados</b>
+                        <div class="spinner-border" role="status" style="width: 20px;height: 20px;">
+                        </div>
+                    
+                    `);
+
+                                console.log("Validando", data);
+                                console.log("Validando");
+                                sendValidarArticulos(data, this);
+
+                                return false;
+                            },
+                        },
+                        Cerrar: function() {},
+                    },
+
+                    onContentReady: function() {},
                 });
             });
+
+
+            function validarRequisicion(idRequisicion) {
+
+                $.confirm({
+                    title: null,
+                    columnClass: "col-md-10 col-md-offset-1",
+                    content: function() {
+                        var self = this;
+                        return $.ajax({
+                                url: "https://sandbox.iexe.app/obtener-detalle-requisicion/" + idRequisicion,
+                                dataType: "json",
+                                method: "GET",
+                            })
+                            .done(function(response) {
+                                console.log(response);
+
+                                if ($.isArray(response)) {
+                                    self.setContent(buildTableArticulos(response));
+                                    let $tableContainer = $(self.$content).find(".container-table-articulos");
+                                    $tableContainer.DataTable();
+                                } else {
+                                    self.setContent("Servicio no disponible, <br> Vuelve a intentarlo.");
+                                }
+                            })
+                            .fail(function() {
+                                self.setContent("Something went wrong.");
+                            });
+                    },
+                    type: "blue",
+                    typeAnimated: true,
+                    buttons: {
+                        validar: {
+                            text: "Validación Parcial",
+                            btnClass: "btn-info",
+                            action: function() {
+
+                                let productos = [];
+                                let comentarios = $("#comentarios").val();
+                                let verificarValidado = false;
+
+                                $(".articulos-validar").each(function() {
+
+                                    let validado = $(this).prop("checked") ? 1 : 0;
+                                    productos.push({
+                                        idDetalle: $(this).data("id"),
+                                        validado: validado,
+                                    });
+
+                                    if (validado === 1) {
+                                        verificarValidado = true;
+                                    }
+
+                                });
+
+                                if (verificarValidado == false) {
+
+                                    alert("Seleccione almenos un validado ...");
+                                    return false;
+
+                                }
+
+                                if (comentarios == "") {
+
+                                    alert("Escriba algo en el comentario ...");
+                                    return false;
+
+                                }
+
+                                let data = {
+                                    idRequisicion,
+                                    productos: productos,
+                                    comentarios: comentarios
+                                };
+
+                                let $btn = this.$$validar;
+                                //$btn.html(`${spinnner} `).prop("disabled", true);
+
+
+                                $("#letrero").html(`
+
+                        <b style="line-height: 30px;margin-top: 8px;font-weight: 500;">Procesar validados</b>
+                        <div class="spinner-border" role="status" style="width: 20px;height: 20px;">
+                        </div>
+                    
+                    `);
+
+                                console.log("Validando", data);
+                                console.log("Validando");
+                                sendValidarArticulos(data, this);
+
+                                return false;
+                            },
+                        },
+                        Cerrar: function() {},
+                    },
+
+                    onContentReady: function() {},
+                });
+            }
+
+
 
         });
     </script>

@@ -15,13 +15,13 @@ $routes->get('template', 'TemplateController::lista');
 $routes->get('inventario/lista', 'InventarioController::lista');
 #Peticiones AJAX
 $routes->post('inventario/data-table', 'InventarioController::obtenerInventario');
-
+$routes->post('inventario/guardar', 'InventarioController::guardar');
 
 
 #Rutas para las requisiciones
 $routes->get('requisiciones/lista', 'RequisicionesController::lista');
 #Peticiones AJAX
 $routes->post('requisiciones/data-table', 'RequisicionesController::obtenerRequisiciones');
-$routes->post('requisiciones/obtener-detalle-requisicion/(:num)', 'RequisicionesController::obtener_detalle_requisicion/$1');
+$routes->post('requisiciones/obtener-detalle-requisicion/(:num)', 'RequisicionesInventarioDetalleController::obtener_detalle_requisicion/$1');
 
 

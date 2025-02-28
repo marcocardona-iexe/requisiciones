@@ -57,4 +57,10 @@ class InventarioController extends BaseController
             'data' => $datos,
         ]);
     }
+
+    public function guardar()
+    {
+        $request = service('request');
+        $data = $request->getPost();
+    }
 }

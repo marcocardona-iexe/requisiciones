@@ -197,82 +197,75 @@
             $(document).on("click", ".ver_solicitud", function() {
                 let id_requisicion = $(this).attr("data-id");
                 alert(id_requisicion);
-                $.confirm({
-                    title: null,
-                    columnClass: "col-md-10 col-md-offset-1",
-                    content: function() {
-                        var self = this;
-                        return $.ajax({
-                                url: "obtener-detalle-requisicion/" + id_requisicion,
-                                dataType: "json",
-                                method: "GET",
-                            })
-                            .done(function(response) {
-                                console.log(response);
 
-                                if ($.isArray(response)) {
-                                    self.setContent(buildTableArticulos(response));
-                                    let $tableContainer = $(self.$content).find(".container-table-articulos");
-                                    $tableContainer.DataTable();
-                                } else {
-                                    self.setContent("Servicio no disponible, <br> Vuelve a intentarlo.");
-                                }
-                            })
-                            .fail(function() {
-                                self.setContent("Something went wrong.");
-                            });
-                    },
-                    type: "blue",
-                    typeAnimated: true,
-                    buttons: {
-                        validar: {
-                            text: "Validación Parcial",
-                            btnClass: "btn-info",
-                            action: function() {
+                $.ajax({
+                    url: "obtener-detalle-requisicion/" + id_requisicion,
+                    dataType: "json",
+                    method: "POST",
+                    success: function(response) {
+                        if (response.status == 'success') {
+                            $.confirm({
+                                title: null,
+                                columnClass: "col-md-8 col-md-offset-2",
+                                content: `
+                                <div class="container">
+                                    <div class="row">
+                                        <table>
+                                        </table>
+                                    </div>
+                                </div>
+                                `,
+                                type: "blue",
+                                typeAnimated: true,
+                                buttons: {
+                                    validar: {
+                                        text: "Validación Parcial",
+                                        btnClass: "btn-info",
+                                        action: function() {
 
-                                let productos = [];
-                                let comentarios = $("#comentarios").val();
-                                let verificarValidado = false;
+                                            let productos = [];
+                                            let comentarios = $("#comentarios").val();
+                                            let verificarValidado = false;
 
-                                $(".articulos-validar").each(function() {
+                                            $(".articulos-validar").each(function() {
 
-                                    let validado = $(this).prop("checked") ? 1 : 0;
-                                    productos.push({
-                                        idDetalle: $(this).data("id"),
-                                        validado: validado,
-                                    });
+                                                let validado = $(this).prop("checked") ? 1 : 0;
+                                                productos.push({
+                                                    idDetalle: $(this).data("id"),
+                                                    validado: validado,
+                                                });
 
-                                    if (validado === 1) {
-                                        verificarValidado = true;
-                                    }
+                                                if (validado === 1) {
+                                                    verificarValidado = true;
+                                                }
 
-                                });
+                                            });
 
-                                if (verificarValidado == false) {
+                                            if (verificarValidado == false) {
 
-                                    alert("Seleccione almenos un validado ...");
-                                    return false;
+                                                alert("Seleccione almenos un validado ...");
+                                                return false;
 
-                                }
+                                            }
 
-                                if (comentarios == "") {
+                                            if (comentarios == "") {
 
-                                    alert("Escriba algo en el comentario ...");
-                                    return false;
+                                                alert("Escriba algo en el comentario ...");
+                                                return false;
 
-                                }
+                                            }
 
-                                let data = {
-                                    idRequisicion,
-                                    productos: productos,
-                                    comentarios: comentarios
-                                };
+                                            let data = {
+                                                idRequisicion,
+                                                productos: productos,
+                                                comentarios: comentarios
+                                            };
 
-                                let $btn = this.$$validar;
-                                //$btn.html(`${spinnner} `).prop("disabled", true);
+                                            let $btn = this.$$validar;
+                                            //$btn.html(`${spinnner} `).prop("disabled", true);
 
 
-                                $("#letrero").html(`
+                                            $("#letrero").html(`
 
                         <b style="line-height: 30px;margin-top: 8px;font-weight: 500;">Procesar validados</b>
                         <div class="spinner-border" role="status" style="width: 20px;height: 20px;">
@@ -280,18 +273,24 @@
                     
                     `);
 
-                                console.log("Validando", data);
-                                console.log("Validando");
-                                sendValidarArticulos(data, this);
+                                            console.log("Validando", data);
+                                            console.log("Validando");
+                                            sendValidarArticulos(data, this);
 
-                                return false;
-                            },
-                        },
-                        Cerrar: function() {},
-                    },
+                                            return false;
+                                        },
+                                    },
+                                    Cerrar: function() {},
+                                },
 
-                    onContentReady: function() {},
+                                onContentReady: function() {},
+                            });
+                        }
+                    }
                 });
+
+
+
             });
 
 

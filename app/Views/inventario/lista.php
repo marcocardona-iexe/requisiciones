@@ -162,7 +162,9 @@
                     <div class="col-md-12">
                         <div class="form-group pb-3">
                             <label for="nombreProducto">Nombre del producto</label>
-                            <input type="text" class="form-control" id="nombreProducto">
+                            <select class="form-control" id="nombreProducto">
+                                <option value="">Seleccione una categoría</option>
+                            </select>
                             <small class="form-text text-muted">Escribe el nombre del producto en la casiilla de texto</small>
                         </div>
                     </div>
@@ -171,13 +173,7 @@
                     <div class="col-md-12">
                         <div class="form-group  pb-4">
                             <label for="categoria">Categoría</label>
-                            <select class="form-control" id="categoria">
-                                <option value="">Seleccione una categoría</option>
-                                <option value="Cómputo">Cómputo</option>
-                                <option value="Mobiliario">Mobiliario</option>
-                                <option value="Abarrotes">Abarrotes</option>
-                                <option value="Electronica">Electronica</option>
-                            </select>
+                            <input type="text" class="form-control" id="categoria" readonly>
                         </div>
                     </div>
                 </div>
@@ -235,7 +231,33 @@
 
             </div>
             `,
-            buttons: false
+            buttons: false,
+            onContentReady: function () {
+                
+                $.ajax({
+                    url: "http://127.0.0.1/requisiciones/inventario/obtenerTipoInventario",
+                    type: "GET",
+                    success: function(articulosInventario) {
+
+                        if(articulosInventario.status == "success"){
+
+                            if (Array.isArray(articulosInventario.data)) {
+                                articulosInventario.data.forEach(function(articulo) {
+                                    $("#nombreProducto").append(`
+                                        <option value="${articulo.id}">${articulo.nombre}</option>
+                                    `);
+                                });
+                            }
+
+                        }else{
+
+                            alert("Error en base de datos");
+                            
+                        }
+                    }
+                });
+
+            }
             });    
 
         });
@@ -342,6 +364,26 @@
                     $("#caracteristicasProducto").val("");
                     $("#valorProducto").val("");
                     $("#tablaProductos").empty();
+
+                }
+            });
+
+        });
+
+        $(document).on("change", "#nombreProducto", function() {
+
+            let idInventario = $(this).val();
+
+            $.ajax({
+                url: "http://127.0.0.1/requisiciones/inventario/obtenerCategoria/" + idInventario,
+                type: "GET",
+                success: function(respuesta) {
+                    
+                    if(respuesta.status == "success"){
+                        $("#categoria").val(respuesta.data.categoria);
+                    }else{
+                        alert("Error en la base de datos");
+                    }
 
                 }
             });

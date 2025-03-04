@@ -264,8 +264,23 @@
 
         $(document).on("click", "#agregar", function() {
 
-            let caracteristicasProducto = $("#caracteristicasProducto").val();
-            let valorProducto = $("#valorProducto").val();
+            let caracteristicasProducto = $("#caracteristicasProducto").val().trim();
+            let valorProducto = $("#valorProducto").val().trim();
+            let verificaProducto = false;
+
+            $("#tablaProductos tr").each(function() {
+                let caracteristicas = $(this).find("td:eq(0)").text().trim();
+
+                if(caracteristicasProducto.toLowerCase() == caracteristicas.toLowerCase()){
+                    alert("El producto ya existe ...");
+                    verificaProducto = true; 
+                }
+
+            });
+
+            if(verificaProducto == true){
+                return;
+            }
 
             if(caracteristicasProducto != "" && valorProducto != ""){
 
@@ -387,6 +402,12 @@
 
                 }
             });
+
+        });
+
+        $(document).on('click', '.btn-warning', function () {
+
+            $(this).closest('tr').remove();
 
         });
 

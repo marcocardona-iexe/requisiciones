@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\InventarioModel;
+use App\Models\CategoriasModel;
 
 
 
@@ -25,10 +26,11 @@ class InventarioController extends BaseController
         return view('inventario/lista', $data);
     }
 
-
-
     public function obtenerInventario()
     {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
         $inventarioModel = new InventarioModel();
 
@@ -58,9 +60,74 @@ class InventarioController extends BaseController
         ]);
     }
 
+    public function obtenerTipoInventario()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+        $inventarioModel = new InventarioModel();     
+        $articulos = $inventarioModel->obtenerTodos();
+    
+        if (!empty($articulos)) {
+
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Datos obtenidos exitosamente.',
+                'data'    => $articulos
+            ])->setStatusCode(200);
+
+        }else{
+
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición',
+                'data'    => $articulos
+            ])->setStatusCode(404);
+            
+        }
+    }  
+
+    public function obtenerCategoria($idInventario)
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        
+        $categoriasModel = new CategoriasModel();     
+        $categoria = $categoriasModel->obtenerCategoria($idInventario);
+
+        if (!empty($categoria)) {
+
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Datos obtenidos exitosamente.',
+                'data'    => $categoria
+            ])->setStatusCode(200);
+
+        }else{
+
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición',
+                'data'    => $categoria
+            ])->setStatusCode(404);
+            
+        }
+
+    }
+
     public function guardar()
     {
-        $request = service('request');
-        $data = $request->getPost();
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        
+        $json = $this->request->getJSON();
+        if ($json) {
+            echo true;
+        } else {
+            echo false;
+        }
     }
 }

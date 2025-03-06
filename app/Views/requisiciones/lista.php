@@ -196,7 +196,6 @@
 
             $(document).on("click", ".ver_solicitud", function() {
                 let id_requisicion = $(this).attr("data-id");
-                alert(id_requisicion);
 
                 $.ajax({
                     url: "obtener-detalle-requisicion/" + id_requisicion,
@@ -204,17 +203,58 @@
                     method: "POST",
                     success: function(response) {
                         if (response.status == 'success') {
+                            let fila = '';
+                            let items = []; // Array para almacenar los objetos
+                            $.each(response.data, function(i, f) {
+                                items.push({
+                                    id_detalle: f.id_detalle,
+                                    check: false
+                                });
+
+                                fila += `
+                                    <tr class="click_fila" data-id="${f.id_detalle}">
+                                        <td>${f.categoria}</td>
+                                        <td>${f.detalle}</td>
+                                        <td>${f.cantidad}</td>
+                                        <td>${f.stock}</td>
+                                        <td>
+                                            <input type="checkbox" class="select-item" data-id="${f.id_detalle}">
+                                        </td>
+                                    </tr>`;
+                            });
                             $.confirm({
                                 title: null,
                                 columnClass: "col-md-8 col-md-offset-2",
                                 content: `
                                 <div class="container">
                                     <div class="row">
-                                        <table>
-                                        </table>
+                                        <div class="col-md-12">
+                                            <table class="table table-striped table-bordered table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Artículo</th>
+                                                        <th>Descripción</th>
+                                                        <th>Cant. solicitada</th>
+                                                        <th>Stock</th>
+                                                        <th>
+                                                            Aprobar todas <input type="checkbox" id="select-all"> <label for="select-all"></label>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>${fila}</tbody>
+
+                                            </table>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="motivo">Motivo del rechazo:</label>
+                                                <textarea id="motivo" class="form-control" rows="4" maxlength="100"></textarea>
+                                                <small id="charCount">100 caracteres restantes</small>
+                                                <div id="errorMessage" style="color: red; display: none;">El motivo debe ser llenado.</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                `,
+                                </div>`,
                                 type: "blue",
                                 typeAnimated: true,
                                 buttons: {
@@ -223,67 +263,42 @@
                                         btnClass: "btn-info",
                                         action: function() {
 
-                                            let productos = [];
-                                            let comentarios = $("#comentarios").val();
-                                            let verificarValidado = false;
-
-                                            $(".articulos-validar").each(function() {
-
-                                                let validado = $(this).prop("checked") ? 1 : 0;
-                                                productos.push({
-                                                    idDetalle: $(this).data("id"),
-                                                    validado: validado,
-                                                });
-
-                                                if (validado === 1) {
-                                                    verificarValidado = true;
-                                                }
-
-                                            });
-
-                                            if (verificarValidado == false) {
-
-                                                alert("Seleccione almenos un validado ...");
-                                                return false;
-
-                                            }
-
-                                            if (comentarios == "") {
-
-                                                alert("Escriba algo en el comentario ...");
-                                                return false;
-
-                                            }
-
-                                            let data = {
-                                                idRequisicion,
-                                                productos: productos,
-                                                comentarios: comentarios
-                                            };
-
-                                            let $btn = this.$$validar;
-                                            //$btn.html(`${spinnner} `).prop("disabled", true);
-
-
-                                            $("#letrero").html(`
-
-                        <b style="line-height: 30px;margin-top: 8px;font-weight: 500;">Procesar validados</b>
-                        <div class="spinner-border" role="status" style="width: 20px;height: 20px;">
-                        </div>
-                    
-                    `);
-
-                                            console.log("Validando", data);
-                                            console.log("Validando");
-                                            sendValidarArticulos(data, this);
-
-                                            return false;
                                         },
                                     },
                                     Cerrar: function() {},
                                 },
 
-                                onContentReady: function() {},
+                                onContentReady: function() {
+
+
+                                    // Actualizar array cuando los checkboxes cambien manualmente
+                                    modal.find(".select-item").on("change", function() {
+                                        let id = $(this).data("id");
+                                        let isChecked = $(this).prop("checked");
+
+                                        let item = itemsSeleccionados.find(item => item.id_detalle == id);
+                                        if (item) {
+                                            item.check = isChecked;
+                                        }
+                                    });
+
+
+
+
+
+
+                                    var $motivo = this.$content.find('#motivo');
+                                    var $charCount = this.$content.find('#charCount');
+                                    var $errorMessage = this.$content.find('#errorMessage');
+
+                                    $motivo.on('input', function() {
+                                        var remaining = 100 - $(this).val().length;
+                                        $charCount.text(remaining + ' caracteres restantes');
+                                        if (remaining <= 0) {
+                                            $motivo.val($motivo.val().substring(0, 100)); // Limita a 100 caracteres
+                                        }
+                                    });
+                                },
                             });
                         }
                     }

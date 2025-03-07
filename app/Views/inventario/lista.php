@@ -37,7 +37,7 @@
                             <div class="container">
                                 <div class="row justify-content-end align-items-center mt-3">
                                     <div class="col-auto">
-                                        <button class="btn btn-info btn-sm btn-modal" id="agregarProducto"><i class='bx bx-plus-circle'></i>Agregar usuario</button>
+                                        <button class="btn btn-info btn-sm btn-modal" id="agregarProducto"><i class='bx bx-plus-circle'></i>Agregar productos</button>
                                     </div>
                                     <div class="col-md-12">
                                         <table class="table table-sm" id="tbl_requisicon">
@@ -82,6 +82,8 @@
     </div>
     <?= $js; ?>
     <script>
+
+        let ventanaProductosInventario = null;
 
         $(document).ready(function() {
             $('#tbl_requisicon').DataTable({
@@ -133,7 +135,7 @@
 
         $("#agregarProducto").on("click", function(event) {
 
-            $.confirm({
+            ventanaProductosInventario = $.confirm({
             title: false,
             boxWidth: '600px',
             useBootstrap: false,
@@ -155,17 +157,56 @@
                     100% { transform: rotate(360deg); }
                 }
 
+                .form-check-input:checked {
+                    background-color: #66b0ff;
+                    border-color: #66b0ff;
+                }
+
+                .form-check-input:focus {
+                    box-shadow: none;
+                    border: 1px solid #d9dee3;
+                }
+
+                .form-check-input:not(:focus) {
+                    border: 1px solid #d9dee3 !important;
+                }
+
+                .form-check-input:not(:focus):checked {
+                    border: 1px solid #d9dee3 !important;
+                    box-shadow: none;
+                }
+
+                #guardar {
+                    display: flex;
+                    align-items: center;
+                }
+
+                #guardar i {
+                    margin-right: 8px;
+                }
+
             </style>
 
             <div class="container-fluid" style="padding: 15px;">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group pb-3">
+                            
                             <label for="nombreProducto">Nombre del producto</label>
-                            <select class="form-control" id="nombreProducto">
-                                <option value="">Seleccione una categoría</option>
-                            </select>
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <select class="form-control" id="nombreProducto">
+                                        <option value="">Seleccione una categoría</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-primary" type="button" id="agregarInventario">Agregar</button>
+                                </div>
+                            </div>
+
                             <small class="form-text text-muted">Escribe el nombre del producto en la casiilla de texto</small>
+
                         </div>
                     </div>
                 </div>
@@ -174,6 +215,16 @@
                         <div class="form-group  pb-4">
                             <label for="categoria">Categoría</label>
                             <input type="text" class="form-control" id="categoria" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-check pb-4">
+                        <input class="form-check-input" type="checkbox" id="consumo">
+                        <label class="form-check-label" for="consumo" style="user-select: none;">
+                            Consumo
+                        </label>
                         </div>
                     </div>
                 </div>
@@ -220,7 +271,8 @@
                     <div class="col-md-12 text-center mt-2">
                         <div class="d-flex justify-content-center align-items-center gap-2">
                             <button type="button" class="btn btn-dark" id="guardar">
-                                Guardar
+                                <i class="bx bx-save"></i> 
+                                <span>Guardar</span>
                             </button>
                         </div>
                     </div>
@@ -307,6 +359,14 @@
 
             let nombreProducto = $("#nombreProducto").val();
             let categoria = $("#categoria").val();
+            let isChecked = $("#consumo").prop("checked");
+            let consumo = 0;
+
+            if (isChecked) {
+                consumo = 1;
+            } else {
+                consumo = 0;
+            }
 
             let datosProductos = [];
 
@@ -323,7 +383,8 @@
             let datosEnviar = JSON.stringify({
                 nombre: nombreProducto,
                 categoria: categoria,
-                productos: datosProductos
+                productos: datosProductos,
+                consumo: consumo
             });
 
             if(nombreProducto == ""){
@@ -379,6 +440,7 @@
                     $("#caracteristicasProducto").val("");
                     $("#valorProducto").val("");
                     $("#tablaProductos").empty();
+                    $("#consumo").prop("checked", false);
 
                 }
             });
@@ -408,6 +470,153 @@
         $(document).on('click', '.btn-warning', function () {
 
             $(this).closest('tr').remove();
+
+        });
+
+        $(document).on('click', '#agregarInventario', function () {
+
+            if (ventanaProductosInventario) {
+                ventanaProductosInventario.close();
+                ventanaProductosInventario = null;
+            }
+
+            $.confirm({
+            title: false,
+            boxWidth: '600px',
+            useBootstrap: false,
+            content: `
+
+            <div class="container-fluid py-3">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group pb-3">
+                            <label for="nombreProductoAgregarInventario">Nombre del producto</label>
+                            <input type="text" class="form-control" id="nombreProductoAgregarInventario" placeholder="Ingrese el nombre del producto">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div id="bloque-categoria">
+                            <label for="categoriaProductoAgregarInventario" style="margin-right: 10px;">Categoría</label>
+                            <div class="form-group" style="display: flex; align-items: center;">
+                                <select class="form-control" id="categoriaProductoAgregarInventario" style="margin-right: 10px;">
+                                    <option value="">Seleccione una categoría</option>
+                                </select>
+                                <button class="btn btn-primary" type="button" id="agregarCategoria">Agregar</button>
+                            </div>
+                        </div>
+
+                        <div id="bloque-AgregarCategoria" style="display: none;">
+                            <label for="nuevaCategoria" style="margin-right: 10px;">Categoría</label>
+                            <div class="form-group" style="display: flex; align-items: center;">
+                                <input type="text" class="form-control" placeholder="Agregar nueva categoría" id="nuevaCategoria" style="margin-right: 10px;">
+                                <button class="btn btn-primary" type="button" id="guardarCategoria">Guardar</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 text-center mt-4">
+                        <button type="button" class="btn btn-dark" id="guardarInventario">
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            `,
+            buttons: false,
+            onContentReady: function () {
+
+                $.ajax({
+                url: "http://127.0.0.1/requisiciones/inventario/obtenerTodasCategorias/",
+                type: "GET",
+                success: function(respuesta) {
+                    
+                    respuesta.data.forEach(function(elemento) {
+                        $("#categoriaProductoAgregarInventario").append('<option value="' + elemento.id + '">' + elemento.categoria + '</option>');
+                    });
+
+                }
+                });
+
+            }
+            });
+
+        });
+
+        $(document).on('click', '#guardarInventario', function () {
+
+            let nombreProductoAgregarInventario = $("#nombreProductoAgregarInventario").val().trim();
+            let categoriaProductoAgregarInventario = $("#categoriaProductoAgregarInventario").val();
+            
+            if(nombreProductoAgregarInventario == ""){
+                alert("El nombre del producto esta vacio ..");
+                return false;
+            }
+
+            if(categoriaProductoAgregarInventario == ""){
+                alert("El nombre de la categoria esta vacio ..");
+                return false;
+            }
+
+            let datosEnviar = JSON.stringify({
+                nombreProductoAgregarInventario: nombreProductoAgregarInventario,
+                categoriaProductoAgregarInventario: categoriaProductoAgregarInventario
+            });
+
+            $("#nombreProductoAgregarInventario").val("");
+            $("#categoriaProductoAgregarInventario").val("");
+
+            $.ajax({
+            url: "http://127.0.0.1/requisiciones/inventario/buscarProducto",
+            type: "POST",
+            dataType: "json",
+            data: {
+                producto: nombreProductoAgregarInventario
+            },
+            success: function(respuesta) {
+
+                if(respuesta.status == "error"){
+                    alert("El producto ya existe ...");
+                }
+
+            }
+            });
+
+        });
+
+        $(document).on('click', '#agregarCategoria', function () {
+
+            $("#bloque-categoria").hide();
+            $("#bloque-AgregarCategoria").show();
+
+        });
+
+        $(document).on('click', '#guardarCategoria', function () {
+
+            $("#bloque-categoria").show();
+            $("#bloque-AgregarCategoria").hide();
+            $("#nuevaCategoria").val("");
+
+            $("#categoriaProductoAgregarInventario").val("");
+
+            /*
+            $.ajax({
+            url: "",
+            type: "POST",
+            dataType: "json",
+            success: function(respuesta) {
+            }
+            });
+            */
 
         });
 

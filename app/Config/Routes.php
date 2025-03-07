@@ -18,6 +18,8 @@ $routes->post('inventario/data-table', 'InventarioController::obtenerInventario'
 $routes->post('inventario/guardar', 'InventarioController::guardar');
 $routes->get('inventario/obtenerTipoInventario', 'InventarioController::obtenerTipoInventario');
 $routes->get('inventario/obtenerCategoria/(:any)', 'InventarioController::obtenerCategoria/$1');
+$routes->get('inventario/obtenerTodasCategorias', 'InventarioController::obtenerTodasCategorias');
+$routes->post('inventario/buscarProducto', 'InventarioController::buscarProducto');
 
 
 #Rutas para las requisiciones

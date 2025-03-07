@@ -315,7 +315,7 @@ class RequisicionesController extends BaseController
             ])->setStatusCode(404);
         }
 
-
+ 
         // Obtener los detalles desde el modelo
         $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicion($idRequisicion);
 

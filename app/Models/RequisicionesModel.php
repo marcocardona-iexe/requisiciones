@@ -93,7 +93,7 @@ class RequisicionesModel extends Model
                 ->orLike('fecha_entregado', $search)
                 ->orLike('fecha_entrega', $search)
                 ->groupEnd();
-        }
+        } 
 
         // Ordenación
         if (!empty($order_column)) {

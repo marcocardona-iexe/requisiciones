@@ -218,9 +218,6 @@
                                 } else {
                                     $('#errorMessage').hide(); // Ocultar mensaje de error
 
-
-
-
                                     $.confirm({
                                         title: "Confirmación",
                                         content: "Estás a punto de rechazar la sollcitud, ¿Deseas continuar?",

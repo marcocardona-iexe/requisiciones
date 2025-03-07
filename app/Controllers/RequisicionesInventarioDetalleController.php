@@ -78,7 +78,7 @@ class RequisicionesInventarioDetalleController extends BaseController
                 'message' => 'ID de requisición inválido.'
             ])->setStatusCode(400);
         }
-
+ 
 
         // Obtener los detalles desde el modelo
         $dataRequisicion = $requisicionesModel->obtenerPorId($idRequisicion);

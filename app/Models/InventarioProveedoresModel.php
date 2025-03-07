@@ -49,7 +49,7 @@ class InventarioProveedoresModel extends Model
         return $this->where($where)->findAll();
     }
 
-
+ 
     /**
      * Editar usuarios según una condición.
      * 

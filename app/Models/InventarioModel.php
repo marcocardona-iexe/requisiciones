@@ -91,7 +91,7 @@ class InventarioModel extends Model
     {
         return $this->db->table('inventario_detalles')->countAll();
     }
-
+ 
     /**
      * Editar usuarios según una condición.
      * 
@@ -120,5 +120,14 @@ class InventarioModel extends Model
         }
 
         return $builder->countAllResults();
+    }
+
+    public function buscarProducto($producto)
+    {
+        $builder = $this->db->table('inventario');
+        $builder->where('LOWER(nombre)', strtolower($producto));
+        $resultado = $builder->countAllResults();
+
+        return $resultado > 0 ? 1 : 0;
     }
 }

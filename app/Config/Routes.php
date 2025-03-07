@@ -33,3 +33,4 @@ $routes->post('requisiciones/obtener-detalle-requisicion-parcial/(:num)', 'Requi
 $routes->post('requisiciones/validar-compra/(:num)', 'RequisicionesController::validar_compra/$1');
 $routes->post('requisiciones/obtener-compra-requisicion/(:num)', 'RequisicionesController::obtener_compra_requisicion/$1');
 
+ 

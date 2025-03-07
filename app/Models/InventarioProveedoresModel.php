@@ -49,7 +49,7 @@ class InventarioProveedoresModel extends Model
         return $this->where($where)->findAll();
     }
 
- 
+
     /**
      * Editar usuarios según una condición.
      * 
@@ -65,9 +65,36 @@ class InventarioProveedoresModel extends Model
 
     public function obtenerProveedoresPorInventario($idInventario)
     {
-        return $this->select('inventario_proveedores.precio, proveedores.proveedor')
+        return $this->select('inventario_proveedores.precio, proveedores.proveedor, inventario_proveedores.id_proveedor')
             ->join('proveedores', 'inventario_proveedores.id_proveedor = proveedores.id')
             ->where('inventario_proveedores.id_inventario', $idInventario)
             ->findAll();
+    }
+
+
+    public function getProveedoresConInventario($id_inventario = 101)
+    {
+        // Consulta SQL directa
+        $sql = "
+            SELECT 
+                proveedores.id AS id_proveedor, 
+                proveedores.proveedor, 
+                COALESCE(inventario_proveedores.precio, 0) AS precio, 
+                CASE 
+                    WHEN inventario_proveedores.id_proveedor IS NOT NULL THEN 1 
+                    ELSE 0 
+                END AS chec
+            FROM 
+                proveedores
+            LEFT JOIN 
+                inventario_proveedores 
+                ON proveedores.id = inventario_proveedores.id_proveedor
+                AND inventario_proveedores.id_inventario = ?
+            ORDER BY 
+                proveedores.proveedor ASC;
+        ";
+
+        // Ejecutar la consulta SQL
+        return $this->db->query($sql, [$id_inventario])->getResultArray();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\InventarioModel;
 use App\Models\CategoriasModel;
+use App\Models\InventarioProveedoresModel;
 
 
 
@@ -66,9 +67,9 @@ class InventarioController extends BaseController
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-        $inventarioModel = new InventarioModel();     
+        $inventarioModel = new InventarioModel();
         $articulos = $inventarioModel->obtenerTodos();
-    
+
         if (!empty($articulos)) {
 
             return $this->response->setJSON([
@@ -76,25 +77,23 @@ class InventarioController extends BaseController
                 'message' => 'Datos obtenidos exitosamente.',
                 'data'    => $articulos
             ])->setStatusCode(200);
-
-        }else{
+        } else {
 
             return $this->response->setJSON([
                 'status'  => 'error',
                 'message' => 'No se encontraron detalles para esta requisición',
                 'data'    => $articulos
             ])->setStatusCode(404);
-            
         }
-    }  
+    }
 
     public function obtenerCategoria($idInventario)
     {
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        
-        $categoriasModel = new CategoriasModel();     
+
+        $categoriasModel = new CategoriasModel();
         $categoria = $categoriasModel->obtenerCategoria($idInventario);
 
         if (!empty($categoria)) {
@@ -104,17 +103,14 @@ class InventarioController extends BaseController
                 'message' => 'Datos obtenidos exitosamente.',
                 'data'    => $categoria
             ])->setStatusCode(200);
-
-        }else{
+        } else {
 
             return $this->response->setJSON([
                 'status'  => 'error',
                 'message' => 'No se encontraron detalles para esta requisición',
                 'data'    => $categoria
             ])->setStatusCode(404);
-            
         }
-
     }
 
     public function obtenerTodasCategorias()
@@ -122,8 +118,8 @@ class InventarioController extends BaseController
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        
-        $categoriasModel = new CategoriasModel();     
+
+        $categoriasModel = new CategoriasModel();
         $categoria = $categoriasModel->obtenerTodasCategorias();
 
         if (!empty($categoria)) {
@@ -133,17 +129,14 @@ class InventarioController extends BaseController
                 'message' => 'Datos obtenidos exitosamente.',
                 'data'    => $categoria
             ])->setStatusCode(200);
-
-        }else{
+        } else {
 
             return $this->response->setJSON([
                 'status'  => 'error',
                 'message' => 'No se encontraron detalles para esta requisición',
                 'data'    => $categoria
             ])->setStatusCode(404);
-            
         }
-
     }
 
     public function buscarProducto()
@@ -153,7 +146,7 @@ class InventarioController extends BaseController
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
         $producto = $_POST['producto'];
-        
+
         $inventarioModel = new InventarioModel();
         $producto = $inventarioModel->buscarProducto($producto);
 
@@ -162,15 +155,12 @@ class InventarioController extends BaseController
             return $this->response->setJSON([
                 'status'  => 'success'
             ]);
-
-        }else{
+        } else {
 
             return $this->response->setJSON([
                 'status'  => 'error'
             ]);
-            
         }
-
     }
 
     public function guardar()
@@ -178,12 +168,23 @@ class InventarioController extends BaseController
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
-        
+
         $json = $this->request->getJSON();
         if ($json) {
             echo true;
         } else {
             echo false;
         }
+    }
+
+    public function get_proveedores_inventario($id_inventario)
+    {
+        $inventarioProveedoresModel = new InventarioProveedoresModel();
+        $dataProveedores = $inventarioProveedoresModel->getProveedoresConInventario($id_inventario);
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $dataProveedores,
+        ])->setStatusCode(200);
     }
 }

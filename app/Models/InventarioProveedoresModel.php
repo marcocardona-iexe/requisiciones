@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class RequisicionesInventarioDetalleModel extends Model
+class InventarioProveedoresModel extends Model
 {
-    protected $table = 'requisiciones_inventario_detalle'; // Nombre de la tabla en la base de datos
+    protected $table = 'inventario_proveedores'; // Nombre de la tabla en la base de datos
     protected $primaryKey = 'id'; // Llave primaria de la tabla
     protected $allowedFields = [
-        'id_requisicion',
-        'cantidad',
-        'id_variante',
-        'validado'
+        'id_proveedor',
+        'id_inventario',
+        'precio'
+
     ]; // Campos permitidos para operaciones de inserción y actualización
     protected $useTimestamps = true; // Utilizar campos de timestamp automáticos
     protected $returnType = 'object';
@@ -63,23 +63,11 @@ class RequisicionesInventarioDetalleModel extends Model
     }
 
 
-    public function obtenerDetallesRequisicion($idRequisicion)
+    public function obtenerProveedoresPorInventario($idInventario)
     {
-        return $this->db->table('requisiciones_inventario_detalle')
-            ->select("
-                requisiciones_inventario_detalle.id,
-                requisiciones_inventario_detalle.id_variante,
-                requisiciones_inventario_detalle.cantidad,
-                requisiciones_inventario_detalle.validado,
-                inventario_detalles.stock_individual,
-                inventario.nombre,
-                GROUP_CONCAT(DISTINCT CONCAT(inventario_detalles.atributo, ': ', inventario_detalles.valor) SEPARATOR ', ') AS detalles
-            ")
-            ->join('inventario_detalles', 'requisiciones_inventario_detalle.id_variante = inventario_detalles.id_variante', 'inner')
-            ->join('inventario', 'inventario_detalles.id_inventario = inventario.id', 'inner')
-            ->where('requisiciones_inventario_detalle.id_requisicion', $idRequisicion)
-            ->groupBy('inventario_detalles.id_inventario')
-            ->get()
-            ->getResultArray(); // Retorna un array asociativo
+        return $this->select('inventario_proveedores.precio, proveedores.proveedor')
+            ->join('proveedores', 'inventario_proveedores.id_proveedor = proveedores.id')
+            ->where('inventario_proveedores.id_inventario', $idInventario)
+            ->findAll();
     }
 }

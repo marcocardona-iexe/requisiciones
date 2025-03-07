@@ -30,7 +30,7 @@
                     <!-- Content -->
 
                     <div class="container-xxl flex-grow-1 container-p-y">
-                        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Usuarios /</span> Lista</h4>
+                        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Requisiciones /</span> Lista</h4>
 
                         <!-- Basic Bootstrap Table -->
                         <div class="card">
@@ -158,7 +158,7 @@
                                         </div>`;
                                     break;
                                 case "3":
-                                    return `<button type="button" class="btn btn-success btn-sm"><i class='bx bx-cart-alt' ></i> Comprar</button>
+                                    return `<button type="button" class="btn btn-success btn-sm realizar_compra" data-id='${data.id}'><i class='bx bx-cart-alt' ></i> Comprar</button>
 `;
                                     break;
                                 case "4":
@@ -589,11 +589,12 @@
                             let fila = '';
                             let items = []; // Array para almacenar los objetos
                             $.each(response.data, function(i, f) {
+                                item_aprobado = (f.validado == "1"); // Convierte "1" en true, cualquier otro valor será false.
+
                                 items.push({
                                     id_detalle: f.id_detalle,
-                                    check: false
+                                    check: item_aprobado ? true : false
                                 });
-                                item_aprobado = (f.validado == "1"); // Convierte "1" en true, cualquier otro valor será false.
 
                                 fila += `
                                     <tr class="click_fila" data-id="${f.id_detalle}" style="cursor:pointer;">
@@ -612,9 +613,7 @@
                                 content: `
                                     <div class="container">
                                         <div class="row">
-                                            <div class="col-md-12">
-                                            <p>Comentario de seguimiento: ${response.requisicion.comentario_estatus}</p>
-                                            </div>
+                                            
                                             <div class="col-md-12">
                                                 <div id="alertMessage" class="alert alert-danger d-none"></div>
                                                 <table class="table table-striped table-bordered table-sm">
@@ -631,6 +630,9 @@
                                                     </thead>
                                                     <tbody>${fila}</tbody>
                                                 </table>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <p><b>Comentario de seguimiento:</b> ${response.requisicion.comentario_estatus}</p>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group">
@@ -667,7 +669,7 @@
 
                                             $.confirm({
                                                 title: "Confirmación",
-                                                content: "Estás a punto de validar un producto. ¿Deseas continuar?",
+                                                content: "Estás a punto de validar la compra. ¿Deseas continuar?",
                                                 type: "orange",
                                                 typeAnimated: true,
                                                 buttons: {
@@ -696,7 +698,7 @@
 
                                                             // Simulación del AJAX (Reemplaza con tu URL real)
                                                             $.ajax({
-                                                                url: "validar-parcialmente/" + id_requisicion,
+                                                                url: "validar-compra/" + id_requisicion,
                                                                 method: "POST",
                                                                 data: {
                                                                     comentario,
@@ -710,7 +712,7 @@
                                                                         // Mostrar mensaje de éxito
                                                                         $.alert({
                                                                             title: 'Respuesta',
-                                                                            content: "Productos validados correctamente.",
+                                                                            content: "Solicitud validada correctamente.",
                                                                             type: 'green', // Tipo verde para éxito
                                                                             autoClose: 'cancelAction|8000', // Cerrar automáticamente después de 8 segundos
                                                                             buttons: {
@@ -831,6 +833,323 @@
 
             });
 
+
+
+            $(document).on("click", ".realizar_compra", function() {
+                let id_requisicion = $(this).attr("data-id");
+
+                $.ajax({
+                    url: "obtener-compra-requisicion/" + id_requisicion,
+                    dataType: "json",
+                    method: "POST",
+                    success: function(response) {
+                        console.log(response);
+                        if (response.status == 'success') {
+
+
+
+                            let filas = "";
+                            let options = "";
+
+                            $.each(response.data, function(i, p) {
+                                options = '<option>Seleccione un proveedor</option>';
+                                $.each(p.proveedor, function(j, pp) {
+                                    options += `<option value=>${pp.proveedor}</option>`;
+                                });
+                                filas += `
+                                    <tr>
+                                        <td>${p.categoria}</td>
+                                        <td>${p.detalle}</td>
+                                        <td>
+                                            <select class="form-select form-select-sm select_prove" id="prove_${p.id_detalle}" data-id=${p.id_detalle} aria-label="Default select example">
+                                                ${options}
+                                            </select>
+                                        </td>
+                                        <td><input type="date" class="form-control" value=""></td>
+                                        <td>${p.cantidad}</td>
+                                        <td>
+                                            <div class="input-group input-group-sm has-validation">
+                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                <input type="text" class="form-control moneda" id="pu_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group input-group-sm has-validation">
+                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                <input type="text" class="form-control moneda" id="du_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group input-group-sm has-validation">
+                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                <input type="text" class="form-control moneda" id="total_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                            });
+
+                            $.confirm({
+                                title: null,
+                                columnClass: "col-md-12",
+                                content: `
+                                    <div class="container">
+                                        <div class="row">
+                                            
+                                            <div class="col-md-12">
+                                                <h3>Orden de Compra</h3>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="row g-2">
+                                                    <div class="col-md-3">
+                                                        <div class="form-floating">
+                                                            <input type="text" readonly class="form-control" id="ordenCompra" value="OC-0028">
+                                                            <label for="ordenCompra">Orden de compra</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-floating">
+                                                            <input type="date" class="form-control" id="fechaCompra">
+                                                            <label for="fechaCompra">Fecha de la compra</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex align-items-center">
+                                                        <div class="form-check d-flex align-items-center">
+                                                            <input class="form-check-input me-2" type="checkbox" id="masIva">
+                                                            <label class="form-check-label" for="masIva">Más IVA</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-5">
+                                            <div class="col-md-12">
+                                                <table class="table table-bordered table-striped table-hover table-sm ">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Producto</th>
+                                                            <th>Descripción</th>
+                                                            <th>Proveedor</th>
+                                                            <th>Fecha entrega</th>
+                                                            <th>Cantidad</th>
+                                                            <th>Precio unitario</th>
+                                                            <th>Descuento unitario</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        ${filas}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 offset-md-8">
+                                                <table class="table  table-striped table-hover table-sm ">
+                                                    <tr>
+                                                        <td><strong>Subtotal</strong></td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm has-validation">
+                                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                                <input type="text" class="form-control" id="subtotal" readonly aria-describedby="inputGroupPrepend" required>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Descuento total</strong></td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm has-validation">
+                                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                                <input type="text" class="form-control" id="descuento_total" readonly aria-describedby="inputGroupPrepend" required>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>IVA 16.00%</strong></td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm has-validation">
+                                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                                <input type="text" class="form-control" id="iva" readonly aria-describedby="inputGroupPrepend" required>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm has-validation">
+                                                                <span class="input-group-text" id="inputGroupPrepend">$</span>
+                                                                <input type="text" class="form-control" id="total_pagar" readonly aria-describedby="inputGroupPrepend" required>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>`,
+                                type: "blue",
+                                typeAnimated: true,
+                                buttons: {
+                                    validar: {
+                                        text: "Validación Parcial",
+                                        btnClass: "btn-info",
+                                        action: function() {
+                                            let comentario = $("#comentario").val().trim();
+                                            let aprobados = items.filter(item => item.check).length;
+                                            let alertBox = $("#alertMessage");
+
+                                            // Verificar si se cumple la validación
+                                            if (!comentario) {
+                                                alertBox.text("Debes ingresar un comentario sobre el seguimiento.").removeClass("d-none");
+                                                return false; // Evita que se cierre el diálogo
+                                            }
+
+                                            if (aprobados === 0) {
+                                                alertBox.text("Debes aprobar al menos un producto.").removeClass("d-none");
+                                                return false;
+                                            }
+
+
+
+                                            $.confirm({
+                                                title: "Confirmación",
+                                                content: "Estás a punto de validar la compra. ¿Deseas continuar?",
+                                                type: "orange",
+                                                typeAnimated: true,
+                                                buttons: {
+                                                    confirmar: {
+                                                        text: "Sí, continuar",
+                                                        btnClass: "btn-info",
+                                                        action: function() {
+                                                            // Cerrar todos los modales abiertos antes de proceder
+                                                            $(".jconfirm").remove();
+
+                                                            // Mostrar modal de carga
+                                                            let loadingDialog = $.dialog({
+                                                                title: false,
+                                                                content: `
+                                                                <div class="container">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12 text-center">
+                                                                        <p><img src="http://127.0.0.1/requisiciones/public/assets/img/sistema/cargando.gif" style="width: 50%;"></p>
+                                                                        <p>Procesando...</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>`,
+                                                                closeIcon: false,
+                                                                columnClass: "col-md-4"
+                                                            });
+
+                                                            // Simulación del AJAX (Reemplaza con tu URL real)
+                                                            $.ajax({
+                                                                url: "validar-compra/" + id_requisicion,
+                                                                method: "POST",
+                                                                data: {
+                                                                    comentario,
+                                                                    items
+                                                                },
+                                                                dataType: "json",
+                                                                success: function(response) {
+                                                                    loadingDialog.close(); // Cerrar el loading
+
+                                                                    if (response.status) {
+                                                                        // Mostrar mensaje de éxito
+                                                                        $.alert({
+                                                                            title: 'Respuesta',
+                                                                            content: "Solicitud validada correctamente.",
+                                                                            type: 'green', // Tipo verde para éxito
+                                                                            autoClose: 'cancelAction|8000', // Cerrar automáticamente después de 8 segundos
+                                                                            buttons: {
+                                                                                cancelAction: {
+                                                                                    text: 'Aceptar',
+                                                                                    action: function() {
+                                                                                        $('#tbl_requisicones').DataTable().ajax.reload(null, false);
+
+
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        $.alert("Hubo un problema en la validación.");
+                                                                    }
+                                                                },
+                                                                error: function() {
+                                                                    loadingDialog.close(); // Cerrar el loading
+                                                                    $.alert("Hubo un error en el proceso.");
+                                                                }
+                                                            });
+                                                        }
+                                                    },
+                                                    cancelar: {
+                                                        text: "No",
+                                                        btnClass: "btn-danger"
+                                                    }
+                                                }
+                                            });
+
+                                            return false; // Evita que se cierre el primer diálogo
+                                        }
+                                    },
+                                    Cerrar: function() {}
+                                },
+
+                                onContentReady: function() {
+
+                                    $(".moneda").on("input", function() {
+                                        let input = $(this)[0]; // Obtiene el input nativo
+                                        let start = input.selectionStart; // Guarda la posición del cursor
+
+                                        // Elimina caracteres no numéricos excepto el punto decimal
+                                        let value = $(this).val().replace(/[^0-9.]/g, "");
+
+                                        // Asegura que solo haya un punto decimal
+                                        let parts = value.split(".");
+                                        if (parts.length > 2) {
+                                            value = parts[0] + "." + parts.slice(1).join(""); // Deja solo el primer punto
+                                        }
+
+                                        // Limita a solo dos decimales
+                                        if (parts.length === 2 && parts[1].length > 2) {
+                                            value = parts[0] + "." + parts[1].substring(0, 2); // Máximo 2 decimales
+                                        }
+
+                                        // Actualiza el input sin formato de pesos
+                                        $(this).val(value);
+
+                                        // Ajusta la posición del cursor
+                                        input.setSelectionRange(start, start);
+                                    });
+
+                                    $(".moneda").on("blur", function() {
+                                        let value = $(this).val().trim();
+
+                                        if (value) {
+                                            let parts = value.split(".");
+
+                                            if (parts.length === 1) {
+                                                value = parseFloat(value).toFixed(2); // Agrega ".00" si no tiene decimales
+                                            } else if (parts.length === 2 && parts[1].length === 1) {
+                                                value = parts[0] + "." + parts[1] + "0"; // Agrega "0" si solo hay un decimal
+                                            }
+                                        }
+
+                                        $(this).val(value ? value : "0.00");
+                                    });
+
+                                    $(".select_prove").on("click", function(){
+
+                                    });
+
+
+                                },
+                            });
+                        }
+                    }
+                });
+
+
+
+            });
 
 
 

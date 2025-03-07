@@ -4,7 +4,8 @@ namespace App\Controllers;
 
 use App\Models\RequisicionesModel;
 use App\Models\RequisicionesInventarioDetalleModel;
-
+use App\Models\ProvedoresModel;
+use App\Models\InventarioProveedoresModel;
 
 
 class RequisicionesController extends BaseController
@@ -205,5 +206,151 @@ class RequisicionesController extends BaseController
         }
     }
 
-    
+
+    public function validar_compra($id)
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+
+        try {
+            $data = $this->request->getPost();
+
+            // Validar que los datos requeridos estén presentes
+            if (!isset($data["items"]) || !is_array($data["items"])) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'El campo "items" es obligatorio y debe ser un array válido.'
+                ])->setStatusCode(400);
+            }
+
+            if (!isset($data['comentario']) || empty(trim($data['comentario']))) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'El comentario es obligatorio.'
+                ])->setStatusCode(400);
+            }
+
+            foreach ($data["items"] as $i) {
+                // Validar que el objeto contenga los campos necesarios
+                if (!isset($i["id_detalle"]) || !isset($i["check"])) {
+                    return $this->response->setJSON([
+                        'status' => 'error',
+                        'message' => 'Cada item debe contener "id_detalle" y "check".'
+                    ])->setStatusCode(400);
+                }
+
+                // Convertir "check" a booleano correctamente
+                $validado = filter_var($i["check"], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+
+                // Actualizar base de datos
+                $actualizado = $requisicionesInventarioDetalleModel->editarPorWhere(
+                    ["id" => $i['id_detalle']],
+                    ["validado" => $validado]
+                );
+
+                // Verificar si la actualización falló
+                if (!$actualizado) {
+                    return $this->response->setJSON([
+                        'status' => 'error',
+                        'message' => 'Error al actualizar el detalle de la requisición.'
+                    ])->setStatusCode(500);
+                }
+            }
+
+            // Actualizar comentario
+            $actualizadoComentario = $requisicionesModel->editarPorWhere(
+                ["id" => $id],
+                [
+                    "comentario_estatus" => $data['comentario'],
+                    "id_estatus" => 3
+                ]
+            );
+
+            if (!$actualizadoComentario) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Error al actualizar el comentario de la requisición.'
+                ])->setStatusCode(500);
+            }
+
+            // Respuesta exitosa
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Datos guardados exitosamente'
+            ])->setStatusCode(200);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Error interno del servidor: ' . $e->getMessage()
+            ])->setStatusCode(500);
+        }
+    }
+
+
+    public function obtener_compra_requisicion($idRequisicion)
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+        $inventarioProveedoresModel = new InventarioProveedoresModel();
+
+
+
+        // Validar que el parámetro sea un número válido
+        if (!is_numeric($idRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'ID de requisición inválido.'
+            ])->setStatusCode(400);
+        }
+
+
+        // Obtener los detalles desde el modelo
+        $dataRequisicion = $requisicionesModel->obtenerPorId($idRequisicion);
+
+
+        if (empty($dataRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontro la requisición'
+            ])->setStatusCode(404);
+        }
+
+
+        // Obtener los detalles desde el modelo
+        $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicion($idRequisicion);
+
+
+        if (empty($detalles)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición.'
+            ])->setStatusCode(404);
+        }
+
+
+        // Formatear la respuesta
+        $responseDetalles = array_map(function ($d) {
+            return (object) [
+                'id_detalle' => $d['id'],
+                'cantidad'   => $d['cantidad'],
+                'stock'      => $d['stock_individual'],
+                'categoria'  => $d['nombre'],
+                'detalle'    => $d['detalles'],
+                'validado'   => $d['validado'],
+                'id_variante'   => $d['id_variante'],
+
+            ];
+        }, $detalles);
+
+        foreach ($responseDetalles as $d) {
+            $d->proveedor = $inventarioProveedoresModel->obtenerProveedoresPorInventario($d->id_variante);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $responseDetalles,
+            'requisicion' => $dataRequisicion
+        ])->setStatusCode(200);
+    }
 }

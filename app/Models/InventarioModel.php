@@ -92,6 +92,18 @@ class InventarioModel extends Model
         return $this->db->table('inventario_detalles')->countAll();
     }
 
+    /**
+     * Editar usuarios según una condición.
+     * 
+     * @param array $where Condición para filtrar usuarios a actualizar.
+     * @param array $data Datos a actualizar.
+     * @return bool Retorna true si se actualizaron registros, false en caso contrario.
+     */
+    public function editarPorWhere(array $where, array $data)
+    {
+        return $this->where($where)->set($data)->update();
+    }
+
     public function contarFilasFiltradasDataTable($search)
     {
         $builder = $this->db->table('inventario_detalles d')

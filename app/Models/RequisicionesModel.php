@@ -19,6 +19,20 @@ class RequisicionesModel extends Model
     protected $useTimestamps = true; // Utilizar campos de timestamp automáticos
     protected $returnType = 'object';
 
+
+
+    /**
+     * Buscar un tipo de beneficiario por su ID.
+     *
+     * @param int $id ID del tipo de beneficiario.
+     * @return object|null Tipo de beneficiario encontrado o null si no existe.
+     */
+    public function obtenerPorId(int $id)
+    {
+        return $this->find($id); // Busca un registro por ID
+    }
+
+
     /**
      * Insertar un nuevo usuario.
      * 
@@ -50,6 +64,19 @@ class RequisicionesModel extends Model
     {
         return $this->where($where)->findAll();
     }
+
+    /**
+     * Editar usuarios según una condición.
+     * 
+     * @param array $where Condición para filtrar usuarios a actualizar.
+     * @param array $data Datos a actualizar.
+     * @return bool Retorna true si se actualizaron registros, false en caso contrario.
+     */
+    public function editarPorWhere(array $where, array $data)
+    {
+        return $this->where($where)->set($data)->update();
+    }
+
 
 
     public function ObtenerRequisicionesDataTable($search, $order_column, $order_dir, $start, $length)

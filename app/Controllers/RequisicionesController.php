@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\RequisicionesModel;
+use App\Models\RequisicionesInventarioDetalleModel;
 
 
 
@@ -61,4 +62,148 @@ class RequisicionesController extends BaseController
             'data' => $data,
         ]);
     }
+
+
+    public function validar_parcialmente($id)
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+
+        try {
+            $data = $this->request->getPost();
+
+            // Validar que los datos requeridos estén presentes
+            if (!isset($data["items"]) || !is_array($data["items"])) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'El campo "items" es obligatorio y debe ser un array válido.'
+                ])->setStatusCode(400);
+            }
+
+            if (!isset($data['comentario']) || empty(trim($data['comentario']))) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'El comentario es obligatorio.'
+                ])->setStatusCode(400);
+            }
+
+            foreach ($data["items"] as $i) {
+                // Validar que el objeto contenga los campos necesarios
+                if (!isset($i["id_detalle"]) || !isset($i["check"])) {
+                    return $this->response->setJSON([
+                        'status' => 'error',
+                        'message' => 'Cada item debe contener "id_detalle" y "check".'
+                    ])->setStatusCode(400);
+                }
+
+                // Convertir "check" a booleano correctamente
+                $validado = filter_var($i["check"], FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+
+                // Actualizar base de datos
+                $actualizado = $requisicionesInventarioDetalleModel->editarPorWhere(
+                    ["id" => $i['id_detalle']],
+                    ["validado" => $validado]
+                );
+
+                // Verificar si la actualización falló
+                if (!$actualizado) {
+                    return $this->response->setJSON([
+                        'status' => 'error',
+                        'message' => 'Error al actualizar el detalle de la requisición.'
+                    ])->setStatusCode(500);
+                }
+            }
+
+            // Actualizar comentario
+            $actualizadoComentario = $requisicionesModel->editarPorWhere(
+                ["id" => $id],
+                [
+                    "comentario_estatus" => $data['comentario'],
+                    "id_estatus" => 2
+                ]
+            );
+
+            if (!$actualizadoComentario) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Error al actualizar el comentario de la requisición.'
+                ])->setStatusCode(500);
+            }
+
+            // Respuesta exitosa
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Datos guardados exitosamente'
+            ])->setStatusCode(200);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Error interno del servidor: ' . $e->getMessage()
+            ])->setStatusCode(500);
+        }
+    }
+
+    public function rechazar($id)
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+
+        // Obtener datos de la petición
+        $data = $this->request->getPost();
+
+        // Validar que el comentario esté presente y no vacío
+        if (!isset($data['motivo']) || empty(trim($data['motivo']))) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'El motivo del rechazo es obligatorio.'
+            ])->setStatusCode(400);
+        }
+
+        try {
+            // Actualizar la requisición con el comentario y el estatus de rechazo (5)
+            $actualizadoRequisicion = $requisicionesModel->editarPorWhere(
+                ["id" => $id],
+                [
+                    "comentario_estatus" => trim($data['motivo']),
+                    "id_estatus" => 5
+                ]
+            );
+
+            // Validar si la actualización de la requisición falló
+            if (!$actualizadoRequisicion) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Error al actualizar la requisición.'
+                ])->setStatusCode(500);
+            }
+
+            // Actualizar todos los registros relacionados en requisicionesInventarioDetalle
+            $actualizado = $requisicionesInventarioDetalleModel->editarPorWhere(
+                ["id_requisicion" => $id],
+                ["validado" => 0]
+            );
+
+            // Validar si la actualización de los detalles falló
+            if (!$actualizado) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Error al actualizar los detalles de la requisición.'
+                ])->setStatusCode(500);
+            }
+
+            // Si todo es exitoso, retornar éxito
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Requisición rechazada correctamente.'
+            ])->setStatusCode(200);
+        } catch (\Exception $e) {
+            // Manejar cualquier excepción inesperada
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Ocurrió un error inesperado: ' . $e->getMessage()
+            ])->setStatusCode(500);
+        }
+    }
+
+    
 }

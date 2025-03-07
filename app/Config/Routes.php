@@ -25,5 +25,9 @@ $routes->get('requisiciones/lista', 'RequisicionesController::lista');
 #Peticiones AJAX
 $routes->post('requisiciones/data-table', 'RequisicionesController::obtenerRequisiciones');
 $routes->post('requisiciones/obtener-detalle-requisicion/(:num)', 'RequisicionesInventarioDetalleController::obtener_detalle_requisicion/$1');
+$routes->post('requisiciones/validar-parcialmente/(:num)', 'RequisicionesController::validar_parcialmente/$1');
+$routes->post('requisiciones/rechazar/(:num)', 'RequisicionesController::rechazar/$1');
+$routes->post('requisiciones/obtener-detalle-requisicion-parcial/(:num)', 'RequisicionesInventarioDetalleController::obtener_detalle_requisicion_parcial/$1');
+
 
 

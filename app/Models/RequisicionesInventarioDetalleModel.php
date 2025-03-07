@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class RequisicionesInventarioDetalleModel extends Model
 {
-    protected $table = 'requisiciones'; // Nombre de la tabla en la base de datos
+    protected $table = 'requisiciones_inventario_detalle'; // Nombre de la tabla en la base de datos
     protected $primaryKey = 'id'; // Llave primaria de la tabla
     protected $allowedFields = [
         'id_requisicion',
@@ -49,12 +49,27 @@ class RequisicionesInventarioDetalleModel extends Model
         return $this->where($where)->findAll();
     }
 
+
+    /**
+     * Editar usuarios según una condición.
+     * 
+     * @param array $where Condición para filtrar usuarios a actualizar.
+     * @param array $data Datos a actualizar.
+     * @return bool Retorna true si se actualizaron registros, false en caso contrario.
+     */
+    public function editarPorWhere(array $where, array $data)
+    {
+        return $this->where($where)->set($data)->update();
+    }
+
+
     public function obtenerDetallesRequisicion($idRequisicion)
     {
         return $this->db->table('requisiciones_inventario_detalle')
             ->select("
                 requisiciones_inventario_detalle.id,
                 requisiciones_inventario_detalle.cantidad,
+                requisiciones_inventario_detalle.validado,
                 inventario_detalles.stock_individual,
                 inventario.nombre,
                 GROUP_CONCAT(DISTINCT CONCAT(inventario_detalles.atributo, ': ', inventario_detalles.valor) SEPARATOR ', ') AS detalles

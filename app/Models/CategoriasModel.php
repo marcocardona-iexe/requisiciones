@@ -39,4 +39,21 @@ class CategoriasModel extends Model
         return $result;
     }
     
+    public function obtenerTodasCategorias()
+    {
+        // Usando el Query Builder para la tabla categorias
+        $builder = $this->db->table('categorias');
+        
+        // Seleccionar la columna 'categoria'
+        $builder->select('id, categoria');
+        
+        // Ejecutar la consulta
+        $query = $builder->get();
+        
+        // Obtener todos los resultados como un array de objetos
+        $result = $query->getResult();
+        
+        return $result;
+    }    
+
 }

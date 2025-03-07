@@ -511,7 +511,7 @@
                         </div>
 
                         <div id="bloque-AgregarCategoria" style="display: none;">
-                            <label for="nuevaCategoria" style="margin-right: 10px;">Categoría</label>
+                            <label for="nuevaCategoria" style="margin-right: 10px;"><i class="bx bx-plus"></i> Agregar categoria</label>
                             <div class="form-group" style="display: flex; align-items: center;">
                                 <input type="text" class="form-control" placeholder="Agregar nueva categoría" id="nuevaCategoria" style="margin-right: 10px;">
                                 <button class="btn btn-primary" type="button" id="guardarCategoria">Guardar</button>

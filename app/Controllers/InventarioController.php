@@ -117,6 +117,62 @@ class InventarioController extends BaseController
 
     }
 
+    public function obtenerTodasCategorias()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        
+        $categoriasModel = new CategoriasModel();     
+        $categoria = $categoriasModel->obtenerTodasCategorias();
+
+        if (!empty($categoria)) {
+
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Datos obtenidos exitosamente.',
+                'data'    => $categoria
+            ])->setStatusCode(200);
+
+        }else{
+
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición',
+                'data'    => $categoria
+            ])->setStatusCode(404);
+            
+        }
+
+    }
+
+    public function buscarProducto()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+        $producto = $_POST['producto'];
+        
+        $inventarioModel = new InventarioModel();
+        $producto = $inventarioModel->buscarProducto($producto);
+
+        if ($producto == 0) {
+
+            return $this->response->setJSON([
+                'status'  => 'success'
+            ]);
+
+        }else{
+
+            return $this->response->setJSON([
+                'status'  => 'error'
+            ]);
+            
+        }
+
+    }
+
     public function guardar()
     {
         header("Access-Control-Allow-Origin: *");

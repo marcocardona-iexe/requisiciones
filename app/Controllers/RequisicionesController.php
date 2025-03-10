@@ -315,9 +315,9 @@ class RequisicionesController extends BaseController
             ])->setStatusCode(404);
         }
 
- 
+
         // Obtener los detalles desde el modelo
-        $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicion($idRequisicion);
+        $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicionCompra($idRequisicion);
 
 
         if (empty($detalles)) {
@@ -351,6 +351,73 @@ class RequisicionesController extends BaseController
             'message' => 'Datos obtenidos exitosamente.',
             'data'    => $responseDetalles,
             'requisicion' => $dataRequisicion
+        ])->setStatusCode(200);
+    }
+
+
+
+    public function realizar_compra($id)
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+
+        try {
+            // $data = $this->request->getPost();
+
+            // Actualizar comentario
+            $actualizadoComentario = $requisicionesModel->editarPorWhere(
+                ["id" => $id],
+                [
+                    "id_estatus" => 4
+                ]
+            );
+
+            if (!$actualizadoComentario) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Error al actualizar el comentario de la requisición.'
+                ])->setStatusCode(500);
+            }
+
+            // Respuesta exitosa
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Datos guardados exitosamente'
+            ])->setStatusCode(200);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Error interno del servidor: ' . $e->getMessage()
+            ])->setStatusCode(500);
+        }
+    }
+
+    public function guardar()
+    {
+        $requisicionesModel = new RequisicionesModel();
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+
+        $data = $this->request->getPost();
+        $dataInsert = [
+            "id_usuario" => 745,
+            "justificacion" => $data['comentarios'],
+            "id_estatus" => 1
+        ];
+
+        $id_requisicion = $requisicionesModel->insertar($dataInsert);
+        foreach ($data['productos'] as $p) {
+            $dataInsert = [
+                "id_requisicion" => $id_requisicion,
+                "cantidad" => $p['cantidad'],
+                "id_variante" => $p['id'],
+                "validado" => 0
+            ];
+            $requisicionesInventarioDetalleModel->insertar($dataInsert);
+        }
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Datos guardados exitosamente'
         ])->setStatusCode(200);
     }
 }

@@ -21,6 +21,7 @@ $routes->get('inventario/obtenerCategoria/(:any)', 'InventarioController::obtene
 $routes->get('inventario/obtenerTodasCategorias', 'InventarioController::obtenerTodasCategorias');
 $routes->post('inventario/buscarProducto', 'InventarioController::buscarProducto');
 $routes->get('inventario/get_proveedores-inventario/(:num)', 'InventarioController::get_proveedores_inventario/$1');
+$routes->post('inventario/obtener-inventario', 'InventarioController::obtener_inventario');
 
 
 #Rutas para las requisiciones
@@ -33,3 +34,5 @@ $routes->post('requisiciones/rechazar/(:num)', 'RequisicionesController::rechaza
 $routes->post('requisiciones/obtener-detalle-requisicion-parcial/(:num)', 'RequisicionesInventarioDetalleController::obtener_detalle_requisicion_parcial/$1');
 $routes->post('requisiciones/validar-compra/(:num)', 'RequisicionesController::validar_compra/$1');
 $routes->post('requisiciones/obtener-compra-requisicion/(:num)', 'RequisicionesController::obtener_compra_requisicion/$1');
+$routes->post('requisiciones/realizar-compra/(:num)', 'RequisicionesController::realizar_compra/$1');
+$routes->post('requisiciones/guardar', 'RequisicionesController::guardar');

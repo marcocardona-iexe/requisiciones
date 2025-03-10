@@ -48,7 +48,7 @@ class RequisicionesInventarioDetalleModel extends Model
     {
         return $this->where($where)->findAll();
     }
- 
+
 
     /**
      * Editar usuarios según una condición.
@@ -78,6 +78,28 @@ class RequisicionesInventarioDetalleModel extends Model
             ->join('inventario_detalles', 'requisiciones_inventario_detalle.id_variante = inventario_detalles.id_variante', 'inner')
             ->join('inventario', 'inventario_detalles.id_inventario = inventario.id', 'inner')
             ->where('requisiciones_inventario_detalle.id_requisicion', $idRequisicion)
+            ->groupBy('inventario_detalles.id_inventario')
+            ->get()
+            ->getResultArray(); // Retorna un array asociativo
+    }
+
+    public function obtenerDetallesRequisicionCompra($idRequisicion)
+    {
+        return $this->db->table('requisiciones_inventario_detalle')
+            ->select("
+                requisiciones_inventario_detalle.id,
+                requisiciones_inventario_detalle.id_variante,
+                requisiciones_inventario_detalle.cantidad,
+                requisiciones_inventario_detalle.validado,
+                inventario_detalles.stock_individual,
+                inventario.nombre,
+                GROUP_CONCAT(DISTINCT CONCAT(inventario_detalles.atributo, ': ', inventario_detalles.valor) SEPARATOR ', ') AS detalles
+            ")
+            ->join('inventario_detalles', 'requisiciones_inventario_detalle.id_variante = inventario_detalles.id_variante', 'inner')
+            ->join('inventario', 'inventario_detalles.id_inventario = inventario.id', 'inner')
+            ->where('requisiciones_inventario_detalle.id_requisicion', $idRequisicion)
+            ->where('requisiciones_inventario_detalle.validado', 1)
+
             ->groupBy('inventario_detalles.id_inventario')
             ->get()
             ->getResultArray(); // Retorna un array asociativo

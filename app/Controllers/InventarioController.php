@@ -187,4 +187,31 @@ class InventarioController extends BaseController
             'data'    => $dataProveedores,
         ])->setStatusCode(200);
     }
+
+    public function obtener_inventario()
+    {
+        // Obtenemos el término de búsqueda enviado por Select2 usando POST
+        $q = $this->request->getPost('q');  // 'q' es el parámetro que envía Select2 con la búsqueda
+
+        // Cargar el modelo
+        $inventarioModel = new InventarioModel();
+
+        // Realizamos la consulta al modelo para obtener los resultados
+        $resultados = $inventarioModel->buscar_inventario($q);
+
+        // Preparamos los resultados para devolver en formato JSON
+        $data = [];
+        foreach ($resultados as $row) {
+            $data[] = [
+                'id' => $row->id,    // ID de la opción
+                'text' => $row->caracteristicas  // El texto que aparecerá en el select2
+            ];
+        }
+
+        // Devolvemos los resultados como JSON
+        return $this->response->setJSON([
+            'items' => $data,
+            'total_count' => count($data)  // Si necesitas mostrar el total de resultados
+        ]);
+    }
 }

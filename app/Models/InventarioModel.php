@@ -91,7 +91,7 @@ class InventarioModel extends Model
     {
         return $this->db->table('inventario_detalles')->countAll();
     }
- 
+
     /**
      * Editar usuarios según una condición.
      * 
@@ -129,5 +129,30 @@ class InventarioModel extends Model
         $resultado = $builder->countAllResults();
 
         return $resultado > 0 ? 1 : 0;
+    }
+
+    public function buscar_inventario($q)
+    {
+        // Utilizando el Query Builder para realizar la consulta
+        $builder = $this->db->table('inventario_detalles d'); // Seleccionamos la tabla 'inventario_detalles' con alias 'd'
+        
+        // Seleccionamos las columnas que queremos en la consulta
+        $builder->select('d.id_variante AS id');
+        $builder->select('GROUP_CONCAT(CONCAT(i.nombre, " - ", d.atributo, ": ", d.valor) SEPARATOR ", ") AS caracteristicas');
+        
+        // Realizamos el JOIN con la tabla 'inventario' usando el alias 'i'
+        $builder->join('inventario i', 'd.id_inventario = i.id');
+        
+        // Agrupamos por la columna 'd.id_inventario'
+        $builder->groupBy('d.id_inventario');
+        
+        // Aplicamos la condición HAVING con LIKE para filtrar los resultados
+        $builder->having('GROUP_CONCAT(CONCAT(i.nombre, " - ", d.atributo, ": ", d.valor) SEPARATOR ", ") LIKE', '%' . $q . '%');
+        
+        // Ejecutamos la consulta
+        $query = $builder->get();
+        
+        // Devolvemos los resultados de la consulta
+        return $query->getResult(); // Devuelve un arreglo de resultados
     }
 }

@@ -859,7 +859,7 @@
 
 
                             let items_venta = []; // Array para almacenar los objetos
-
+                            let ordenes_compra = [];
 
                             $.each(response.data, function(i, p) {
                                 options = '<option value=0>Seleccione un proveedor</option>';
@@ -915,14 +915,14 @@
                                         <div class="row">
                                             
                                             <div class="col-md-12">
-                                                <h3>Orden de Compra</h3>
+                                                <h3>Realizar venta</h3>
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="row g-2">
                                                     <div class="col-md-3">
                                                         <div class="form-floating">
-                                                            <input type="text" readonly class="form-control" id="ordenCompra" value="OC-0001">
-                                                            <label for="ordenCompra">Orden de compra</label>
+                                                            <input type="text" readonly class="form-control" id="ordenCompra" value="V-0001">
+                                                            <label for="ordenCompra">Orden de la venta</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
@@ -962,7 +962,18 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4 offset-md-8">
+                                            <div class="col-md-4 offset-md-4">
+                                                <table class="table  table-striped table-hover table-sm ">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Orden de compra</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="ordenes_compra">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-md-4">
                                                 <table class="table  table-striped table-hover table-sm ">
                                                     <tr>
                                                         <td><strong>Subtotal</strong></td>
@@ -1009,29 +1020,14 @@
                                 typeAnimated: true,
                                 buttons: {
                                     validar: {
-                                        text: "Validación Parcial",
+                                        text: "Realizar Venta",
                                         btnClass: "btn-info",
                                         action: function() {
-                                            let comentario = $("#comentario").val().trim();
-                                            let aprobados = items.filter(item => item.check).length;
-                                            let alertBox = $("#alertMessage");
-
-                                            // Verificar si se cumple la validación
-                                            if (!comentario) {
-                                                alertBox.text("Debes ingresar un comentario sobre el seguimiento.").removeClass("d-none");
-                                                return false; // Evita que se cierre el diálogo
-                                            }
-
-                                            if (aprobados === 0) {
-                                                alertBox.text("Debes aprobar al menos un producto.").removeClass("d-none");
-                                                return false;
-                                            }
-
 
 
                                             $.confirm({
                                                 title: "Confirmación",
-                                                content: "Estás a punto de validar la compra. ¿Deseas continuar?",
+                                                content: "Estás a punto de realizar la venta. ¿Deseas continuar?",
                                                 type: "orange",
                                                 typeAnimated: true,
                                                 buttons: {
@@ -1049,8 +1045,8 @@
                                                                 <div class="container">
                                                                     <div class="row">
                                                                         <div class="col-md-12 text-center">
-                                                                        <p><img src="http://127.0.0.1/requisiciones/public/assets/img/sistema/cargando.gif" style="width: 50%;"></p>
-                                                                        <p>Procesando...</p>
+                                                                            <p><img src="http://127.0.0.1/requisiciones/public/assets/img/sistema/cargando.gif" style="width: 50%;"></p>
+                                                                            <p>Procesando...</p>
                                                                         </div>
                                                                     </div>
                                                                 </div>`,
@@ -1060,12 +1056,9 @@
 
                                                             // Simulación del AJAX (Reemplaza con tu URL real)
                                                             $.ajax({
-                                                                url: "validar-compra/" + id_requisicion,
+                                                                url: "realizar-compra/" + id_requisicion,
                                                                 method: "POST",
-                                                                data: {
-                                                                    comentario,
-                                                                    items
-                                                                },
+                                                                data: {},
                                                                 dataType: "json",
                                                                 success: function(response) {
                                                                     loadingDialog.close(); // Cerrar el loading
@@ -1074,7 +1067,7 @@
                                                                         // Mostrar mensaje de éxito
                                                                         $.alert({
                                                                             title: 'Respuesta',
-                                                                            content: "Solicitud validada correctamente.",
+                                                                            content: "Venta realizada correctamente.",
                                                                             type: 'green', // Tipo verde para éxito
                                                                             autoClose: 'cancelAction|8000', // Cerrar automáticamente después de 8 segundos
                                                                             buttons: {
@@ -1082,8 +1075,6 @@
                                                                                     text: 'Aceptar',
                                                                                     action: function() {
                                                                                         $('#tbl_requisicones').DataTable().ajax.reload(null, false);
-
-
                                                                                     }
                                                                                 }
                                                                             }
@@ -1193,6 +1184,8 @@
                                         let id_detalle = $(this).attr("data-id");
                                         let id_proveedor = $(this).val();
                                         let precio = $(this).find('option:selected').data('precio');
+                                        let nombreProveedor = $(this).find("option:selected").text();
+
                                         if (precio != 0) {
                                             $(`#pu_${id_detalle}`).val(precio).removeAttr('readonly');
                                             $(`#du_${id_detalle}`).removeAttr('readonly');
@@ -1206,7 +1199,58 @@
                                             $(`#pu_${id_detalle}`).val(valor_unitario).attr('readonly', true);
                                             $(`#du_${id_detalle}`).val(valor_unitario).attr('readonly', true);
                                         }
+
+                                        console.log(ordenes_compra);
+                                        agregarOrdenCompra(id_proveedor, nombreProveedor, id_detalle, 1, precio);
+                                        console.log(ordenes_compra);
+
                                     });
+
+                                    let ordenes_compra = {}; // Asegurar que la variable existe
+
+                                    let agregarOrdenCompra = (idProveedor, nombreProveedor, idProducto, cantidad, precio) => {
+                                        // Verificar si el idProducto ya existe en otro proveedor
+                                        Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                            let index = proveedor.productos.findIndex(p => p.idProducto === idProducto);
+                                            if (index !== -1) {
+                                                // Si el producto ya existe, eliminamos toda la relación del proveedor
+                                                delete ordenes_compra[id];
+                                            }
+                                        });
+
+                                        // Si el proveedor no existe, lo creamos
+                                        if (!ordenes_compra[idProveedor]) {
+                                            ordenes_compra[idProveedor] = {
+                                                nombre: nombreProveedor,
+                                                productos: []
+                                            };
+                                        }
+
+                                        // Agregar el nuevo producto al proveedor
+                                        ordenes_compra[idProveedor].productos.push({
+                                            idProducto: idProducto,
+                                            cantidad: cantidad,
+                                            precio: precio
+                                        });
+
+                                        // Imprimir en consola para depuración
+                                        console.log("Contenido de ordenes_compra:", ordenes_compra);
+
+                                        // Limpiar la tabla antes de actualizarla
+                                        $("#ordenes_compra").empty();
+
+                                        // Construcción de la tabla
+                                        let filas = ""; // Inicializar correctamente
+
+                                        Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                            console.log("Proveedor:", proveedor); // Verifica que ahora sí tenga datos
+                                            filas += `<tr style="cursor:pointer;"><td>${proveedor.nombre} <i class='bx bxs-receipt'></i></td></tr>`;
+                                        });
+
+                                        // Agregar filas a la tabla
+                                        $("#ordenes_compra").append(filas);
+                                    };
+
 
                                     $(".precio_unitario").on("blur", function() {
                                         let pu = $(this).val();

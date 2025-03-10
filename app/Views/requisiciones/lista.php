@@ -847,11 +847,33 @@
 
                             let filas = "";
                             let options = "";
+                            let venta = {
+                                orden_compra: '------',
+                                fecha_compra: '-------',
+                                iva_aplicado: false,
+                                subtotal: 0,
+                                descuento_total: 0,
+                                iva: 0,
+                                total: 0
+                            };
+
+
+                            let items_venta = []; // Array para almacenar los objetos
+
 
                             $.each(response.data, function(i, p) {
-                                options = '<option>Seleccione un proveedor</option>';
+                                options = '<option value=0>Seleccione un proveedor</option>';
                                 $.each(p.proveedor, function(j, pp) {
-                                    options += `<option value=>${pp.proveedor}</option>`;
+                                    options += `<option value=${pp.id_proveedor} data-precio=${pp.precio}>${pp.proveedor}</option>`;
+                                });
+                                items_venta.push({
+                                    id_detalle: p.id_detalle,
+                                    id_provedor: null,
+                                    fecha_entrega: null,
+                                    cantidad: p.cantidad,
+                                    pu: 0,
+                                    du: 0,
+                                    total: 0
                                 });
                                 filas += `
                                     <tr>
@@ -867,19 +889,19 @@
                                         <td>
                                             <div class="input-group input-group-sm has-validation">
                                                 <span class="input-group-text" id="inputGroupPrepend">$</span>
-                                                <input type="text" class="form-control moneda" id="pu_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
+                                                <input type="text" class="form-control moneda precio_unitario" id="pu_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="input-group input-group-sm has-validation">
                                                 <span class="input-group-text" id="inputGroupPrepend">$</span>
-                                                <input type="text" class="form-control moneda" id="du_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
+                                                <input type="text" class="form-control moneda descuento_unitario" id="du_${p.id_detalle}" data-id=${p.id_detalle} value=00.00 readonly>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="input-group input-group-sm has-validation">
                                                 <span class="input-group-text" id="inputGroupPrepend">$</span>
-                                                <input type="text" class="form-control moneda" id="total_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
+                                                <input type="text" class="form-control moneda total_producto" id="total_${p.id_detalle}" data-id=${p.id_detalle} value=0.00 readonly>
                                             </div>
                                         </td>
                                     </tr>`;
@@ -899,7 +921,7 @@
                                                 <div class="row g-2">
                                                     <div class="col-md-3">
                                                         <div class="form-floating">
-                                                            <input type="text" readonly class="form-control" id="ordenCompra" value="OC-0028">
+                                                            <input type="text" readonly class="form-control" id="ordenCompra" value="OC-0001">
                                                             <label for="ordenCompra">Orden de compra</label>
                                                         </div>
                                                     </div>
@@ -1092,6 +1114,40 @@
 
                                 onContentReady: function() {
 
+                                    let verificar_iva = (subtotal, descuento_total) => {
+                                        if ($('#masIva').is(':checked')) {
+                                            total = (subtotal * .16) + subtotal;
+                                            iva = subtotal * .16;
+                                            $("#iva").val(iva);
+                                        } else {
+                                            total = subtotal;
+                                        }
+                                        $("#total_pagar").val(total);
+                                        return;
+                                    }
+
+
+                                    let calculos = (item, precio_u, descuento) => {
+                                        let cantidad = parseFloat(item.cantidad).toFixed(2);
+                                        let total_producto = (cantidad * precio_u) - (cantidad * descuento);
+                                        $(`#total_${item.id_detalle}`).val(total_producto);
+                                        let subtotal = 0;
+                                        let descuento_total = 0;
+                                        $('.total_producto').each(function(i, tp) {
+                                            subtotal += parseFloat($(this).val()) || 0; // Asegura que se sume como número
+                                        });
+
+                                        $('.descuento_unitario').each(function(i, tp) {
+                                            descuento_total += parseFloat($(this).val()) || 0; // Asegura que se sume como número
+                                        });
+
+                                        $("#subtotal").val(subtotal.toFixed(2)); // Mostrar el subtotal con dos decimales
+                                        $("#descuento_total").val(descuento_total.toFixed(2)); // Mostrar el subtotal con dos decimales
+
+                                        verificar_iva(subtotal, descuento_total);
+                                        return;
+                                    }
+
                                     $(".moneda").on("input", function() {
                                         let input = $(this)[0]; // Obtiene el input nativo
                                         let start = input.selectionStart; // Guarda la posición del cursor
@@ -1133,10 +1189,56 @@
                                         $(this).val(value ? value : "0.00");
                                     });
 
-                                    $(".select_prove").on("click", function(){
-
+                                    $(".select_prove").on("change", function() {
+                                        let id_detalle = $(this).attr("data-id");
+                                        let id_proveedor = $(this).val();
+                                        let precio = $(this).find('option:selected').data('precio');
+                                        if (precio != 0) {
+                                            $(`#pu_${id_detalle}`).val(precio).removeAttr('readonly');
+                                            $(`#du_${id_detalle}`).removeAttr('readonly');
+                                            let precio_u = parseFloat(precio).toFixed(2);
+                                            let descuento = parseFloat($(`#du_${id_detalle}`).val()).toFixed(2);
+                                            const item = items_venta.find(item => item.id_detalle === id_detalle);
+                                            if (item) {
+                                                calculos(item, precio_u, descuento);
+                                            }
+                                        } else {
+                                            $(`#pu_${id_detalle}`).val(valor_unitario).attr('readonly', true);
+                                            $(`#du_${id_detalle}`).val(valor_unitario).attr('readonly', true);
+                                        }
                                     });
 
+                                    $(".precio_unitario").on("blur", function() {
+                                        let pu = $(this).val();
+                                        let id_detalle = $(this).attr("data-id");
+                                        let precio_u = parseFloat(pu).toFixed(2);
+                                        let descuento = parseFloat($(`#du_${id_detalle}`).val()).toFixed(2);
+                                        const item = items_venta.find(item => item.id_detalle === id_detalle);
+                                        if (item) {
+                                            calculos(item, precio_u, descuento);
+                                        }
+                                    });
+
+                                    $(".descuento_unitario").on("blur", function() {
+                                        let du = $(this).val();
+                                        let id_detalle = $(this).attr("data-id");
+                                        let precio_u = parseFloat($(`#pu_${id_detalle}`).val()).toFixed(2);
+                                        let descuento = parseFloat(du).toFixed(2);
+                                        const item = items_venta.find(item => item.id_detalle === id_detalle);
+                                        if (item) {
+                                            calculos(item, precio_u, descuento);
+                                        }
+                                    });
+
+
+                                    $('#masIva').change(function() {
+                                        let subtotal = parseFloat($("#subtotal").val()) || 0; // Asegura que sea número
+                                        let iva = $(this).is(':checked') ? subtotal * 0.16 : 0; // Calcula el IVA si está marcado
+                                        let totalPagar = subtotal + iva; // Suma subtotal + IVA
+
+                                        $("#iva").val(iva.toFixed(2)); // Mostrar solo el IVA
+                                        $("#total_pagar").val(totalPagar.toFixed(2)); // Mostrar total a pagar
+                                    });
 
                                 },
                             });

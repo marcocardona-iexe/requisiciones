@@ -122,7 +122,7 @@
                                         <i class='bx bxs-paste'></i> Acciones
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                        <li class="ver_solicitud"><a class="dropdown-item" href="#" ><i class='bx bx-list-ul'></i> Proovedores</a></li>
+                                        <li class="ver_solicitud"><a class="dropdown-item" href="#" id="proovedores"><i class='bx bx-list-ul'></i> Proovedores</a></li>
                                         <li><a class="dropdown-item" href="#"><i class='bx bx-trash'></i> Asignaciones</a></li>
                                     </ul>
                                 </div>
@@ -618,6 +618,145 @@
             });
             */
 
+        });
+
+        $(document).on('click', '#proovedores', function () {
+            $.confirm({
+                title: false,
+                boxWidth: '850px',
+                useBootstrap: false,
+                content: `
+
+                    <style>
+
+                    tr:first-child td:first-child {
+                        width: 100px;
+                    }
+
+                    .form-check-input:checked {
+                        background-color: #66b0ff;
+                        border-color: #66b0ff;
+                        color: #b1bbc5;
+                    }
+
+                    .form-check-input:focus {
+                        box-shadow: none;
+                        border: 1px solid #b1bbc5;
+                    }
+
+                    .form-check-input:not(:focus) {
+                        border: 1px solid #b1bbc5 !important;
+                    }
+
+                    .form-check-input:not(:focus):checked {
+                        border: 1px solid #b1bbc5 !important;
+                        box-shadow: none;
+                    }
+
+                    .checkbox-container {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        font-weight: 400;
+                    }
+
+                    </style>
+
+                    <div style="text-align: center;">
+                        <h6 style="margin-top: 5px;">Lista de Proveedores</h6>
+                    </div>
+
+                    <div id="loader" style="text-align: center;margin-top: 35px;">
+                        <img src="http://127.0.0.1/requisiciones/public/assets/img/llF5iyg.gif" width="30" height="30"/>
+                         Cargando...
+                    </div>
+
+                    <table class="table" id="Proveedores">
+                        <thead>
+                            <tr>
+                                <th scope="col">Proveedor</th>
+                                <th scope="col">Monto</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width: 10%;">Mark</td>
+                                <td style="text-align: center;width: 70%;">
+                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
+                                </td>
+                                <td style="text-align: center;">
+
+                                <div class="checkbox-container">
+                                    <input class="form-check-input" type="checkbox" id="consumo">
+                                    <label for="">seleccionar</label>
+                                </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10%;">Mark</td>
+                                <td style="text-align: center;width: 70%;">
+                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
+                                </td>
+                                <td style="text-align: center;">
+
+                                <div class="checkbox-container">
+                                    <input class="form-check-input" type="checkbox" id="consumo">
+                                    <label for="">seleccionar</label>
+                                </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10%;">Mark</td>
+                                <td style="text-align: center;width: 70%;">
+                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
+                                </td>
+                                <td style="text-align: center;">
+
+                                <div class="checkbox-container">
+                                    <input class="form-check-input" type="checkbox" id="consumo">
+                                    <label for="">seleccionar</label>
+                                </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 10%;">Mark</td>
+                                <td style="text-align: center;width: 70%;">
+                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
+                                </td>
+                                <td style="text-align: center;">
+
+                                <div class="checkbox-container">
+                                    <input class="form-check-input" type="checkbox" id="consumo">
+                                    <label for="">seleccionar</label>
+                                </div>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <small class="form-text text-muted">Seleccion nombre del proveedor en la tabla</small>
+
+                `,
+                buttons: false,
+                onContentReady: function () {
+
+                    setTimeout(function() {
+                        $('#loader').show();
+
+                        $('#Proveedores').DataTable({
+                            "initComplete": function(settings, json) {
+                                $('#loader').hide();
+                            }
+                        });
+                    }, 100);
+
+                }
+            });
         });
 
     </script>

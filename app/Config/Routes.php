@@ -36,3 +36,7 @@ $routes->post('requisiciones/validar-compra/(:num)', 'RequisicionesController::v
 $routes->post('requisiciones/obtener-compra-requisicion/(:num)', 'RequisicionesController::obtener_compra_requisicion/$1');
 $routes->post('requisiciones/realizar-compra/(:num)', 'RequisicionesController::realizar_compra/$1');
 $routes->post('requisiciones/guardar', 'RequisicionesController::guardar');
+
+
+#Rutas para las requisiciones
+$routes->get('proveedores/lista', 'ProveedoresController::lista');

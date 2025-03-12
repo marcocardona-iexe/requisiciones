@@ -84,6 +84,7 @@
     <script>
 
         let ventanaProductosInventario = null;
+        let proovedores = "";
 
         $(document).ready(function() {
             $('#tbl_requisicon').DataTable({
@@ -116,17 +117,19 @@
                         data: null,
                         className: "text-center",
                         render: function (data, type, row) {
+
                             return `
                                 <div class="btn-group" role="group">
                                     <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class='bx bxs-paste'></i> Acciones
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                        <li class="ver_solicitud"><a class="dropdown-item" href="#" id="proovedores"><i class='bx bx-list-ul'></i> Proovedores</a></li>
+                                        <li class="ver_solicitud"><a class="dropdown-item proovedores" href="#" data-proovedores="${row.id_variante}" ><i class='bx bx-list-ul'></i> Proovedores</a></li>
                                         <li><a class="dropdown-item" href="#"><i class='bx bx-trash'></i> Asignaciones</a></li>
                                     </ul>
                                 </div>
                             `;
+
                         }
                     }
                 ]
@@ -620,7 +623,10 @@
 
         });
 
-        $(document).on('click', '#proovedores', function () {
+        $(document).on('click', '.proovedores', function () {
+
+            proovedores = $(this).data("proovedores");
+
             $.confirm({
                 title: false,
                 boxWidth: '850px',
@@ -680,62 +686,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td style="width: 10%;">Mark</td>
-                                <td style="text-align: center;width: 70%;">
-                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
-                                </td>
-                                <td style="text-align: center;">
-
-                                <div class="checkbox-container">
-                                    <input class="form-check-input" type="checkbox" id="consumo">
-                                    <label for="">seleccionar</label>
-                                </div>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 10%;">Mark</td>
-                                <td style="text-align: center;width: 70%;">
-                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
-                                </td>
-                                <td style="text-align: center;">
-
-                                <div class="checkbox-container">
-                                    <input class="form-check-input" type="checkbox" id="consumo">
-                                    <label for="">seleccionar</label>
-                                </div>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 10%;">Mark</td>
-                                <td style="text-align: center;width: 70%;">
-                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
-                                </td>
-                                <td style="text-align: center;">
-
-                                <div class="checkbox-container">
-                                    <input class="form-check-input" type="checkbox" id="consumo">
-                                    <label for="">seleccionar</label>
-                                </div>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 10%;">Mark</td>
-                                <td style="text-align: center;width: 70%;">
-                                    <input type="email" class="form-control" readonly style="width: 90%;margin-left: 10px;">
-                                </td>
-                                <td style="text-align: center;">
-
-                                <div class="checkbox-container">
-                                    <input class="form-check-input" type="checkbox" id="consumo">
-                                    <label for="">seleccionar</label>
-                                </div>
-
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
 
@@ -748,15 +698,67 @@
                     setTimeout(function() {
                         $('#loader').show();
 
+                        if ($.fn.DataTable.isDataTable('#Proveedores')) {
+                            var table = $('#Proveedores').DataTable();
+                            table.clear().draw();
+                            table.destroy();
+                        }
+
                         $('#Proveedores').DataTable({
+                            "ajax": {
+                                "url": "http://127.0.0.1/requisiciones/inventario/get_proveedores-inventario/" + proovedores,
+                                "type": "GET",
+                                "dataSrc": "data"
+                            },
+                            "columns": [
+                                { "data": "proveedor" },
+                                { "data": "precio",
+                                  "render": function(data, type, row) {
+                                    return '<input type="text" class="form-control precio-input" value="' + data + '" style="width: 300px;">';
+                                  }
+                                },
+                                { "data": "chec",
+                                    "render": function(data, type, row) {
+                                        var checked = data == 1 ? "checked" : "";
+                                        return '<div class="form-check text-center">' +
+                                            '<input class="form-check-input checkbox-proveedor" type="checkbox" ' + checked + ' data-proveedor="' + row.id_proveedor + '">';
+                                            '</div>';
+                                    }
+                                }
+                            ],
+                            "columnDefs": [
+                                { "width": "200px", "targets": 0 },
+                                { "className": "text-center", "targets": 2 }
+                            ],
                             "initComplete": function(settings, json) {
+                                console.log("Datos recibidos:", json);
                                 $('#loader').hide();
                             }
                         });
+
                     }, 100);
 
                 }
             });
+
+        });
+
+        $(document).on('change', '.checkbox-proveedor', function () {
+
+            proovedores
+            let proveedor = $(this).data("proveedor");
+            let isChecked = $(this).prop('checked');
+
+            let data = {
+                proovedores: proovedores,
+                proveedor: proveedor,
+                estado: isChecked ? 1 : 0 
+            };
+
+            let jsonData = JSON.stringify(data);
+
+            console.log(jsonData);
+
         });
 
     </script>

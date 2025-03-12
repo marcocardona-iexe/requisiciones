@@ -124,7 +124,7 @@
 
             <style>
 
-                .container{
+                .container-proveedor{
                     font-family: Arial, sans-serif;
                 }
 
@@ -176,7 +176,7 @@
 
             </style>
 
-            <div class="container">
+            <div class="container container-proveedor">
 
                 <div class="modal-header">
                     <h2 class="form-title">Registro de Proveedor</h2>

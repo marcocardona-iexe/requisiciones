@@ -124,6 +124,10 @@
 
             <style>
 
+                .container{
+                    font-family: Arial, sans-serif;
+                }
+
                 .form-group {
                     margin-bottom: 1.5rem;
                 }
@@ -148,23 +152,51 @@
                     width: 100%;
                 }
 
+                .form-title {
+                    font-size: 20px;
+                    font-weight: 600;
+                    color: #333;
+                    margin: 0;
+                }
+
+                .modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding: 0px;
+                    padding-top: 10px;
+                }
+
+                .help-text {
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 4px;
+                }
+
             </style>
 
             <div class="container">
-            
+
+                <div class="modal-header">
+                    <h2 class="form-title">Registro de Proveedor</h2>
+                </div>
+
                 <div class="form-group">
-                    <label for="proveedor" class="camposFormulario">Proveedor</label>
+                    <label for="proveedor" class="camposFormulario">Proveedor <span style="color: #d60b52;">*</span></label>
                     <input type="text" class="form-control" id="proveedor" placeholder="Escriba nombre del proveedor" autocomplete="off" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="rfc" class="camposFormulario">RFC</label>
+                    <label for="rfc" class="camposFormulario">RFC <span style="color: #d60b52;">*</span></label>
                     <input type="text" class="form-control" id="rfc" placeholder="Ingrese el RFC" autocomplete="off" required>
+                    <p class="help-text">Formato para personas físicas: AAAA######AAA / Para personas morales: AAA######AAA</p>
                 </div>
 
                 <div class="form-group">
-                    <label for="telefono" class="camposFormulario">Teléfono</label>
+                    <label for="telefono" class="camposFormulario">Teléfono <span style="color: #d60b52;">*</span></label>
                     <input type="text" class="form-control" id="telefono" placeholder="Ingrese numero telefonico" autocomplete="off" required>
+                    <p class="help-text">Ingrese un numero valido sin espacios ni guiones</p>
                 </div>
 
                 <button class="btn btn-primary btn-block" id="enviarProveedor">Enviar</button>
@@ -179,11 +211,38 @@
 
     $(document).on('click', '#enviarProveedor', function () {
 
+        let proveedor = $("#proveedor").val().trim();
+        let rfc = $("#rfc").val().trim();
+        let telefono = $("#telefono").val().trim();
+
         let data = {
-            proveedor: $("#proveedor").val(),
-            rfc: $("#rfc").val(),
-            telefono: $("#telefono").val()
+            proveedor: proveedor,
+            rfc: rfc,
+            telefono: telefono
         };
+
+        let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexRFC = /^[A-Za-z0-9\s]+$/;
+        let regexTelefono = /^[0-9]+$/;
+
+        if (!regexProveedor.test(proveedor)) {
+            alert("Nombre del proveedor es invalido ...");
+            return false;
+        }
+
+        if (!regexRFC.test(rfc)) {
+            alert("RFC inválido asegúrate de que tiene el formato correcto ...");
+            return false;
+        }
+
+        if (!regexTelefono.test(telefono)) {
+            alert("Teléfono inválido ...");
+            return false;
+        }
+
+        $("#proveedor").val("");
+        $("#rfc").val("");
+        $("#telefono").val("");
 
         console.log(JSON.stringify(data));
 

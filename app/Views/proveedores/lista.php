@@ -118,7 +118,7 @@
 
         $.confirm({
         title: false,
-        boxWidth: '600px',
+        boxWidth: '650px',
         useBootstrap: false,
         content: `
 
@@ -182,21 +182,75 @@
                     <h2 class="form-title">Registro de Proveedor</h2>
                 </div>
 
-                <div class="form-group">
-                    <label for="proveedor" class="camposFormulario">Proveedor <span style="color: #d60b52;">*</span></label>
-                    <input type="text" class="form-control" id="proveedor" placeholder="Escriba nombre del proveedor" autocomplete="off" required>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rfc" class="camposFormulario">Proveedor <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveProveedor" placeholder="Ingrese nombre del proveedor" autocomplete="off" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefono" class="camposFormulario">Vende <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveVende" placeholder="Ingrese nombre de lo que vende" autocomplete="off" required>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="rfc" class="camposFormulario">RFC <span style="color: #d60b52;">*</span></label>
-                    <input type="text" class="form-control" id="rfc" placeholder="Ingrese el RFC" autocomplete="off" required>
+                    <input type="text" class="form-control" id="AgregarFormProveRFC" placeholder="Ingrese el RFC" autocomplete="off" required>
                     <p class="help-text">Formato para personas físicas: AAAA######AAA / Para personas morales: AAA######AAA</p>
                 </div>
 
                 <div class="form-group">
-                    <label for="telefono" class="camposFormulario">Teléfono <span style="color: #d60b52;">*</span></label>
-                    <input type="text" class="form-control" id="telefono" placeholder="Ingrese numero telefonico" autocomplete="off" required>
+                    <label for="rfc" class="camposFormulario">Codigo postal <span style="color: #d60b52;">*</span></label>
+                    <input type="text" class="form-control" id="AgregarFormProveCodigoPostal" placeholder="Ingrese codigo postal" autocomplete="off" required>
+                    <p class="help-text">Ingrese numero de codigo postal</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rfc" class="camposFormulario">Pais <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProvePais" placeholder="Ingrese nombre del pais" autocomplete="off" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefono" class="camposFormulario">Teléfono <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveTelefono" placeholder="Ingrese numero telefonico" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono" class="camposFormulario">Correo <span style="color: #d60b52;">*</span></label>
+                    <input type="text" class="form-control" id="AgregarFormProveCorreo" placeholder="Ingrese numero telefonico" autocomplete="off" required>
                     <p class="help-text">Ingrese un numero valido sin espacios ni guiones</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono" class="camposFormulario">Contacto <span style="color: #d60b52;">*</span></label>
+                    <input type="text" class="form-control" id="AgregarFormProveContacto" placeholder="Ingrese nombre de contacto" autocomplete="off" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="rfc" class="camposFormulario">Telefono contacto <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveTelefonoContacto" placeholder="Ingrese numero telefonico de contacto" autocomplete="off" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefono" class="camposFormulario">Correo contacto <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveCorreoContacto" placeholder="Ingrese correo contacto" autocomplete="off" required>
+                        </div>
+                    </div>
                 </div>
 
                 <button class="btn btn-primary btn-block" id="enviarProveedor">Enviar</button>
@@ -211,21 +265,47 @@
 
     $(document).on('click', '#enviarProveedor', function () {
 
-        let proveedor = $("#proveedor").val().trim();
-        let rfc = $("#rfc").val().trim();
-        let telefono = $("#telefono").val().trim();
+        let proveedor = $("#AgregarFormProveProveedor").val().trim();
+        let vende = $("#AgregarFormProveVende").val().trim();
+        let rfc = $("#AgregarFormProveRFC").val().trim();
+        let postal = $("#AgregarFormProveCodigoPostal").val().trim();
+        let pais = $("#AgregarFormProvePais").val().trim();
+        let telefono = $("#AgregarFormProveTelefono").val().trim();
+        let correo = $("#AgregarFormProveCorreo").val().trim();
+        let contacto = $("#AgregarFormProveContacto").val().trim();
+        let telefonoContacto = $("AgregarFormProveTelefonoContacto").val().trim();
+        let correoContacto = $("AgregarFormProveCorreoContacto").val().trim();
 
         let data = {
             proveedor: proveedor,
+            vende: vende,
             rfc: rfc,
-            telefono: telefono
+            postal: postal,
+            pais: pais,
+            telefono: telefono,
+            correo: correo,
+            contacto: contacto,
+            telefonoContacto: telefonoContacto,
+            correoContacto: correoContacto
         };
 
         let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexVende = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexRFC = /^[A-Za-z0-9\s]+$/;
+        let regexPostal = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexPais = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexTelefono = /^[0-9]+$/;
+        let regexCorreo = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexContacto = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexTelefonoContacto = /^[0-9]+$/;
+        let regexCorreoContacto = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
 
         if (!regexProveedor.test(proveedor)) {
+            alert("Nombre del proveedor es invalido ...");
+            return false;
+        }
+
+        if (!regexVende.test(vende)) {
             alert("Nombre del proveedor es invalido ...");
             return false;
         }
@@ -235,14 +315,46 @@
             return false;
         }
 
+        if (!regexPostal.test(postal)) {
+            alert("RFC inválido asegúrate de que tiene el formato correcto ...");
+            return false;
+        }
+
         if (!regexTelefono.test(telefono)) {
             alert("Escriba un teléfono inválido ...");
             return false;
         }
 
-        $("#proveedor").val("");
-        $("#rfc").val("");
-        $("#telefono").val("");
+        if (!regexCorreo.test(correo)) {
+            alert("Escriba un teléfono inválido ...");
+            return false;
+        }
+
+        if (!regexContacto.test(contacto)) {
+            alert("Escriba un teléfono inválido ...");
+            return false;
+        }
+
+        if (!regexTelefonoContacto.test(telefonoContacto)) {
+            alert("Escriba un teléfono inválido ...");
+            return false;
+        }
+
+        if (!regexCorreoContacto.test(correoContacto)) {
+            alert("Escriba un teléfono inválido ...");
+            return false;
+        }
+
+        $("#AgregarFormProveProveedor").val("").trim();
+        $("#AgregarFormProveVende").val("").trim();
+        $("#AgregarFormProveRFC").val("").trim();
+        $("#AgregarFormProveCodigoPostal").val("").trim();
+        $("#AgregarFormProvePais").val("").trim();
+        $("#AgregarFormProveTelefono").val("").trim();
+        $("#AgregarFormProveCorreo").val("").trim();
+        $("#AgregarFormProveContacto").val("").trim();
+        $("AgregarFormProveTelefonoContacto").val("").trim();
+        $("AgregarFormProveCorreoContacto").val("").trim();
 
         console.log(JSON.stringify(data));
 

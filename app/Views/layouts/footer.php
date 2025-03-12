@@ -7,7 +7,7 @@
                 document.write(new Date().getFullYear());
             </script>
             desarrollado por
-            <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">CreandoPixeles</a>
+            <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">Iexe Universidad</a>
         </div>
         <div>
             <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>

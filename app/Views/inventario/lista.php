@@ -287,7 +287,7 @@
             onContentReady: function () {
                 
                 $.ajax({
-                    url: "http://127.0.0.1/requisiciones/inventario/obtenerTipoInventario",
+                    url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTipoInventario",
                     type: "GET",
                     success: function(articulosInventario) {
 
@@ -413,7 +413,7 @@
             `);
 
             $.ajax({
-                url: "http://127.0.0.1/requisiciones/inventario/guardar",
+                url: "http://127.0.0.1:8080/requisiciones/inventario/guardar",
                 type: "POST",
                 data: datosEnviar,
                 contentType: "application/json",
@@ -452,7 +452,7 @@
             let idInventario = $(this).val();
 
             $.ajax({
-                url: "http://127.0.0.1/requisiciones/inventario/obtenerCategoria/" + idInventario,
+                url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerCategoria/" + idInventario,
                 type: "GET",
                 success: function(respuesta) {
                     
@@ -536,7 +536,7 @@
             onContentReady: function () {
 
                 $.ajax({
-                url: "http://127.0.0.1/requisiciones/inventario/obtenerTodasCategorias/",
+                url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTodasCategorias/",
                 type: "GET",
                 success: function(respuesta) {
                     
@@ -576,7 +576,7 @@
             $("#categoriaProductoAgregarInventario").val("");
 
             $.ajax({
-            url: "http://127.0.0.1/requisiciones/inventario/buscarProducto",
+            url: "http://127.0.0.1:8080/requisiciones/inventario/buscarProducto",
             type: "POST",
             dataType: "json",
             data: {
@@ -667,7 +667,7 @@
                     </div>
 
                     <div id="loader" style="text-align: center;margin-top: 35px;">
-                        <img src="http://127.0.0.1/requisiciones/public/assets/img/llF5iyg.gif" width="30" height="30"/>
+                        <img src="http://127.0.0.1:8080/requisiciones/public/assets/img/llF5iyg.gif" width="30" height="30"/>
                          Cargando...
                     </div>
 

@@ -40,3 +40,8 @@ $routes->post('requisiciones/guardar', 'RequisicionesController::guardar');
 
 #Rutas para las requisiciones
 $routes->get('proveedores/lista', 'ProveedoresController::lista');
+
+
+
+
+$routes->get('orden-de-compra', 'OrdenCompraController::index');

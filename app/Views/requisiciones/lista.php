@@ -859,7 +859,7 @@
 
 
                             let items_venta = []; // Array para almacenar los objetos
-                            let ordenes_compra = [];
+                            let ordenes_compra = {}; // Asegurar que la variable existe
 
                             $.each(response.data, function(i, p) {
                                 options = '<option value=0>Seleccione un proveedor</option>';
@@ -1185,12 +1185,12 @@
                                         let id_proveedor = $(this).val();
                                         let precio = $(this).find('option:selected').data('precio');
                                         let nombreProveedor = $(this).find("option:selected").text();
+                                        let descuento = parseFloat($(`#du_${id_detalle}`).val()).toFixed(2);
+                                        let precio_u = parseFloat(precio).toFixed(2);
 
                                         if (precio != 0) {
                                             $(`#pu_${id_detalle}`).val(precio).removeAttr('readonly');
                                             $(`#du_${id_detalle}`).removeAttr('readonly');
-                                            let precio_u = parseFloat(precio).toFixed(2);
-                                            let descuento = parseFloat($(`#du_${id_detalle}`).val()).toFixed(2);
                                             const item = items_venta.find(item => item.id_detalle === id_detalle);
                                             if (item) {
                                                 calculos(item, precio_u, descuento);
@@ -1200,21 +1200,21 @@
                                             $(`#du_${id_detalle}`).val(valor_unitario).attr('readonly', true);
                                         }
 
+                                        if (id_proveedor !== "0") {
+                                            agregarOrdenCompra(id_proveedor, nombreProveedor, id_detalle, 1, precio, descuento);
+                                        } else {
+                                            eliminarProductoDeOrden(id_detalle); // Elimina si el proveedor es "0"
+                                        }
                                         console.log(ordenes_compra);
-                                        agregarOrdenCompra(id_proveedor, nombreProveedor, id_detalle, 1, precio);
-                                        console.log(ordenes_compra);
-
                                     });
 
-                                    let ordenes_compra = {}; // Asegurar que la variable existe
-
-                                    let agregarOrdenCompra = (idProveedor, nombreProveedor, idProducto, cantidad, precio) => {
-                                        // Verificar si el idProducto ya existe en otro proveedor
+                                    // Función para agregar productos a la orden de compra
+                                    let agregarOrdenCompra = (idProveedor, nombreProveedor, idProducto, cantidad, precio, descuento) => {
+                                        // Verificar si el idProducto ya existe en otro proveedor y eliminarlo
                                         Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
                                             let index = proveedor.productos.findIndex(p => p.idProducto === idProducto);
                                             if (index !== -1) {
-                                                // Si el producto ya existe, eliminamos toda la relación del proveedor
-                                                delete ordenes_compra[id];
+                                                delete ordenes_compra[id]; // Eliminar el proveedor que contenía el producto
                                             }
                                         });
 
@@ -1230,25 +1230,77 @@
                                         ordenes_compra[idProveedor].productos.push({
                                             idProducto: idProducto,
                                             cantidad: cantidad,
-                                            precio: precio
+                                            precio: precio,
+                                            descuento: descuento
                                         });
 
-                                        // Imprimir en consola para depuración
-                                        console.log("Contenido de ordenes_compra:", ordenes_compra);
+                                        actualizarTablaOrdenes();
+                                    };
 
-                                        // Limpiar la tabla antes de actualizarla
+                                    // Función para eliminar un producto de la orden si el proveedor es "0"
+                                    let eliminarProductoDeOrden = (idProducto) => {
+                                        let proveedorAEliminar = null;
+
+                                        // Buscar en qué proveedor está el producto y eliminarlo
+                                        Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                            let index = proveedor.productos.findIndex(p => p.idProducto === idProducto);
+                                            if (index !== -1) {
+                                                proveedor.productos.splice(index, 1); // Eliminar el producto de la lista
+                                                if (proveedor.productos.length === 0) {
+                                                    proveedorAEliminar = id; // Marcar para eliminar si ya no tiene productos
+                                                }
+                                            }
+                                        });
+
+                                        // Si el proveedor ya no tiene productos, eliminarlo completamente
+                                        if (proveedorAEliminar) {
+                                            delete ordenes_compra[proveedorAEliminar];
+                                        }
+
+                                        actualizarTablaOrdenes();
+                                    };
+
+                                    // Función para actualizar la tabla de órdenes de compra
+                                    let actualizarTablaOrdenes = () => {
                                         $("#ordenes_compra").empty();
 
-                                        // Construcción de la tabla
-                                        let filas = ""; // Inicializar correctamente
-
+                                        let filas = "";
                                         Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
-                                            console.log("Proveedor:", proveedor); // Verifica que ahora sí tenga datos
-                                            filas += `<tr style="cursor:pointer;"><td>${proveedor.nombre} <i class='bx bxs-receipt'></i></td></tr>`;
+                                            filas += `<tr  style="cursor:pointer;"><td>${proveedor.nombre} <i class='bx bxs-file-pdf click1' data-id="${id}"></i></td></tr>`;
                                         });
 
-                                        // Agregar filas a la tabla
                                         $("#ordenes_compra").append(filas);
+                                    };
+
+
+                                    $(document).on("click", ".click1", function() {
+                                        let idProveedor = $(this).attr("data-id");
+                                        console.log(ordenes_compra[idProveedor]);
+                                        $.ajax({
+                                            url: "http://127.0.0.1:8080/requisiciones/orden-de-compra", // Reemplaza con la URL correcta en tu backend
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: {
+                                                proveedor: ordenes_compra[idProveedor],
+                                                id_proveedor: idProveedor
+                                            },
+                                            success: function(response) {
+                                                alert("Orden de compra enviada correctamente.");
+                                                console.log(response);
+                                            },
+                                            error: function(xhr, status, error) {
+                                                console.error("Error al enviar la orden:", error);
+                                            }
+                                        });
+                                    })
+
+                                    let enviarOrdenCompra = (idProveedor) => {
+                                        if (!ordenes_compra[idProveedor]) {
+                                            alert("No hay datos para este proveedor.");
+                                            return;
+                                        }
+
+
                                     };
 
 

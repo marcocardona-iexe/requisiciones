@@ -83,11 +83,11 @@
     $(document).ready(function() {
 
         const testData = [
-            { proveedor: 'Proveedor A', rfc: 'RFC12345', telefono: '123-456-7890' },
-            { proveedor: 'Proveedor B', rfc: 'RFC23456', telefono: '234-567-8901' },
-            { proveedor: 'Proveedor C', rfc: 'RFC34567', telefono: '345-678-9012' },
-            { proveedor: 'Proveedor D', rfc: 'RFC45678', telefono: '456-789-0123' },
-            { proveedor: 'Proveedor E', rfc: 'RFC56789', telefono: '567-890-1234' },
+            { proveedor: 'Prueba A', rfc: 'RFC12345', telefono: '123-456-7890' },
+            { proveedor: 'Prueba B', rfc: 'RFC23456', telefono: '234-567-8901' },
+            { proveedor: 'Prueba C', rfc: 'RFC34567', telefono: '345-678-9012' },
+            { proveedor: 'Prueba D', rfc: 'RFC45678', telefono: '456-789-0123' },
+            { proveedor: 'Prueba E', rfc: 'RFC56789', telefono: '567-890-1234' },
         ];
 
         $('#tabla_proveedores').DataTable({
@@ -236,7 +236,7 @@
         }
 
         if (!regexTelefono.test(telefono)) {
-            alert("Teléfono inválido ...");
+            alert("Escriba un teléfono inválido ...");
             return false;
         }
 

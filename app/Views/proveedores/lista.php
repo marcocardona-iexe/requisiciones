@@ -228,7 +228,7 @@
 
                 <div class="form-group">
                     <label for="telefono" class="camposFormulario">Correo <span style="color: #d60b52;">*</span></label>
-                    <input type="text" class="form-control" id="AgregarFormProveCorreo" placeholder="Ingrese numero telefonico" autocomplete="off" required>
+                    <input type="text" class="form-control" id="AgregarFormProveCorreo" placeholder="Ingrese un correo electronico" autocomplete="off" required>
                     <p class="help-text">Ingrese un numero valido sin espacios ni guiones</p>
                 </div>
 
@@ -268,19 +268,19 @@
         let proveedor = $("#AgregarFormProveProveedor").val().trim();
         let vende = $("#AgregarFormProveVende").val().trim();
         let rfc = $("#AgregarFormProveRFC").val().trim();
-        let postal = $("#AgregarFormProveCodigoPostal").val().trim();
+        let codigoPostal = $("#AgregarFormProveCodigoPostal").val().trim();
         let pais = $("#AgregarFormProvePais").val().trim();
         let telefono = $("#AgregarFormProveTelefono").val().trim();
         let correo = $("#AgregarFormProveCorreo").val().trim();
         let contacto = $("#AgregarFormProveContacto").val().trim();
-        let telefonoContacto = $("AgregarFormProveTelefonoContacto").val().trim();
-        let correoContacto = $("AgregarFormProveCorreoContacto").val().trim();
+        let telefonoContacto = $("#AgregarFormProveTelefonoContacto").val().trim();
+        let correoContacto = $("#AgregarFormProveCorreoContacto").val().trim();
 
         let data = {
             proveedor: proveedor,
             vende: vende,
             rfc: rfc,
-            postal: postal,
+            codigoPostal: codigoPostal,
             pais: pais,
             telefono: telefono,
             correo: correo,
@@ -292,13 +292,13 @@
         let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexVende = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexRFC = /^[A-Za-z0-9\s]+$/;
-        let regexPostal = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexCodigoPostal = /^[0-9A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexPais = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexTelefono = /^[0-9]+$/;
-        let regexCorreo = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         let regexContacto = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
         let regexTelefonoContacto = /^[0-9]+$/;
-        let regexCorreoContacto = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+        let regexCorreoContacto = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (!regexProveedor.test(proveedor)) {
             alert("Nombre del proveedor es invalido ...");
@@ -306,7 +306,7 @@
         }
 
         if (!regexVende.test(vende)) {
-            alert("Nombre del proveedor es invalido ...");
+            alert("Vende es ivalido ...");
             return false;
         }
 
@@ -315,46 +315,46 @@
             return false;
         }
 
-        if (!regexPostal.test(postal)) {
-            alert("RFC inválido asegúrate de que tiene el formato correcto ...");
-            return false;
-        }
-
-        if (!regexTelefono.test(telefono)) {
-            alert("Escriba un teléfono inválido ...");
+        if (!regexCodigoPostal.test(codigoPostal)) {
+            alert("EL codigo postal es invalido ...");
             return false;
         }
 
         if (!regexCorreo.test(correo)) {
-            alert("Escriba un teléfono inválido ...");
+            alert("Correo es invalido ...");
+            return false;
+        }
+
+        if (!regexTelefono.test(telefono)) {
+            alert("Telefono es invalido ...");
             return false;
         }
 
         if (!regexContacto.test(contacto)) {
-            alert("Escriba un teléfono inválido ...");
+            alert("Contacto es inválido ...");
             return false;
         }
 
         if (!regexTelefonoContacto.test(telefonoContacto)) {
-            alert("Escriba un teléfono inválido ...");
+            alert("Escriba un teléfono de contacto es invalido ...");
             return false;
         }
 
         if (!regexCorreoContacto.test(correoContacto)) {
-            alert("Escriba un teléfono inválido ...");
+            alert("Correo es invalido ...");
             return false;
         }
 
-        $("#AgregarFormProveProveedor").val("").trim();
-        $("#AgregarFormProveVende").val("").trim();
-        $("#AgregarFormProveRFC").val("").trim();
-        $("#AgregarFormProveCodigoPostal").val("").trim();
-        $("#AgregarFormProvePais").val("").trim();
-        $("#AgregarFormProveTelefono").val("").trim();
-        $("#AgregarFormProveCorreo").val("").trim();
-        $("#AgregarFormProveContacto").val("").trim();
-        $("AgregarFormProveTelefonoContacto").val("").trim();
-        $("AgregarFormProveCorreoContacto").val("").trim();
+        $("#AgregarFormProveProveedor").val();
+        $("#AgregarFormProveVende").val();
+        $("#AgregarFormProveRFC").val();
+        $("#AgregarFormProveCodigoPostal").val();
+        $("#AgregarFormProvePais").val();
+        $("#AgregarFormProveTelefono").val();
+        $("#AgregarFormProveCorreo").val();
+        $("#AgregarFormProveContacto").val();
+        $("#AgregarFormProveTelefonoContacto").val();
+        $("#AgregarFormProveCorreoContacto").val();
 
         console.log(JSON.stringify(data));
 

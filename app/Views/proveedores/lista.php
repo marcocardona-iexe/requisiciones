@@ -423,7 +423,13 @@
         $("#AgregarFormProveBanco").val("");
         $("#AgregarFormProveClave").val("");
 
-        console.log(JSON.stringify(data));
+        $.ajax({
+        type: "POST",
+        url: "index.php",
+        data: JSON.stringify(data),
+        success: function(returnData){
+        }
+        });
 
     });
 

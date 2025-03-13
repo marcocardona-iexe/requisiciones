@@ -364,6 +364,11 @@
             return false;
         }
 
+        if (!regexPais.test(pais)) {
+            alert("EL codigo postal es invalido ...");
+            return false;
+        }
+
         if (!regexCorreo.test(correo)) {
             alert("Correo es invalido ...");
             return false;

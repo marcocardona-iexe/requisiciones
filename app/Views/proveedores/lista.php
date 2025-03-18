@@ -81,36 +81,48 @@
     <script>
 
     let ventanaProveedor = "";
-        
+
     $(document).ready(function() {
 
-        const testData = [
-            { proveedor: 'Prueba A', rfc: 'RFC12345', telefono: '123-456-7890' },
-            { proveedor: 'Prueba B', rfc: 'RFC23456', telefono: '234-567-8901' },
-            { proveedor: 'Prueba C', rfc: 'RFC34567', telefono: '345-678-9012' },
-            { proveedor: 'Prueba D', rfc: 'RFC45678', telefono: '456-789-0123' },
-            { proveedor: 'Prueba E', rfc: 'RFC56789', telefono: '567-890-1234' },
-        ];
-
         $('#tabla_proveedores').DataTable({
-            data: testData,
-            columns: [
-                { data: 'proveedor' },
-                { data: 'rfc' },
-                { data: 'telefono' },
+            "ajax": {
+                "url": "http://127.0.0.1/requisiciones/proveedores/obtenerProveedores",
+                "type": "GET",
+                "dataSrc": ""
+            },
+            "columns": [
+                { "data": "proveedor" },
+                { "data": "rfc" },
+                { "data": "telefono" },
                 {
-                    data: null,
-                    render: function(data, type, row) {
+                    "data": null,
+                    "render": function(data, type, row) {
                         return `
-                        <button type="button" class="btn btn-outline-dark btn-sm" id="editar">
-                            <i class="bx bx-list-ul"></i> Editar
-                        </button>
+                            <button type="button" class="btn btn-outline-dark btn-sm" id="editar">
+                                <i class="bx bx-list-ul"></i> Editar
+                            </button>
                         `;
                     }
                 }
             ],
             "columnDefs": [
-                { "className": "text-center", "targets": 3 }
+                { 
+                    "targets": 0, // Primera columna (proveedor)
+                    "width": "20%" // 20% de ancho para la primera columna
+                },
+                { 
+                    "targets": 1, // Segunda columna (rfc)
+                    "width": "20%" // 25% de ancho para la segunda columna
+                },
+                { 
+                    "targets": 2, // Tercera columna (telefono)
+                    "width": "25%" // 25% de ancho para la tercera columna
+                },
+                { 
+                    "targets": 3, // Cuarta columna (editar)
+                    "width": "10%", // 10% de ancho para la cuarta columna
+                    "className": "text-center"
+                }
             ]
         });
 
@@ -432,10 +444,9 @@
             success: function(response){
 
                 ventanaProveedor.close();
-                
+
             }
         });
-
 
     });
 

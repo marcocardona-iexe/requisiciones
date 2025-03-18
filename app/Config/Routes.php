@@ -43,6 +43,7 @@ $routes->get('proveedores/lista', 'ProveedoresController::lista');
 
 #Raul
 $routes->post('proveedores/guardar', 'ProveedoresController::guardar');
+$routes->get('proveedores/obtenerProveedores', 'ProveedoresController::obtenerProveedores');
 
 
 $routes->get('orden-de-compra', 'OrdenCompraController::index');

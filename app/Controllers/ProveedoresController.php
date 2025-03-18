@@ -24,6 +24,16 @@ class ProveedoresController extends BaseController
         return view('proveedores/lista', $data);
     }
 
+    public function obtenerProveedores()
+    {
+
+        $proveedoresModel = new ProveedoresModel();
+        $proveedores = $proveedoresModel->obtenerProveedores();
+          
+        return $this->response->setJSON($proveedores);
+    }
+
+
     public function guardar()
     {
         

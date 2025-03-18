@@ -79,6 +79,8 @@
     </div>
     <?= $js; ?>
     <script>
+
+    let ventanaProveedor = "";
         
     $(document).ready(function() {
 
@@ -116,9 +118,9 @@
 
     $(document).on('click', '#agregar_proveedor', function () {
 
-        $.confirm({
+        ventanaProveedor = $.confirm({
         title: false,
-        boxWidth: '650px',
+        boxWidth: '700px',
         useBootstrap: false,
         content: `
 
@@ -318,16 +320,16 @@
             proveedor: proveedor,
             vende: vende,
             rfc: rfc,
-            codigoPostal: codigoPostal,
+            codigo_postal: codigoPostal,
             pais: pais,
             telefono: telefono,
             correo: correo,
             contacto: contacto,
-            telefonoContacto: telefonoContacto,
-            correoContacto: correoContacto,
+            telefono_contacto: telefonoContacto,
+            correo_contacto: correoContacto,
             cuenta : cuenta,
             banco: banco,
-            clave: clave
+            clabe: clave
         };
 
         let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
@@ -422,14 +424,18 @@
         $("#AgregarFormProveCuenta").val("");
         $("#AgregarFormProveBanco").val("");
         $("#AgregarFormProveClave").val("");
-
+       
         $.ajax({
-        type: "POST",
-        url: "index.php",
-        data: JSON.stringify(data),
-        success: function(returnData){
-        }
+            type: "POST",
+            url: "http://127.0.0.1/requisiciones/proveedores/guardar",
+            data: JSON.stringify(data),
+            success: function(response){
+
+                ventanaProveedor.close();
+                
+            }
         });
+
 
     });
 

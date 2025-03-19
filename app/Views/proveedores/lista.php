@@ -12,10 +12,6 @@
 
 <body>
 
-    <div id="fullscreen-loader" class="fullscreen-loader">
-        <div class="spinner"></div>
-    </div>
-
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
@@ -41,6 +37,13 @@
 
                             <div class="container">
                                 <div class="row justify-content-end align-items-center mt-3">
+
+
+                                    <div style="position: absolute; top: 40%; left: 44%; transform: translate(-50%, -50%) z-index: 999; display: none;" id="loader">
+                                        <img src="http://127.0.0.1/requisiciones/public/assets/img/loader.gif" width="100" height="100">
+                                    </div>
+
+
                                     <div class="col-auto">
                                         <button class="btn btn-info btn-sm btn-modal" id="agregar_proveedor"><i class='bx bx-plus-circle'></i>Agregar proveedor</button>
                                     </div>
@@ -692,6 +695,8 @@
         $("#AgregarFormProveCuenta").val("");
         $("#AgregarFormProveBanco").val("");
         $("#AgregarFormProveClave").val("");
+
+        $("#loader").show();
        
         $.ajax({
             type: "POST",
@@ -700,6 +705,8 @@
             success: function(response){
 
                 ventanaProveedor.close();
+                $('#tabla_proveedores').DataTable().ajax.reload();
+                $("#loader").hide();
 
             }
         });

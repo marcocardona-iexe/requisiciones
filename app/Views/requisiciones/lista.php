@@ -80,6 +80,7 @@
     <?= $js; ?>
     <script>
         $(document).ready(function() {
+            console.log("API URL:", window.env.API_URL);
             $('#tbl_requisicones').DataTable({
                 processing: true,
                 serverSide: true,

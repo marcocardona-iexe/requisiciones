@@ -415,6 +415,7 @@ class RequisicionesController extends BaseController
             $requisicionesInventarioDetalleModel->insertar($dataInsert);
         }
 
+
         return $this->response->setJSON([
             'status' => 'success',
             'message' => 'Datos guardados exitosamente'

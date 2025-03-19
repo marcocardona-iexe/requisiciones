@@ -3,6 +3,8 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
+    <script src="<?= base_url('public/assets/system/js/env.js') ?>"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <script src="<?= base_url('public/assets/vendor/libs/jquery/jquery.js') ?>"></script>
@@ -21,6 +23,7 @@
     <!-- Page JS -->
 
     <!-- Place this tag in your head or just before your close body tag. -->
+
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery-confirm@3.3.4/js/jquery-confirm.min.js"></script>

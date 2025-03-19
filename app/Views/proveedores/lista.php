@@ -37,6 +37,11 @@
 
                             <div class="container">
                                 <div class="row justify-content-end align-items-center mt-3">
+
+                                    <div style="position: absolute; top: 40%; left: 44%; transform: translate(-50%, -50%) z-index: 999; display: none;" id="loader">
+                                        <img src="http://127.0.0.1/requisiciones/public/assets/img/loader.gif" width="80" height="80">
+                                    </div>
+
                                     <div class="col-auto">
                                         <button class="btn btn-info btn-sm btn-modal" id="agregar_proveedor"><i class='bx bx-plus-circle'></i>Agregar proveedor</button>
                                     </div>
@@ -79,36 +84,50 @@
     </div>
     <?= $js; ?>
     <script>
-        
+
+    let ventanaProveedor = "";
+
     $(document).ready(function() {
 
-        const testData = [
-            { proveedor: 'Prueba A', rfc: 'RFC12345', telefono: '123-456-7890' },
-            { proveedor: 'Prueba B', rfc: 'RFC23456', telefono: '234-567-8901' },
-            { proveedor: 'Prueba C', rfc: 'RFC34567', telefono: '345-678-9012' },
-            { proveedor: 'Prueba D', rfc: 'RFC45678', telefono: '456-789-0123' },
-            { proveedor: 'Prueba E', rfc: 'RFC56789', telefono: '567-890-1234' },
-        ];
-
         $('#tabla_proveedores').DataTable({
-            data: testData,
-            columns: [
-                { data: 'proveedor' },
-                { data: 'rfc' },
-                { data: 'telefono' },
+            "ajax": {
+                "url": "http://127.0.0.1/requisiciones/proveedores/obtenerProveedores",
+                "type": "GET",
+                "dataSrc": ""
+            },
+            "columns": [
+                { "data": "proveedor" },
+                { "data": "rfc" },
+                { "data": "telefono" },
                 {
-                    data: null,
-                    render: function(data, type, row) {
+                    "data": null,
+                    "render": function(data, type, row) {
                         return `
-                        <button type="button" class="btn btn-outline-dark btn-sm" id="editar">
-                            <i class="bx bx-list-ul"></i> Editar
-                        </button>
+                            <button type="button" class="btn btn-outline-dark btn-sm" id="editar">
+                                <i class="bx bx-list-ul"></i> Editar
+                            </button>
                         `;
                     }
                 }
             ],
             "columnDefs": [
-                { "className": "text-center", "targets": 3 }
+                { 
+                    "targets": 0,
+                    "width": "20%"
+                },
+                { 
+                    "targets": 1,
+                    "width": "20%"
+                },
+                { 
+                    "targets": 2,
+                    "width": "25%"
+                },
+                { 
+                    "targets": 3,
+                    "width": "10%",
+                    "className": "text-center"
+                }
             ]
         });
 
@@ -116,9 +135,9 @@
 
     $(document).on('click', '#agregar_proveedor', function () {
 
-        $.confirm({
+        ventanaProveedor = $.confirm({
         title: false,
-        boxWidth: '650px',
+        boxWidth: '850px',
         useBootstrap: false,
         content: `
 
@@ -183,29 +202,31 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Proveedor <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveProveedor" placeholder="Ingrese nombre del proveedor" autocomplete="off" required>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Vende <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveVende" placeholder="Ingrese nombre de lo que vende" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">RFC <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveRFC" placeholder="Ingrese el RFC" autocomplete="off" required>
-                            <p class="help-text">Formato para personas físicas: AAAA######AAA / Para personas morales: AAA######AAA</p>
+                            <p class="help-text">Formato para rfc AAAA######AAA /AAA######AAA</p>
                         </div>
                     </div>
+
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -214,15 +235,269 @@
                             <p class="help-text">Ingrese numero de codigo postal</p>
                         </div>
                    </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Pais <span style="color: #d60b52;">*</span></label>
-                            <input type="text" class="form-control" id="AgregarFormProvePais" placeholder="Ingrese nombre del pais" autocomplete="off" required>
+                            <select class="form-control" id="AgregarFormProvePais" required>
+                            <option> selecciona un pais </option>
+                            <option> Aland Islands </option>
+                            <option> Afghanistan </option>
+                            <option> Albania </option>
+                            <option> Algeria </option>
+                            <option> American Samoa </option>
+                            <option> Andorra </option>
+                            <option> Angola </option>
+                            <option> Anguilla </option>
+                            <option> Antarctica </option>
+                            <option> Antigua And Barbuda </option>
+                            <option> Argentina </option>
+                            <option> Armenia </option>
+                            <option> Aruba </option>
+                            <option> Australia </option>
+                            <option> Austria </option>
+                            <option> Azerbaijan </option>
+                            <option> Bahrain </option>
+                            <option> Bangladesh </option>
+                            <option> Barbados </option>
+                            <option> Belarus </option>
+                            <option> Belgium </option>
+                            <option> Belize </option>
+                            <option> Benin </option>
+                            <option> Bermuda </option>
+                            <option> Bhutan </option>
+                            <option> Bolivia </option>
+                            <option> Bonaire, Sint Eustatius and Saba </option>
+                            <option> Bosnia and Herzegovina </option>
+                            <option> Botswana </option>
+                            <option> Bouvet Island </option>
+                            <option> Brazil </option>
+                            <option> British Indian Ocean Territory </option>
+                            <option> Brunei </option>
+                            <option> Bulgaria </option>
+                            <option> Burkina Faso </option>
+                            <option> Burundi </option>
+                            <option> Cambodia </option>
+                            <option> Cameroon </option>
+                            <option> Canada </option>
+                            <option> Cape Verde </option>
+                            <option> Cayman Islands </option>
+                            <option> Central African Republic </option>
+                            <option> Chad </option>
+                            <option> Chile </option>
+                            <option> China </option>
+                            <option> Christmas Island </option>
+                            <option> Cocos (Keeling) Islands </option>
+                            <option> Colombia </option>
+                            <option> Comoros </option>
+                            <option> Congo </option>
+                            <option> Cook Islands </option>
+                            <option> Costa Rica </option>
+                            <option> Cote D'Ivoire (Ivory Coast) </option>
+                            <option> Croatia </option>
+                            <option> Cuba </option>
+                            <option> Curaçao </option>
+                            <option> Cyprus </option>
+                            <option> Czech Republic </option>
+                            <option> Democratic Republic of the Congo </option>
+                            <option> Denmark </option>
+                            <option> Djibouti </option>
+                            <option> Dominica </option>
+                            <option> Dominican Republic </option>
+                            <option> East Timor </option>
+                            <option> Ecuador </option>
+                            <option> Egypt </option>
+                            <option> El Salvador </option>
+                            <option> Equatorial Guinea </option>
+                            <option> Eritrea </option>
+                            <option> Estonia </option>
+                            <option> Ethiopia </option>
+                            <option> Falkland Islands </option>
+                            <option> Faroe Islands </option>
+                            <option> Fiji Islands </option>
+                            <option> Finland </option>
+                            <option> France </option>
+                            <option> French Guiana </option>
+                            <option> French Polynesia </option>
+                            <option> French Southern Territories </option>
+                            <option> Gabon </option>
+                            <option> Gambia The </option>
+                            <option> Georgia </option>
+                            <option> Germany </option>
+                            <option> Ghana </option>
+                            <option> Gibraltar </option>
+                            <option> Greece </option>
+                            <option> Greenland </option>
+                            <option> Grenada </option>
+                            <option> Guadeloupe </option>
+                            <option> Guam </option>
+                            <option> Guatemala </option>
+                            <option> Guernsey and Alderney </option>
+                            <option> Guinea </option>
+                            <option> Guinea-Bissau </option>
+                            <option> Guyana </option>
+                            <option> Haiti </option>
+                            <option> Heard Island and McDonald Islands </option>
+                            <option> Honduras </option>
+                            <option> Hong Kong S.A.R. </option>
+                            <option> Hungary </option>
+                            <option> Iceland </option>
+                            <option> India </option>
+                            <option> Indonesia </option>
+                            <option> Iran </option>
+                            <option> Iraq </option>
+                            <option> Ireland </option>
+                            <option> Israel </option>
+                            <option> Italy </option>
+                            <option> Jamaica </option>
+                            <option> Japan </option>
+                            <option> Jersey </option>
+                            <option> Jordan </option>
+                            <option> Kazakhstan </option>
+                            <option> Kenya </option>
+                            <option> Kiribati </option>
+                            <option> Kosovo </option>
+                            <option> Kuwait </option>
+                            <option> Kyrgyzstan </option>
+                            <option> Laos </option>
+                            <option> Latvia </option>
+                            <option> Lebanon </option>
+                            <option> Lesotho </option>
+                            <option> Liberia </option>
+                            <option> Libya </option>
+                            <option> Liechtenstein </option>
+                            <option> Lithuania </option>
+                            <option> Luxembourg </option>
+                            <option> Macau S.A.R. </option>
+                            <option> Macedonia </option>
+                            <option> Madagascar </option>
+                            <option> Malawi </option>
+                            <option> Malaysia </option>
+                            <option> Maldives </option>
+                            <option> Mali </option>
+                            <option> Malta </option>
+                            <option> Man (Isle of) </option>
+                            <option> Marshall Islands </option>
+                            <option> Martinique </option>
+                            <option> Mauritania </option>
+                            <option> Mauritius </option>
+                            <option> Mayotte </option>
+                            <option> México </option>
+                            <option> Micronesia </option>
+                            <option> Moldova </option>
+                            <option> Monaco </option>
+                            <option> Mongolia </option>
+                            <option> Montenegro </option>
+                            <option> Montserrat </option>
+                            <option> Morocco </option>
+                            <option> Mozambique </option>
+                            <option> Myanmar </option>
+                            <option> Namibia </option>
+                            <option> Nauru </option>
+                            <option> Nepal </option>
+                            <option> Netherlands </option>
+                            <option> New Caledonia </option>
+                            <option> New Zealand </option>
+                            <option> Nicaragua </option>
+                            <option> Niger </option>
+                            <option> Nigeria </option>
+                            <option> Niue </option>
+                            <option> Norfolk Island </option>
+                            <option> North Korea </option>
+                            <option> Northern Mariana Islands </option>
+                            <option> Norway </option>
+                            <option> Oman </option>
+                            <option> Pakistan </option>
+                            <option> Palau </option>
+                            <option> Palestinian Territory Occupied </option>
+                            <option> Panama </option>
+                            <option> Papua New Guinea </option>
+                            <option> Paraguay </option>
+                            <option> Peru </option>
+                            <option> Philippines </option>
+                            <option> Pitcairn Island </option>
+                            <option> Poland </option>
+                            <option> Portugal </option>
+                            <option> Puerto Rico </option>
+                            <option> Qatar </option>
+                            <option> Reunion </option>
+                            <option> Romania </option>
+                            <option> Russia </option>
+                            <option> Rwanda </option>
+                            <option> Saint Helena </option>
+                            <option> Saint Kitts And Nevis </option>
+                            <option> Saint Lucia </option>
+                            <option> Saint Pierre and Miquelon </option>
+                            <option> Saint Vincent And The Grenadines </option>
+                            <option> Saint-Barthelemy </option>
+                            <option> Saint-Martin (French part) </option>
+                            <option> Samoa </option>
+                            <option> San Marino </option>
+                            <option> Sao Tome and Principe </option>
+                            <option> Saudi Arabia </option>
+                            <option> Senegal </option>
+                            <option> Serbia </option>
+                            <option> Seychelles </option>
+                            <option> Sierra Leone </option>
+                            <option> Singapore </option>
+                            <option> Sint Maarten (Dutch part) </option>
+                            <option> Slovakia </option>
+                            <option> Slovenia </option>
+                            <option> Solomon Islands </option>
+                            <option> Somalia </option>
+                            <option> South Africa </option>
+                            <option> South Georgia </option>
+                            <option> South Korea </option>
+                            <option> South Sudan </option>
+                            <option> Spain </option>
+                            <option> Sri Lanka </option>
+                            <option> Sudan </option>
+                            <option> Suriname </option>
+                            <option> Svalbard And Jan Mayen Islands </option>
+                            <option> Swaziland </option>
+                            <option> Sweden </option>
+                            <option> Switzerland </option>
+                            <option> Syria </option>
+                            <option> Taiwan </option>
+                            <option> Tajikistan </option>
+                            <option> Tanzania </option>
+                            <option> Thailand </option>
+                            <option> The Bahamas </option>
+                            <option> Togo </option>
+                            <option> Tokelau </option>
+                            <option> Tonga </option>
+                            <option> Trinidad And Tobago </option>
+                            <option> Tunisia </option>
+                            <option> Turkey </option>
+                            <option> Turkmenistan </option>
+                            <option> Turks And Caicos Islands </option>
+                            <option> Tuvalu </option>
+                            <option> Uganda </option>
+                            <option> Ukraine </option>
+                            <option> United Arab Emirates </option>
+                            <option> United Kingdom </option>
+                            <option> United States </option>
+                            <option> United States Minor Outlying Islands </option>
+                            <option> Uruguay </option>
+                            <option> Uzbekistan </option>
+                            <option> Vanuatu </option>
+                            <option> Vatican City State (Holy See) </option>
+                            <option> Venezuela </option>
+                            <option> Vietnam </option>
+                            <option> Virgin Islands (British) </option>
+                            <option> Virgin Islands (US) </option>
+                            <option> Wallis And Futuna Islands </option>
+                            <option> Western Sahara </option>
+                            <option> Yemen </option>
+                            <option> Zambia </option>
+                            <option> Zimbabwe </option>
+                            </select>
                         </div>
                     </div>
+
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -230,9 +505,7 @@
                             <input type="text" class="form-control" id="AgregarFormProveTelefono" placeholder="Ingrese numero telefonico" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Correo <span style="color: #d60b52;">*</span></label>
@@ -240,15 +513,17 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Contacto <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveContacto" placeholder="Ingrese correo contacto" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Telefono contacto <span style="color: #d60b52;">*</span></label>
@@ -256,21 +531,26 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Correo contacto <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveCorreoContacto" placeholder="Ingrese correo contacto" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Cuenta <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveCuenta" placeholder="Ingrese numero de cuenta" autocomplete="off" required>
                         </div>
                     </div>
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -278,13 +558,14 @@
                             <input type="text" class="form-control" id="AgregarFormProveBanco" placeholder="Ingrese banco" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="telefono" class="camposFormulario">Clave <span style="color: #d60b52;">*</span></label>
-                        <input type="text" class="form-control" id="AgregarFormProveClave" placeholder="Ingrese numero de clave" autocomplete="off" required>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefono" class="camposFormulario">Clave <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveClave" placeholder="Ingrese numero de clave" autocomplete="off" required>
+                        </div>
                     </div>
+                    
                 </div>
 
                 <button class="btn btn-primary btn-block" id="enviarProveedor">Enviar</button>
@@ -318,16 +599,16 @@
             proveedor: proveedor,
             vende: vende,
             rfc: rfc,
-            codigoPostal: codigoPostal,
+            codigo_postal: codigoPostal,
             pais: pais,
             telefono: telefono,
             correo: correo,
             contacto: contacto,
-            telefonoContacto: telefonoContacto,
-            correoContacto: correoContacto,
+            telefono_contacto: telefonoContacto,
+            correo_contacto: correoContacto,
             cuenta : cuenta,
             banco: banco,
-            clave: clave
+            clabe: clave
         };
 
         let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
@@ -423,12 +704,21 @@
         $("#AgregarFormProveBanco").val("");
         $("#AgregarFormProveClave").val("");
 
+        $("#loader").show();
+       
         $.ajax({
-        type: "POST",
-        url: "index.php",
-        data: JSON.stringify(data),
-        success: function(returnData){
-        }
+            type: "POST",
+            url: "http://127.0.0.1/requisiciones/proveedores/guardar",
+            data: JSON.stringify(data),
+            success: function(response){
+
+                ventanaProveedor.close();
+                setTimeout(function() {
+                    $('#tabla_proveedores').DataTable().ajax.reload();
+                    $("#loader").hide();  // Ocultar el loader
+                }, 2000);
+
+            }
         });
 
     });

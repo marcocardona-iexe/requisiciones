@@ -41,7 +41,7 @@
          </li>
          <li class="menu-item">
              <a href="<?= base_url('proveedores/lista') ?>" class="menu-link">
-                 <i class='bx bx-street-view'></i>
+                 <i class='bx bx-package'></i>
                  <div data-i18n="Buttons">Proveedores</div>
              </a>
          </li>

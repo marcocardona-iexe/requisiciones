@@ -77,4 +77,39 @@ class ProveedoresModel extends Model
 
         return $result;
     }
+
+    public function guardar($proveedor)
+    {
+
+        $data = [
+            'proveedor'        => $proveedor->proveedor,
+            'vende'            => $proveedor->vende,
+            'rfc'              => $proveedor->rfc,
+            'codigo_postal'    => $proveedor->codigo_postal,
+            'pais'             => $proveedor->pais,
+            'telefono'         => $proveedor->telefono,
+            'correo'           => $proveedor->correo,
+            'contacto'         => $proveedor->contacto,
+            'telefono_contacto'=> $proveedor->telefono_contacto,
+            'correo_contacto'  => $proveedor->correo_contacto,
+            'banco'            => $proveedor->banco,
+            'cuenta'           => $proveedor->cuenta,
+            'clabe'            => $proveedor->clabe,
+            'status'           => $proveedor->status
+        ];
+
+        return $this->insert($data);
+    }
+
+    public function obtenerProveedores()
+    {
+
+        $builder = $this->db->table('proveedores');
+        $builder->select('id, proveedor, rfc, telefono, status');
+        $query = $builder->get();
+        
+        return $query->getResult();
+
+    }
+    
 }

@@ -137,7 +137,7 @@
 
         ventanaProveedor = $.confirm({
         title: false,
-        boxWidth: '700px',
+        boxWidth: '850px',
         useBootstrap: false,
         content: `
 
@@ -202,29 +202,31 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Proveedor <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveProveedor" placeholder="Ingrese nombre del proveedor" autocomplete="off" required>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Vende <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveVende" placeholder="Ingrese nombre de lo que vende" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">RFC <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveRFC" placeholder="Ingrese el RFC" autocomplete="off" required>
-                            <p class="help-text">Formato para personas físicas: AAAA######AAA / Para personas morales: AAA######AAA</p>
+                            <p class="help-text">Formato para rfc AAAA######AAA /AAA######AAA</p>
                         </div>
                     </div>
+
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -233,9 +235,7 @@
                             <p class="help-text">Ingrese numero de codigo postal</p>
                         </div>
                    </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Pais <span style="color: #d60b52;">*</span></label>
@@ -495,15 +495,17 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Teléfono <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveTelefono" placeholder="Ingrese numero telefonico" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Correo <span style="color: #d60b52;">*</span></label>
@@ -511,15 +513,17 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Contacto <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveContacto" placeholder="Ingrese correo contacto" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Telefono contacto <span style="color: #d60b52;">*</span></label>
@@ -527,21 +531,26 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Correo contacto <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveCorreoContacto" placeholder="Ingrese correo contacto" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Cuenta <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control" id="AgregarFormProveCuenta" placeholder="Ingrese numero de cuenta" autocomplete="off" required>
                         </div>
                     </div>
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -549,13 +558,14 @@
                             <input type="text" class="form-control" id="AgregarFormProveBanco" placeholder="Ingrese banco" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="telefono" class="camposFormulario">Clave <span style="color: #d60b52;">*</span></label>
-                        <input type="text" class="form-control" id="AgregarFormProveClave" placeholder="Ingrese numero de clave" autocomplete="off" required>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefono" class="camposFormulario">Clave <span style="color: #d60b52;">*</span></label>
+                            <input type="text" class="form-control" id="AgregarFormProveClave" placeholder="Ingrese numero de clave" autocomplete="off" required>
+                        </div>
                     </div>
+                    
                 </div>
 
                 <button class="btn btn-primary btn-block" id="enviarProveedor">Enviar</button>

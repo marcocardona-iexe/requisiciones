@@ -72,31 +72,45 @@
                 password: password
             },
             success: function(response) {
-                
+
                 if (response.status === 'success') {
                 
                     window.location.href = 'http://localhost/requisiciones/inventario/lista';
 
-                }else{
-
-                    $("#username").addClass("is-invalid");
-                    $("#password").addClass("is-invalid");
-                    
                 }
+                if (response.status === 'correo_invalido') {
 
+                    $("#username").removeClass("is-invalid");
+                    $("#password").removeClass("is-invalid");
+                    
+                    $("#username").addClass("is-invalid");
+
+                }
+                if (response.status === 'password_invalido') {
+
+                    $("#username").removeClass("is-invalid");
+                    $("#password").removeClass("is-invalid");
+                    
+                    $("#password").addClass("is-invalid");
+
+                }
             }
         });
 
     });
 
     $("#username").keydown(function(){
+        
         $(this).removeClass("is-invalid");
         $(this).addClass("is-valid");
+
     });
 
     $("#password").keydown(function(){
+
         $(this).removeClass("is-invalid");
         $(this).addClass("is-valid");
+
     });
 
 </script>

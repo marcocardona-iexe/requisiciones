@@ -36,16 +36,34 @@ class UsuariosModel extends Model
         
         // Si no se encontró el usuario
         if (!$result) {
-            return null;  // Retorna null si el usuario no existe
+
+            $data = [
+                'correo' => false,
+                'password' => false
+            ];
+
+            return $data;  // Retorna null si el usuario no existe
         }
         
         // Verificar si la contraseña es correcta
         if (password_verify($password, $result->password)) {
-            // Si la contraseña es válida, retornar los datos del usuario
-            return $result;
+
+            $data = [
+                'id' => $result->id,
+                'correo' => true,
+                'password' => true
+            ];
+
+            return $data;
+
         } else {
-            // Si la contraseña no coincide
-            return null;
+
+            $data = [
+                'correo' => true,
+                'password' => false
+            ];
+
+            return $data;
         }
     }
 

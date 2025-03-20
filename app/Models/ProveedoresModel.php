@@ -90,7 +90,7 @@ class ProveedoresModel extends Model
             'telefono'         => $proveedor->telefono,
             'correo'           => $proveedor->correo,
             'contacto'         => $proveedor->contacto,
-            'telefono_contacto'=> $proveedor->telefono_contacto,
+            'telefono_contacto' => $proveedor->telefono_contacto,
             'correo_contacto'  => $proveedor->correo_contacto,
             'banco'            => $proveedor->banco,
             'cuenta'           => $proveedor->cuenta,
@@ -107,9 +107,7 @@ class ProveedoresModel extends Model
         $builder = $this->db->table('proveedores');
         $builder->select('id, proveedor, rfc, telefono, status');
         $query = $builder->get();
-        
-        return $query->getResult();
 
+        return $query->getResult();
     }
-    
 }

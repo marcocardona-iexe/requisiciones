@@ -5,24 +5,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orden de Compra</title>
+
+    <!-- Incluir la fuente "Unito" desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Unito:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Unito', sans-serif;
+            margin: 0px;
+            padding: 0;
             font-size: 12px;
+            color: #333;
         }
 
         .container {
             width: 100%;
-            padding: 20px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
             margin-bottom: 20px;
         }
 
-        .header img {
-            width: 150px;
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .header .company-info {
+            text-align: left;
+        }
+
+        .header .company-info h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .order-title {
+            text-align: right;
+            font-size: 22px;
+            font-weight: 700;
+            color: #888;
+        }
+
+        /* Usamos display: table para organizar los divs lado a lado */
+        .info-container {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            display: table-cell;
+            /* Esto pone los divs en fila */
+            width: 48%;
+            /* Asigna un 48% de espacio a cada div */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .box:first-child {
+            background-color: #d1e7dd;
+        }
+
+        .box:last-child {
+            background-color: #f8d7da;
         }
 
         .table {
@@ -33,15 +98,18 @@
 
         .table th,
         .table td {
-            border: 1px solid #000;
-            padding: 5px;
+            border: 1px solid #ddd;
+            padding: 10px;
             text-align: left;
+            font-size: 14px;
         }
 
         .table th {
-            background-color: #f4f4f4;
+            background-color: #f2f2f2;
+            font-weight: 600;
         }
 
+        
         .totales {
             margin-top: 15px;
             text-align: right;
@@ -50,56 +118,64 @@
 </head>
 
 <body>
+
     <div class="container">
-        <!-- Encabezado -->
         <div class="header">
-            <img src="<?= base_url('assets/img/logo.png'); ?>" alt="Logo Empresa">
-            <h2>Orden de Compra</h2>
-            <p><strong>Fecha:</strong> <?= date('Y-m-d'); ?></p>
+            <div class="company-info">
+                <img src="<?= base_url('public/assets/img/sistema/iexe_logo.png'); ?>" alt="Logo Empresa">
+                <p>Dirección:<br>Blvrd Esteban de Antuñano 2702,<br>Reforma, 72160 Heroica Puebla de Zaragoza, Pue.</p>
+                <p>Teléfono: 800 286 8464 </p>
+            </div>
+            <div class="order-title">VISTA PREVIA ORDEN DE COMPRA</div>
         </div>
 
-        <!-- Datos de la Empresa -->
-        <table class="table">
-            <tr>
-                <td><strong>Empresa:</strong> Mi Empresa S.A. de C.V.</td>
-                <td><strong>RFC:</strong> XAXX010101000</td>
-            </tr>
-            <tr>
-                <td><strong>Dirección:</strong> Calle Falsa 123, CDMX</td>
-                <td><strong>Teléfono:</strong> 55-5555-5555</td>
-            </tr>
-        </table>
+        <p><strong>NÚMERO DE O/C:</strong> <span class="order-number">XXXX</span></p>
 
-        <!-- Datos del Proveedor -->
-        <h3>Datos del Proveedor</h3>
-        <table class="table">
-            <tr>
-                <td><strong>Proveedor:</strong></td>
-                <td><strong>ID:</strong></td>
-            </tr>
-            <tr>
-                <td><strong>Dirección:</strong> </td>
-                <td><strong>Teléfono:</strong></td>
-            </tr>
-        </table>
+        <div class="info-container">
+            <div class="info-box">
+                <strong>Para:</strong>
+                Marco Antonio Cardona<br>
+                Iexe Universidad<br>
+                Blvrd Esteban de Antuñano 2702, Reforma, 72160 Heroica Puebla de Zaragoza, Pue.<br>
+                800 286 8464
+            </div>
+            <div class="info-box">
+                <strong>Enviar a:</strong>
+                Nombre<br>
+                Compañía<br>
+                Dirección<br>
+                Ciudad, Estado, Código Postal<br>
+                Teléfono
+            </div>
+        </div>
 
-        <!-- Detalles de Productos -->
-        <h3>Productos</h3>
         <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Descripción</th>
-                    <th>Cantidad</th>
-                    <th>Unidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Total</th>
+                    <th>CANTIDAD</th>
+                    <th>PESO POR</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th>PRECIO UNITARIO</th>
+                    <th>TOTAL</th>
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>kg</td>
+                    <td>Producto A</td>
+                    <td>$50.00</td>
+                    <td>$50.00</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>kg</td>
+                    <td>Producto B</td>
+                    <td>$30.00</td>
+                    <td>$60.00</td>
+                </tr>
             </tbody>
         </table>
-
         <!-- Totales -->
         <div class="totales">
             <p><strong>Subtotal:</strong> $</p>
@@ -112,7 +188,9 @@
             <p>__________________________________</p>
             <p>Autorizado por</p>
         </div>
+
     </div>
+
 </body>
 
 </html>

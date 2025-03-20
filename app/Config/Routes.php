@@ -46,4 +46,4 @@ $routes->post('proveedores/guardar', 'ProveedoresController::guardar');
 $routes->get('proveedores/obtenerProveedores', 'ProveedoresController::obtenerProveedores');
 
 
-$routes->get('orden-de-compra', 'OrdenCompraController::index');
+$routes->post('orden-de-compra/imprimir-previo', 'OrdenCompraController::imprimir_previo');

@@ -9,6 +9,11 @@
     data-template="vertical-menu-template-free">
 
 <?= $head; ?>
+<style>
+    tbody tr {
+        font-size: 12px;
+    }
+</style>
 
 <body>
 
@@ -1267,33 +1272,40 @@
 
                                         let filas = "";
                                         Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
-                                            filas += `<tr  style="cursor:pointer;"><td>${proveedor.nombre} <i class='bx bxs-file-pdf click1' data-id="${id}"></i></td></tr>`;
+                                            filas += `<tr  style="cursor:pointer;"><td>${proveedor.nombre} <i class='bx bxs-file-pdf orden_compra' data-id="${id}"></i></td></tr>`;
                                         });
 
                                         $("#ordenes_compra").append(filas);
                                     };
 
 
-                                    $(document).on("click", ".click1", function() {
+                                    $(document).on("click", ".orden_compra", function() {
                                         let idProveedor = $(this).attr("data-id");
-                                        console.log(ordenes_compra[idProveedor]);
+
                                         $.ajax({
-                                            url: "http://127.0.0.1:8080/requisiciones/orden-de-compra", // Reemplaza con la URL correcta en tu backend
+                                            url: "http://127.0.0.1/requisiciones/orden-de-compra/imprimir-previo",
                                             type: "POST",
-                                            dataType: "json",
                                             data: {
                                                 proveedor: ordenes_compra[idProveedor],
                                                 id_proveedor: idProveedor
                                             },
+                                            // xhrFields: {
+                                            //     responseType: "blob" // ⚠️ Esto evita que jQuery intente interpretar el PDF como JSON
+                                            // },
                                             success: function(response) {
-                                                alert("Orden de compra enviada correctamente.");
-                                                console.log(response);
+                                                var blob = new Blob([response], {
+                                                    type: "application/pdf"
+                                                });
+                                                var url = URL.createObjectURL(blob);
+                                                window.open(url, "_blank"); // Abre el PDF en una nueva pestaña
                                             },
                                             error: function(xhr, status, error) {
-                                                console.error("Error al enviar la orden:", error);
+                                                console.error("Error al generar el PDF:", error);
                                             }
                                         });
-                                    })
+                                    });
+
+
 
                                     let enviarOrdenCompra = (idProveedor) => {
                                         if (!ordenes_compra[idProveedor]) {
@@ -1313,6 +1325,18 @@
                                         const item = items_venta.find(item => item.id_detalle === id_detalle);
                                         if (item) {
                                             calculos(item, precio_u, descuento);
+                                            console.log(ordenes_compra);
+
+                                            // Buscar en qué proveedor está el producto y eliminarlo
+                                            Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                                let index = proveedor.productos.findIndex(p => p.idProducto === id_detalle);
+                                                if (index !== -1) {
+                                                    proveedor.productos[index].precio = precio_u; // Reemplaza NUEVO_PRECIO con el valor deseado
+                                                    console.log(`Precio actualizado para idProducto ${id_detalle}`);
+                                                    console.log(proveedor.productos[index]); // Muestra el producto actualizado
+                                                }
+                                            });
+                                            console.log(ordenes_compra);
                                         }
                                     });
 
@@ -1324,6 +1348,18 @@
                                         const item = items_venta.find(item => item.id_detalle === id_detalle);
                                         if (item) {
                                             calculos(item, precio_u, descuento);
+                                            console.log(ordenes_compra);
+
+                                            // Buscar en qué proveedor está el producto y eliminarlo
+                                            Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                                let index = proveedor.productos.findIndex(p => p.idProducto === id_detalle);
+                                                if (index !== -1) {
+                                                    proveedor.productos[index].descuento = descuento; // Reemplaza NUEVO_PRECIO con el valor deseado
+                                                    console.log(`Precio actualizado para idProducto ${id_detalle}`);
+                                                    console.log(proveedor.productos[index]); // Muestra el producto actualizado
+                                                }
+                                            });
+                                            console.log(ordenes_compra);
                                         }
                                     });
 

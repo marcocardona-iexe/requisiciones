@@ -65,5 +65,42 @@ class OrdenCompraController extends BaseController
     }
 
 
+    public function imprimir_previo()
+    {
+        $proveedoresModel = new ProveedoresModel();
+        $data = $this->request->getPost();
 
+        // echo "<pre>";
+        // print_r($data);
+        // echo "</pre>";
+
+        // $dataProveedor = $proveedoresModel->obtenerPorId($data['id_proveedor']);
+        // echo "<pre>";
+        // print_r($dataProveedor);
+        // echo "</pre>";
+
+        // $data = [
+        //     "proveedor" => $dataProveedor->proveedor
+        // ];
+        // die;
+        // Generar HTML de la vista
+        $html = view('orden_compra/pdf_orden_compra');
+
+        // Configurar Dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // ⚠️ Importante: Asegurar que se envía el PDF correctamente
+        header("Content-Type: application/pdf");
+        header("Content-Disposition: inline; filename='orden_compra.pdf'"); // Inline para ver en el navegador
+        echo $dompdf->output();
+        exit();
+    }
 }

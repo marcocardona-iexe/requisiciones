@@ -97,7 +97,9 @@ class ProveedoresModel extends Model
             'banco'            => $proveedor->banco,
             'cuenta'           => $proveedor->cuenta,
             'clabe'            => $proveedor->clabe,
-            'status'           => $proveedor->status
+            'status'           => $proveedor->status,
+            'codigo'           => $proveedor->codigo,
+            'direccion'        => $proveedor->direccion
         ];
 
         return $this->insert($data);

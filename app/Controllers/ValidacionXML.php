@@ -15,7 +15,8 @@ class ValidacionXML extends BaseController
         $archivo = $_FILES['archivo'];
 
         $xmlOrigen = $archivo['tmp_name'];
-        $xmlDestino =  FCPATH . 'assets/destino/nodoTimbrado.xml';
+        $randomDate = date('YmdHis');
+        $xmlDestino =  FCPATH . 'assets/destino/nodoTimbrado_'.$randomDate.'.xml';
         
         if (file_exists($xmlDestino)) {
             if (unlink($xmlDestino)) {

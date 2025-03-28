@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Models\InventarioModel;
-use App\Models\CategoriasModel;
 
+
+use App\Models\ProveedoresModel;
 
 
 class ProveedoresController extends BaseController
@@ -24,12 +24,12 @@ class ProveedoresController extends BaseController
         return view('proveedores/lista', $data);
     }
 
-    public function obtenerProveedores()
+    public function obtener_proveedores()
     {
 
         $proveedoresModel = new ProveedoresModel();
-        $proveedores = $proveedoresModel->obtenerProveedores();
-          
+        $proveedores = $proveedoresModel->obtenerTodos();
+           
         return $this->response->setJSON($proveedores);
     }
 

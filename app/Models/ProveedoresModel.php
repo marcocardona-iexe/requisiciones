@@ -103,13 +103,8 @@ class ProveedoresModel extends Model
         return $this->insert($data);
     }
 
-    public function obtenerProveedores()
+    public function obtenerTodos()
     {
-
-        $builder = $this->db->table('proveedores');
-        $builder->select('id, proveedor, rfc, telefono, status');
-        $query = $builder->get();
-
-        return $query->getResult();
+        return $this->findAll();
     }
 }

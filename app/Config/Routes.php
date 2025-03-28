@@ -40,10 +40,12 @@ $routes->post('requisiciones/guardar', 'RequisicionesController::guardar');
 
 #Rutas para las requisiciones
 $routes->get('proveedores/lista', 'ProveedoresController::lista');
-
-#Raul
+#Peticiones Ajax
+$routes->get('proveedores/obtener-proveedores', 'ProveedoresController::obtener_proveedores');
 $routes->post('proveedores/guardar', 'ProveedoresController::guardar');
-$routes->get('proveedores/obtenerProveedores', 'ProveedoresController::obtenerProveedores');
+#Raul
+
+
 
 
 $routes->post('orden-de-compra/imprimir-previo', 'OrdenCompraController::imprimir_previo');

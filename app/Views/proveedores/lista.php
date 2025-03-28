@@ -9,6 +9,11 @@
     data-template="vertical-menu-template-free">
 
 <?= $head; ?>
+<style>
+    tbody tr {
+        font-size: 12px;
+    }
+</style>
 
 <body>
 
@@ -46,12 +51,13 @@
                                         <button class="btn btn-info btn-sm btn-modal" id="agregar_proveedor"><i class='bx bx-plus-circle'></i>Agregar proveedor</button>
                                     </div>
                                     <div class="col-md-12">
-                                        <table class="table table-sm" id="tabla_proveedores">
+                                        <table class="table table-sm table-striped table-hover table-bordered" id="tabla_proveedores">
                                             <thead>
                                                 <tr>
                                                     <th>Proveedor</th>
+                                                    <th>Código</th>
                                                     <th>RFC</th>
-                                                    <th>Telefono</th>
+                                                    <th>Estatus</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -84,62 +90,76 @@
     </div>
     <?= $js; ?>
     <script>
+        let ventanaProveedor = "";
 
-    let ventanaProveedor = "";
+        $(document).ready(function() {
 
-    $(document).ready(function() {
-
-        $('#tabla_proveedores').DataTable({
-            "ajax": {
-                "url": "http://127.0.0.1/requisiciones/proveedores/obtenerProveedores",
-                "type": "GET",
-                "dataSrc": ""
-            },
-            "columns": [
-                { "data": "proveedor" },
-                { "data": "rfc" },
-                { "data": "telefono" },
-                {
-                    "data": null,
-                    "render": function(data, type, row) {
-                        return `
-                            <button type="button" class="btn btn-outline-dark btn-sm" id="editar">
-                                <i class="bx bx-list-ul"></i> Editar
-                            </button>
-                        `;
+            $('#tabla_proveedores').DataTable({
+                "ajax": {
+                    "url": "http://127.0.0.1/requisiciones/proveedores/obtener-proveedores",
+                    "type": "GET",
+                    "dataSrc": ""
+                },
+                "columns": [{
+                        "data": "proveedor"
+                    },
+                    {
+                        "data": "codigo",
+                    },
+                    {
+                        "data": "rfc"
+                    },
+                    {
+                        "data": "status",
+                        "render": function(data, type, row) {
+                            return data == 1 ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
+                        }
+                    },
+                    {
+                        "data": null,
+                        "render": function(data, type, row) {
+                            let i = (data.status == 1) ? `<li><a class="dropdown-item" href="#">Eliminar</a></li>` : `<li><a class="dropdown-item" href="#">Activar</a></li>`;
+                            return `
+                              <div class="btn-group" role="group">
+                                <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                    <li><a class="dropdown-item" href="#">Editar</a></li>
+                                    ${i}
+                                </ul>
+                            </div>`;
+                        }
                     }
-                }
-            ],
-            "columnDefs": [
-                { 
-                    "targets": 0,
-                    "width": "20%"
+                ],
+                language: {
+                    processing: "Procesando...",
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "No hay registros disponibles",
+                    infoFiltered: "(filtrado de _MAX_ registros en total)",
+                    loadingRecords: "Cargando...",
+                    zeroRecords: "No se encontraron resultados",
+                    emptyTable: "No hay datos disponibles en la tabla",
+                    paginate: {
+                        first: "Primero",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        last: "Último",
+                    },
                 },
-                { 
-                    "targets": 1,
-                    "width": "20%"
-                },
-                { 
-                    "targets": 2,
-                    "width": "25%"
-                },
-                { 
-                    "targets": 3,
-                    "width": "10%",
-                    "className": "text-center"
-                }
-            ]
+            });
+
         });
 
-    });
+        $(document).on('click', '#agregar_proveedor', function() {
 
-    $(document).on('click', '#agregar_proveedor', function () {
-
-        ventanaProveedor = $.confirm({
-        title: false,
-        boxWidth: '850px',
-        useBootstrap: false,
-        content: `
+            ventanaProveedor = $.confirm({
+                title: false,
+                boxWidth: '850px',
+                useBootstrap: false,
+                content: `
 
             <style>
 
@@ -572,157 +592,157 @@
             </div>
 
             `,
-            buttons: false
+                buttons: false
+
+            });
+
 
         });
 
+        $(document).on('click', '#enviarProveedor', function() {
 
-    });
+            let proveedor = $("#AgregarFormProveProveedor").val().trim();
+            let vende = $("#AgregarFormProveVende").val().trim();
+            let rfc = $("#AgregarFormProveRFC").val().trim();
+            let codigoPostal = $("#AgregarFormProveCodigoPostal").val().trim();
+            let pais = $("#AgregarFormProvePais").val().trim();
+            let telefono = $("#AgregarFormProveTelefono").val().trim();
+            let correo = $("#AgregarFormProveCorreo").val().trim();
+            let contacto = $("#AgregarFormProveContacto").val().trim();
+            let telefonoContacto = $("#AgregarFormProveTelefonoContacto").val().trim();
+            let correoContacto = $("#AgregarFormProveCorreoContacto").val().trim();
+            let cuenta = $("#AgregarFormProveCuenta").val().trim();
+            let banco = $("#AgregarFormProveBanco").val().trim();
+            let clave = $("#AgregarFormProveClave").val().trim();
 
-    $(document).on('click', '#enviarProveedor', function () {
+            let data = {
+                proveedor: proveedor,
+                vende: vende,
+                rfc: rfc,
+                codigo_postal: codigoPostal,
+                pais: pais,
+                telefono: telefono,
+                correo: correo,
+                contacto: contacto,
+                telefono_contacto: telefonoContacto,
+                correo_contacto: correoContacto,
+                cuenta: cuenta,
+                banco: banco,
+                clabe: clave
+            };
 
-        let proveedor = $("#AgregarFormProveProveedor").val().trim();
-        let vende = $("#AgregarFormProveVende").val().trim();
-        let rfc = $("#AgregarFormProveRFC").val().trim();
-        let codigoPostal = $("#AgregarFormProveCodigoPostal").val().trim();
-        let pais = $("#AgregarFormProvePais").val().trim();
-        let telefono = $("#AgregarFormProveTelefono").val().trim();
-        let correo = $("#AgregarFormProveCorreo").val().trim();
-        let contacto = $("#AgregarFormProveContacto").val().trim();
-        let telefonoContacto = $("#AgregarFormProveTelefonoContacto").val().trim();
-        let correoContacto = $("#AgregarFormProveCorreoContacto").val().trim();
-        let cuenta = $("#AgregarFormProveCuenta").val().trim();
-        let banco = $("#AgregarFormProveBanco").val().trim();
-        let clave = $("#AgregarFormProveClave").val().trim();
+            let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexVende = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexRFC = /^[A-Za-z0-9\s]+$/;
+            let regexCodigoPostal = /^[0-9A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexPais = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexTelefono = /^[0-9]+$/;
+            let regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            let regexContacto = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexTelefonoContacto = /^[0-9]+$/;
+            let regexCorreoContacto = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            let regexCuenta = /^[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexBanco = /^[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s]+$/;
+            let regexClave = /^[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s]+$/;
 
-        let data = {
-            proveedor: proveedor,
-            vende: vende,
-            rfc: rfc,
-            codigo_postal: codigoPostal,
-            pais: pais,
-            telefono: telefono,
-            correo: correo,
-            contacto: contacto,
-            telefono_contacto: telefonoContacto,
-            correo_contacto: correoContacto,
-            cuenta : cuenta,
-            banco: banco,
-            clabe: clave
-        };
-
-        let regexProveedor = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexVende = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexRFC = /^[A-Za-z0-9\s]+$/;
-        let regexCodigoPostal = /^[0-9A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexPais = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexTelefono = /^[0-9]+$/;
-        let regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        let regexContacto = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexTelefonoContacto = /^[0-9]+$/;
-        let regexCorreoContacto = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        let regexCuenta = /^[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexBanco = /^[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s]+$/;
-        let regexClave = /^[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ\s]+$/;
-
-        if (!regexProveedor.test(proveedor)) {
-            alert("Nombre del proveedor es invalido ...");
-            return false;
-        }
-
-        if (!regexVende.test(vende)) {
-            alert("Vende es ivalido ...");
-            return false;
-        }
-
-        if (!regexRFC.test(rfc)) {
-            alert("RFC inválido asegúrate de que tiene el formato correcto ...");
-            return false;
-        }
-
-        if (!regexCodigoPostal.test(codigoPostal)) {
-            alert("EL codigo postal es invalido ...");
-            return false;
-        }
-
-        if (!regexPais.test(pais)) {
-            alert("EL codigo postal es invalido ...");
-            return false;
-        }
-
-        if (!regexCorreo.test(correo)) {
-            alert("Correo es invalido ...");
-            return false;
-        }
-
-        if (!regexTelefono.test(telefono)) {
-            alert("Telefono es invalido ...");
-            return false;
-        }
-
-        if (!regexContacto.test(contacto)) {
-            alert("Contacto es inválido ...");
-            return false;
-        }
-
-        if (!regexTelefonoContacto.test(telefonoContacto)) {
-            alert("Escriba un teléfono de contacto es invalido ...");
-            return false;
-        }
-
-        if (!regexCorreoContacto.test(correoContacto)) {
-            alert("EL correo es invalido ...");
-            return false;
-        }
-
-        if (!regexCuenta.test(cuenta)) {
-            alert("Cuenta invalida ...");
-            return false;
-        }
-
-        if (!regexBanco.test(banco)) {
-            alert("Banco invalido ...");
-            return false;
-        }
-
-        if (!regexClave.test(clave)) {
-            alert("Clave invalida ...");
-            return false;
-        }
-        
-        $("#AgregarFormProveProveedor").val("");
-        $("#AgregarFormProveVende").val("");
-        $("#AgregarFormProveRFC").val("");
-        $("#AgregarFormProveCodigoPostal").val("");
-        $("#AgregarFormProvePais").val("");
-        $("#AgregarFormProveTelefono").val("");
-        $("#AgregarFormProveCorreo").val("");
-        $("#AgregarFormProveContacto").val("");
-        $("#AgregarFormProveTelefonoContacto").val("");
-        $("#AgregarFormProveCorreoContacto").val("");
-        $("#AgregarFormProveCuenta").val("");
-        $("#AgregarFormProveBanco").val("");
-        $("#AgregarFormProveClave").val("");
-
-        $("#loader").show();
-       
-        $.ajax({
-            type: "POST",
-            url: "http://127.0.0.1/requisiciones/proveedores/guardar",
-            data: JSON.stringify(data),
-            success: function(response){
-
-                ventanaProveedor.close();
-                setTimeout(function() {
-                    $('#tabla_proveedores').DataTable().ajax.reload();
-                    $("#loader").hide();  // Ocultar el loader
-                }, 2000);
-
+            if (!regexProveedor.test(proveedor)) {
+                alert("Nombre del proveedor es invalido ...");
+                return false;
             }
+
+            if (!regexVende.test(vende)) {
+                alert("Vende es ivalido ...");
+                return false;
+            }
+
+            if (!regexRFC.test(rfc)) {
+                alert("RFC inválido asegúrate de que tiene el formato correcto ...");
+                return false;
+            }
+
+            if (!regexCodigoPostal.test(codigoPostal)) {
+                alert("EL codigo postal es invalido ...");
+                return false;
+            }
+
+            if (!regexPais.test(pais)) {
+                alert("EL codigo postal es invalido ...");
+                return false;
+            }
+
+            if (!regexCorreo.test(correo)) {
+                alert("Correo es invalido ...");
+                return false;
+            }
+
+            if (!regexTelefono.test(telefono)) {
+                alert("Telefono es invalido ...");
+                return false;
+            }
+
+            if (!regexContacto.test(contacto)) {
+                alert("Contacto es inválido ...");
+                return false;
+            }
+
+            if (!regexTelefonoContacto.test(telefonoContacto)) {
+                alert("Escriba un teléfono de contacto es invalido ...");
+                return false;
+            }
+
+            if (!regexCorreoContacto.test(correoContacto)) {
+                alert("EL correo es invalido ...");
+                return false;
+            }
+
+            if (!regexCuenta.test(cuenta)) {
+                alert("Cuenta invalida ...");
+                return false;
+            }
+
+            if (!regexBanco.test(banco)) {
+                alert("Banco invalido ...");
+                return false;
+            }
+
+            if (!regexClave.test(clave)) {
+                alert("Clave invalida ...");
+                return false;
+            }
+
+            $("#AgregarFormProveProveedor").val("");
+            $("#AgregarFormProveVende").val("");
+            $("#AgregarFormProveRFC").val("");
+            $("#AgregarFormProveCodigoPostal").val("");
+            $("#AgregarFormProvePais").val("");
+            $("#AgregarFormProveTelefono").val("");
+            $("#AgregarFormProveCorreo").val("");
+            $("#AgregarFormProveContacto").val("");
+            $("#AgregarFormProveTelefonoContacto").val("");
+            $("#AgregarFormProveCorreoContacto").val("");
+            $("#AgregarFormProveCuenta").val("");
+            $("#AgregarFormProveBanco").val("");
+            $("#AgregarFormProveClave").val("");
+
+            $("#loader").show();
+
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1/requisiciones/proveedores/guardar",
+                data: JSON.stringify(data),
+                success: function(response) {
+
+                    ventanaProveedor.close();
+                    setTimeout(function() {
+                        $('#tabla_proveedores').DataTable().ajax.reload();
+                        $("#loader").hide(); // Ocultar el loader
+                    }, 2000);
+
+                }
+            });
+
         });
-
-    });
-
     </script>
 </body>
+
 </html>

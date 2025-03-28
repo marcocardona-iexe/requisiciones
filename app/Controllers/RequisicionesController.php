@@ -6,7 +6,9 @@ use App\Models\RequisicionesModel;
 use App\Models\RequisicionesInventarioDetalleModel;
 use App\Models\ProvedoresModel;
 use App\Models\InventarioProveedoresModel;
-
+use App\Models\VentasModel;
+use App\Models\OrdenCompraModel;
+use App\Models\ProveedoresModel;
 
 class RequisicionesController extends BaseController
 {
@@ -16,12 +18,21 @@ class RequisicionesController extends BaseController
     public function lista()
     {
 
+        $datajs = [
+            'scripts' => [
+                'public/assets/system/js/requisiciones/requisiciones.js',
+                'public/assets/system/js/requisiciones/cancelaciones.js',
+                'public/assets/system/js/requisiciones/realizar_compra.js',
+                'public/assets/system/js/requisiciones/ver_solicitud.js'
+
+            ]
+        ];
         $data = [
             'menu' => view('layouts/menu'),
             'head' => view('layouts/head'),
             'nav' => view('layouts/nav'),
             'footer' => view('layouts/footer'),
-            'js' => view('layouts/js'),
+            'js' => view('layouts/js', $datajs),
         ];
 
         return view('requisiciones/lista', $data);
@@ -360,8 +371,84 @@ class RequisicionesController extends BaseController
     {
         $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
         $requisicionesModel = new RequisicionesModel();
+        $ventasModel = new VentasModel();
+        $proveedorModel = new ProveedoresModel();
+        $ordenCompraModel = new OrdenCompraModel();
 
+
+        $data = $this->request->getPost();
         try {
+            // Obtener el último ID de venta desde el modelo
+            $ultimoCodigo = $ventasModel->obtenerUltimoCodigoVenta(); // Método que debes implementar en el modelo
+            // Generar el código en el formato V-000001
+            if ($ultimoCodigo === NULL) {
+                $codigo = "V-000001"; // Si no hay registros, comienza con el primer código
+            } else {
+                // Extraer el número del código (asumiendo el formato "V-XXXXXX")
+                $numero = (int) substr($ultimoCodigo, 2); // Quita el prefijo "V-" y convierte a entero
+                $codigo = "V-" . str_pad($numero + 1, 6, "0", STR_PAD_LEFT); // Generar el consecutivo
+            }
+
+            // Llenar el array $dataInsertVenta
+            $dataInsertVenta = [
+                'codigo' => $codigo,
+                'fecha' => $data['venta']['fecha_compra'],
+                'iva_aplicado' => $data['venta']['iva_aplicado'] == true ? 1 : 0,
+                'iva' => $data['venta']['iva'],
+                'subtotal' => $data['venta']['subtotal'],
+                'total' => $data['venta']['total'],
+                'descuento' => $data['venta']['descuento_total']
+                // Otros atributos que necesites agregar
+            ];
+
+            $idVenta = $ventasModel->insertar($dataInsertVenta); // Método que debes implementar en el modelo
+
+            foreach ($data['ordenes'] as $o => $orden) {
+                $aplicar_iva = $orden['iva'] == true ? 1 : 0;
+
+                $total = 0;
+                $subtotal = 0;
+                $descuento = 0;
+                foreach ($orden['productos'] as $p) {
+                    $subtotal += $p['total'];
+                    $descuento += $p['descuento'];
+                }
+
+                $total = ($aplicar_iva) ?  ($subtotal - $descuento) * .16 : $subtotal - $descuento;
+                $iva_aplicado = ($aplicar_iva) ? $subtotal * .16 : 0;
+
+                $dataProveedor = $proveedorModel->obtenerPorId($o);
+
+                // Obtener el último ID de venta desde el modelo
+                $ultimoCodigo = $ventasModel->obtenerUltimoCodigoVenta(); // Método que debes implementar en el modelo
+                // Generar el código en el formato V-000001
+                if ($ultimoCodigo === NULL) {
+                    $codigo = $dataProveedor . "-000001"; // Si no hay registros, comienza con el primer código
+                } else {
+                    // Extraer el número del código (asumiendo el formato "V-XXXXXX")
+                    $numero = (int) substr($ultimoCodigo, 2); // Quita el prefijo "V-" y convierte a entero
+                    $codigo = $dataProveedor->codigo . str_pad($numero + 1, 6, "0", STR_PAD_LEFT); // Generar el consecutivo
+                }
+
+
+                $dataInsertOrden = [
+                    'id_venta' => $idVenta,
+                    'id_proveedor' => $o,
+                    'iva' => $orden['iva'],
+                    'iva_aplicado' =>  $iva_aplicado,
+                    'subtotal' => $subtotal,
+                    'total' => $total,
+                    'descuento' => $descuento,
+                    'codigo' => $codigo
+
+                ];
+                $ordenCompraModel->insertar($dataInsertOrden);
+            }
+
+
+
+
+
             // $data = $this->request->getPost();
 
             // Actualizar comentario

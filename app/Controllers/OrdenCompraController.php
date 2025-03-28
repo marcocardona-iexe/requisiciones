@@ -68,23 +68,61 @@ class OrdenCompraController extends BaseController
     public function imprimir_previo()
     {
         $proveedoresModel = new ProveedoresModel();
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+
+
         $data = $this->request->getPost();
 
-        // echo "<pre>";
-        // print_r($data);
-        // echo "</pre>";
 
-        // $dataProveedor = $proveedoresModel->obtenerPorId($data['id_proveedor']);
-        // echo "<pre>";
-        // print_r($dataProveedor);
-        // echo "</pre>";
+        $productos = [];
+        $subtotal = 0;
+        $descuento_total = 0;
+        foreach ($data["proveedor"]["productos"] as $rp) {
+            $producto = new \stdClass; // Instantiate stdClass object
 
-        // $data = [
-        //     "proveedor" => $dataProveedor->proveedor
-        // ];
-        // die;
-        // Generar HTML de la vista
-        $html = view('orden_compra/pdf_orden_compra');
+            $detalle = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicionPorId($rp["idProducto"]);
+
+            $producto->cantidad = $detalle->cantidad;
+            $producto->producto = $detalle->nombre;
+            $producto->descripcion = $detalle->detalles;
+            $producto->cantidad = $detalle->cantidad;
+            $producto->precio = $rp["precio"];
+            $producto->descuento = $rp["descuento"];
+            $producto->total = $rp["total"];
+            $productos[] = $producto;
+
+            $subtotal = $subtotal + $rp["total"];
+            $descuento_total =  $descuento_total + $rp["descuento"];
+        }
+        $dataProveedor = $proveedoresModel->obtenerPorId($data['id_proveedor']);
+
+        if ($data["proveedor"]['iva'] == 1) {
+            $iva_aplicado = ($subtotal) * .16;
+            $total_global = $iva_aplicado + $subtotal;
+        } else {
+            $iva_aplicado = 0;
+            $total_global = $subtotal;
+        }
+
+
+        $proveedor = [
+            "contacto" => $dataProveedor->contacto,
+            "proveedor" => $dataProveedor->proveedor,
+            "direccion" => $dataProveedor->direccion,
+            "telefono" => $dataProveedor->telefono
+        ];
+
+        //Generar HTML de la vista
+        $data = [
+            "proveedor" => $proveedor,
+            "productos" => $productos,
+            "subtotal" => $subtotal,
+            "descuento_total" => $descuento_total,
+            "iva_aplicado" => $iva_aplicado,
+            "total_global" => $total_global
+        ];
+
+        $html = view('orden_compra/pdf_orden_compra', $data);
 
         // Configurar Dompdf
         $options = new Options();

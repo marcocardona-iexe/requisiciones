@@ -122,6 +122,6 @@ class RequisicionesInventarioDetalleModel extends Model
             ->where('requisiciones_inventario_detalle.id', $id)
             ->groupBy('inventario_detalles.id_inventario')
             ->get()
-            ->getResultArray(); // Retorna un array asociativo
+            ->getRow(); // Retorna un array asociativo
     }
 }

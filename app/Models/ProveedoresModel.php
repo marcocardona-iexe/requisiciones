@@ -9,6 +9,7 @@ class ProveedoresModel extends Model
     protected $table = 'proveedores';
     protected $primaryKey = 'id';
     protected $allowedFields = [
+        'codigo',
         'proveedor',
         'vende',
         'rfc',
@@ -22,7 +23,8 @@ class ProveedoresModel extends Model
         'banco',
         'cuenta',
         'clabe',
-        'status'
+        'status',
+        'direccion'
     ];
     protected $useTimestamps = true;
     protected $returnType = 'object';

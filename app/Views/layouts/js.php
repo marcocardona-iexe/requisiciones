@@ -28,3 +28,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jquery-confirm@3.3.4/js/jquery-confirm.min.js"></script>
     <script src="//cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
+
+    <?php if (isset($scripts) && !empty($scripts)) : ?>
+        <?php foreach ($scripts as $script) : ?>
+            <script src="<?= base_url($script) ?>"></script>
+        <?php endforeach; ?>
+    <?php endif; ?>

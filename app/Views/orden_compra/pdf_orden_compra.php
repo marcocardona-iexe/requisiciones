@@ -101,7 +101,7 @@
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
-            font-size: 14px;
+            font-size: 10px;
         }
 
         .table th {
@@ -109,7 +109,7 @@
             font-weight: 600;
         }
 
-        
+
         .totales {
             margin-top: 15px;
             text-align: right;
@@ -134,53 +134,51 @@
         <div class="info-container">
             <div class="info-box">
                 <strong>Para:</strong>
+                <?= $proveedor['contacto']; ?><br>
+                <?= $proveedor['proveedor']; ?><br>
+                <?= $proveedor['direccion']; ?><br>
+                <?= $proveedor['telefono']; ?>
+            </div>
+            <div class="info-box">
+                <strong>Enviar a:</strong>
                 Marco Antonio Cardona<br>
                 Iexe Universidad<br>
                 Blvrd Esteban de Antuñano 2702, Reforma, 72160 Heroica Puebla de Zaragoza, Pue.<br>
                 800 286 8464
-            </div>
-            <div class="info-box">
-                <strong>Enviar a:</strong>
-                Nombre<br>
-                Compañía<br>
-                Dirección<br>
-                Ciudad, Estado, Código Postal<br>
-                Teléfono
             </div>
         </div>
 
         <table class="table">
             <thead>
                 <tr>
-                    <th>CANTIDAD</th>
-                    <th>PESO POR</th>
-                    <th>DESCRIPCIÓN</th>
-                    <th>PRECIO UNITARIO</th>
-                    <th>TOTAL</th>
+                    <th>Producto</th>
+                    <th>Descripción</th>
+                    <th>Cant.</th>
+                    <th>Precio Unitario</th>
+                    <th>Precion con descuento</th>
+                    <th>Subtotal</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>kg</td>
-                    <td>Producto A</td>
-                    <td>$50.00</td>
-                    <td>$50.00</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>kg</td>
-                    <td>Producto B</td>
-                    <td>$30.00</td>
-                    <td>$60.00</td>
-                </tr>
+            <tbody style="font-size: 10px;">
+                <?php foreach ($productos as $p) { ?>
+                    <tr>
+                        <td><?= $p->producto; ?></td>
+                        <td><?= $p->descripcion; ?></td>
+                        <td><?= $p->cantidad; ?></td>
+                        <td>$ <?= $p->precio; ?></td>
+                        <td>$ <?= $p->descuento; ?></td>
+                        <td>$ <?= $p->total; ?></td>
+                    </tr>
+                <?php } ?>
             </tbody>
         </table>
         <!-- Totales -->
         <div class="totales">
-            <p><strong>Subtotal:</strong> $</p>
-            <p><strong>IVA (16%):</strong> $</p>
-            <p><strong>Total:</strong> $</p>
+            <p><strong>Subtotal:</strong> $ <?= $subtotal; ?></p>
+            <p><strong>Descuento total:</strong> $ <?= $descuento_total; ?></p>
+
+            <p><strong>IVA (16%):</strong> $ <?= $iva_aplicado; ?></p>
+            <p><strong>Total:</strong> $ <?= $total_global; ?></p>
         </div>
 
         <!-- Firma -->

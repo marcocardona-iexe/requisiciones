@@ -14,25 +14,31 @@
      <div class="menu-inner-shadow"></div>
 
      <ul class="menu-inner py-1">
-         <!-- Dashboard -->
-         <li class="menu-item">
-             <a href="<?= base_url('dahsboard') ?>" class="menu-link">
-                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                 <div data-i18n="Analytics">Dashboard</div>
-             </a>
-         </li>
 
          <!-- Layouts -->
+         <li class="menu-header small text-uppercase">
+             <span class="menu-header-text">Administracion</span>
+         </li>
+         <li class="menu-item">
+             <a href="<?= base_url('inventario/lista') ?>" class="menu-link">
+                 <i class='menu-icon bx bx-user'></i>
+                 <div data-i18n="Accordion">Usuarios</div>
+             </a>
+         </li>
+         <li class="menu-header small text-uppercase">
+             <span class="menu-header-text">Inventario</span>
+         </li>
+         <li class="menu-item">
+             <a href="<?= base_url('inventario/lista') ?>" class="menu-link">
+                 <i class='menu-icon bx bx-user'></i>
+                 <div data-i18n="Accordion">Lista</div>
+             </a>
+         </li>
 
          <li class="menu-header small text-uppercase">
              <span class="menu-header-text">Requisiciones</span>
          </li>
-         <li class="menu-item">
-             <a href="<?= base_url('inventario/lista') ?>" class="menu-link">
-                 <i class='bx bx-user'></i>
-                 <div data-i18n="Accordion">Inventario</div>
-             </a>
-         </li>
+
          <li class="menu-item">
              <a href="<?= base_url('requisiciones/lista') ?>" class="menu-link">
                  <i class='bx bx-street-view'></i>

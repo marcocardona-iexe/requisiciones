@@ -26,10 +26,10 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => 'requisiciones',
+        'hostname'     => 'app.iexe.edu.mx',
+        'username'     => 'appiexeedu_develop',
+        'password'     => 'Xn8^~b&6ebfL',
+        'database'     => 'appiexeedu_requisiciones',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,

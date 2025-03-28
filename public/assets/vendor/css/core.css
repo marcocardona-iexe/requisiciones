@@ -15410,7 +15410,8 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
 }
 .menu:not(.menu-no-animation) .menu-icon {
     transition: margin-right 0.3s ease;
-    color: #15297c;
+    /*color: #15297c;*/
+    color: white;
 }
 
 .menu-link {

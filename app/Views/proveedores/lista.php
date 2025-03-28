@@ -38,7 +38,7 @@
                             <div class="container">
                                 <div class="row justify-content-end align-items-center mt-3">
 
-                                    <div style="position: absolute; top: 40%; left: 44%; transform: translate(-50%, -50%) z-index: 999; display: none;" id="loader">
+                                    <div style="position: absolute; top: 40%; left: 44%; z-index: 999 !important; display: none;" id="loader">
                                         <img src="http://127.0.0.1/requisiciones/public/assets/img/loader.gif" width="80" height="80">
                                     </div>
 

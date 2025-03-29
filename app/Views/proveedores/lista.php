@@ -170,12 +170,7 @@
                 .form-group {
                     margin-bottom: 1.5rem;
                 }
-
-                .camposFormulario {
-                    font-size: 1.1rem;
-                    color: #555;
-                }
-
+                
                 .btn-block {
                     width: 100%;
                 }

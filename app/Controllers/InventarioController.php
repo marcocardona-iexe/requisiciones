@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\InventarioModel;
+use App\Models\AreasModel;
 use App\Models\CategoriasModel;
 use App\Models\InventarioProveedoresModel;
 
@@ -15,8 +16,16 @@ class InventarioController extends BaseController
 
     public function lista()
     {
+        $categoriasModel = new CategoriasModel();
+        $areasModel = new AreasModel();
+        $categorias = $categoriasModel->obtenerPorWhere(['status' => 1]);
+        $areas = $areasModel->obtenerPorWhere(['status' => 1]);
+
+
 
         $data = [
+            'categorias' => $categorias,
+            'areas' => $areas,
             'menu' => view('layouts/menu'),
             'head' => view('layouts/head'),
             'nav' => view('layouts/nav'),
@@ -27,45 +36,79 @@ class InventarioController extends BaseController
         return view('inventario/lista', $data);
     }
 
-    public function obtenerInventario()
+    /*
+     * Método para obtener el inventario para el select2
+     * @return JSON
+     */
+    public function obtener_inventario()
     {
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+        // Obtenemos el término de búsqueda enviado por Select2 usando POST
+        $q = $this->request->getPost('q');  // 'q' es el parámetro que envía Select2 con la búsqueda
 
+        // Cargar el modelo
         $inventarioModel = new InventarioModel();
 
-        $request = service('request');
+        // Realizamos la consulta al modelo para obtener los resultados
+        $resultados = $inventarioModel->buscar_inventario($q);
 
-        $search = $request->getPost('search')['value'] ?? '';
-        $orderColumnIndex = $request->getPost('order')[0]['column'] ?? 0;
-        $orderDir = $request->getPost('order')[0]['dir'] ?? 'asc';
-        $start = $request->getPost('start') ?? 0;
-        $length = $request->getPost('length') ?? 10;
+        // Preparamos los resultados para devolver en formato JSON
+        $data = [];
+        foreach ($resultados as $row) {
+            $data[] = [
+                'id' => $row->id,    // ID de la opción
+                'text' => $row->caracteristicas  // El texto que aparecerá en el select2
+            ];
+        }
 
-        // Columnas que se pueden ordenar en el DataTable
-        $columnasOrdenables = ['d.id_variante', 'i.nombre', 'categorias.categoria', 'stock_total'];
-        $orderColumn = $columnasOrdenables[$orderColumnIndex] ?? 'i.nombre';
-
-        // Obtener datos con filtros y orden
-        $datos = $inventarioModel->obtenerInventarioDetallesDataTable($search, $orderColumn, $orderDir, $start, $length);
-
-        $totalFiltrado = $inventarioModel->contarFilasFiltradasDataTable($search);
-        $totalRegistros = $inventarioModel->contarFilasTotalesDataTable();
-
+        // Devolvemos los resultados como JSON
         return $this->response->setJSON([
-            'draw' => intval($request->getPost('draw')),
-            'recordsTotal' => $totalRegistros,
-            'recordsFiltered' => $totalFiltrado,
-            'data' => $datos,
+            'items' => $data,
+            'total_count' => count($data)  // Si necesitas mostrar el total de resultados
         ]);
     }
 
+
+
+
+    public function get_inventario_table()
+    {
+        $request = service('request');
+        $model = new InventarioModel();
+
+        // Parámetros enviados por DataTables
+        $draw = $request->getPost('draw');
+        $start = $request->getPost('start');
+        $length = $request->getPost('length');
+        $search = $request->getPost('search')['value'];
+        $order_column_index = $request->getPost('order')[0]['column'];
+        $order_dir = $request->getPost('order')[0]['dir'];
+
+        // Definir las columnas para ordenar correctamente
+        $columns = ['inventario.id', 'inventario.nombre', 'caracteristicas', 'categorias.categoria', 'area.area', 'inventario_detalles.stock', 'inventario_detalles.stock_minimo'];
+        $order_column = $columns[$order_column_index] ?? 'inventario.id';
+
+        // Obtener filtros desde la petición
+        $categoria = $request->getPost('categoria'); // ID de la categoría
+        $area = $request->getPost('area'); // ID del área
+
+        // Obtener datos de inventario con filtros
+        $inventario = $model->getInventario($length, $start, $search, $order_column, $order_dir, $categoria, $area);
+        $total_filtered = $model->getTotalInventario($search, $categoria, $area);
+        $total_records = $model->getTotalInventario(); // Total sin filtros
+
+        // Respuesta en formato JSON para DataTables
+        return $this->response->setJSON([
+            'draw' => intval($draw),
+            'recordsTotal' => $total_records,
+            'recordsFiltered' => $total_filtered,
+            'data' => $inventario
+        ]);
+    }
+
+
+
     public function obtenerTipoInventario()
     {
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
         $inventarioModel = new InventarioModel();
         $articulos = $inventarioModel->obtenerTodos();
@@ -186,32 +229,5 @@ class InventarioController extends BaseController
             'message' => 'Datos obtenidos exitosamente.',
             'data'    => $dataProveedores,
         ])->setStatusCode(200);
-    }
-
-    public function obtener_inventario()
-    {
-        // Obtenemos el término de búsqueda enviado por Select2 usando POST
-        $q = $this->request->getPost('q');  // 'q' es el parámetro que envía Select2 con la búsqueda
-
-        // Cargar el modelo
-        $inventarioModel = new InventarioModel();
-
-        // Realizamos la consulta al modelo para obtener los resultados
-        $resultados = $inventarioModel->buscar_inventario($q);
-
-        // Preparamos los resultados para devolver en formato JSON
-        $data = [];
-        foreach ($resultados as $row) {
-            $data[] = [
-                'id' => $row->id,    // ID de la opción
-                'text' => $row->caracteristicas  // El texto que aparecerá en el select2
-            ];
-        }
-
-        // Devolvemos los resultados como JSON
-        return $this->response->setJSON([
-            'items' => $data,
-            'total_count' => count($data)  // Si necesitas mostrar el total de resultados
-        ]);
     }
 }

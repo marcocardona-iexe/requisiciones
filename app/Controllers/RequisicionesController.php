@@ -14,19 +14,27 @@ class RequisicionesController extends BaseController
 {
 
 
+    /**
+     * Cargar la vista de la lista de requisiciones.
+     *
+     * @return \CodeIgniter\HTTP\Response La vista cargada.
+     */
 
     public function lista()
     {
-
+        // Cargar los js necesarios
         $datajs = [
             'scripts' => [
                 'public/assets/system/js/requisiciones/requisiciones.js',
                 'public/assets/system/js/requisiciones/cancelaciones.js',
                 'public/assets/system/js/requisiciones/realizar_compra.js',
-                'public/assets/system/js/requisiciones/ver_solicitud.js'
+                'public/assets/system/js/requisiciones/ver_solicitud.js',
+                'public/assets/system/js/requisiciones/autorizar.js',
+                'public/assets/system/js/requisiciones/ver_compra.js'
 
             ]
         ];
+        // Cargar los datos necesarios para la vista
         $data = [
             'menu' => view('layouts/menu'),
             'head' => view('layouts/head'),
@@ -35,20 +43,28 @@ class RequisicionesController extends BaseController
             'js' => view('layouts/js', $datajs),
         ];
 
+        // Cargar la vista de la lista de requisiciones
         return view('requisiciones/lista', $data);
     }
 
+
+    /**
+     * Obtener los datos de las requisiciones para el DataTable.
+     *
+     * @return \CodeIgniter\HTTP\Response JSON con los datos de las requisiciones.
+     */
     public function obtenerRequisiciones()
     {
+        // Cargar el modelo y la librería de request
         $request = service('request');
+        // Cargar el modelo de requisiciones
         $requisicionesModel = new RequisicionesModel();
-
+        // Obtener los parámetros de búsqueda y ordenación del DataTable
         $search = $request->getPost('search')['value'] ?? '';
         $order_column_index = $request->getPost('order')[0]['column'] ?? 0;
         $order_dir = $request->getPost('order')[0]['dir'] ?? 'asc';
         $start = $request->getPost('start') ?? 0;
         $length = $request->getPost('length') ?? 10;
-
         // Mapear índices a nombres de columnas
         $columns = [
             'id_usuario',
@@ -58,15 +74,14 @@ class RequisicionesController extends BaseController
             'fecha_entregado',
             'fecha_entrega'
         ];
+        // Obtener el nombre de la columna a ordenar
         $order_column = $columns[$order_column_index] ?? 'id';
-
         // Obtener datos paginados
         $data = $requisicionesModel->ObtenerRequisicionesDataTable($search, $order_column, $order_dir, $start, $length);
-
         // Contar registros
         $totalRecords = $requisicionesModel->totalRecordsDataTable();
         $totalFiltered = $requisicionesModel->totalFilteredRecordsDataTable($search);
-
+        // Formatear los datos para el DataTable
         return $this->response->setJSON([
             'draw' => intval($request->getPost('draw')),
             'recordsTotal' => $totalRecords,
@@ -76,6 +91,73 @@ class RequisicionesController extends BaseController
     }
 
 
+    /**
+     * Obtener los detalles de una requisición específica, esto es para la primer validacion del sistema.
+     *
+     * @param int $idRequisicion ID de la requisición.
+     * @return \CodeIgniter\HTTP\Response JSON con los detalles de la requisición.
+     */
+    public function obtener_detalle_requisicion($idRequisicion)
+    {
+        // Cargar el modelo de requisiciones inventario detalle
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+
+        // Validar que el parámetro sea un número válido
+        if (!is_numeric($idRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'ID de requisición inválido.'
+            ])->setStatusCode(400);
+        }
+
+        $dataRequisicion = $requisicionesModel->obtenerPorId($idRequisicion);
+        if (empty($dataRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontro la requisición'
+            ])->setStatusCode(404);
+        }
+
+
+
+        // Obtener los detalles desde el modelo
+        $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicion($idRequisicion);
+
+
+        if (empty($detalles)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición.'
+            ])->setStatusCode(404);
+        }
+
+        // Formatear la respuesta
+        $responseDetalles = array_map(function ($d) {
+            return [
+                'id_detalle' => $d['id'],
+                'cantidad'   => $d['cantidad'] . ' (' . $d['unidad'] . ')',
+                'stock'      => $d['stock'],
+                'categoria'  => $d['nombre'],
+                'detalle'    => $d['detalles']
+            ];
+        }, $detalles);
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $responseDetalles,
+            'requisicion' => $dataRequisicion
+        ])->setStatusCode(200);
+    }
+
+
+    /**
+     * Validar parcialmente una requisición.
+     *
+     * @param int $id ID de la requisición.
+     * @return \CodeIgniter\HTTP\Response JSON con el resultado de la operación.
+     */
     public function validar_parcialmente($id)
     {
         $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
@@ -153,6 +235,68 @@ class RequisicionesController extends BaseController
                 'message' => 'Error interno del servidor: ' . $e->getMessage()
             ])->setStatusCode(500);
         }
+    }
+
+
+    public function obtener_detalle_requisicion_parcial($idRequisicion)
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+
+        // Validar que el parámetro sea un número válido
+        if (!is_numeric($idRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'ID de requisición inválido.'
+            ])->setStatusCode(400);
+        }
+
+
+        // Obtener los detalles desde el modelo
+        $dataRequisicion = $requisicionesModel->obtenerPorId($idRequisicion);
+
+
+        if (empty($dataRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontro la requisición'
+            ])->setStatusCode(404);
+        }
+
+
+        // Obtener los detalles desde el modelo
+        $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicion($idRequisicion);
+
+
+        if (empty($detalles)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición.'
+            ])->setStatusCode(404);
+        }
+
+
+
+
+
+        // Formatear la respuesta
+        $responseDetalles = array_map(function ($d) {
+            return [
+                'id_detalle' => $d['id'],
+                'cantidad'   => $d['cantidad'] . '(' . $d['unidad'] . ')',
+                'stock'      => $d['stock'],
+                'categoria'  => $d['nombre'],
+                'detalle'    => $d['detalles'],
+                'validado'   => $d['validado'],
+            ];
+        }, $detalles);
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $responseDetalles,
+            'requisicion' => $dataRequisicion
+        ])->setStatusCode(200);
     }
 
     public function rechazar($id)
@@ -343,8 +487,8 @@ class RequisicionesController extends BaseController
         $responseDetalles = array_map(function ($d) {
             return (object) [
                 'id_detalle' => $d['id'],
-                'cantidad'   => $d['cantidad'],
-                'stock'      => $d['stock_individual'],
+                'cantidad'   => $d['cantidad']  . ' (' . $d['unidad'] . ')',
+                'stock'      => $d['stock'],
                 'categoria'  => $d['nombre'],
                 'detalle'    => $d['detalles'],
                 'validado'   => $d['validado'],
@@ -479,6 +623,81 @@ class RequisicionesController extends BaseController
         }
     }
 
+
+    public function ver_compra_realizada()
+    {
+        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
+        $requisicionesModel = new RequisicionesModel();
+        $inventarioProveedoresModel = new InventarioProveedoresModel();
+
+
+
+        // Validar que el parámetro sea un número válido
+        if (!is_numeric($idRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'ID de requisición inválido.'
+            ])->setStatusCode(400);
+        }
+
+
+        // Obtener los detalles desde el modelo
+        $dataRequisicion = $requisicionesModel->obtenerPorId($idRequisicion);
+
+
+        if (empty($dataRequisicion)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontro la requisición'
+            ])->setStatusCode(404);
+        }
+
+
+        // Obtener los detalles desde el modelo
+        $detalles = $requisicionesInventarioDetalleModel->obtenerDetallesRequisicionCompra($idRequisicion);
+
+
+        if (empty($detalles)) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'No se encontraron detalles para esta requisición.'
+            ])->setStatusCode(404);
+        }
+
+
+        // Formatear la respuesta
+        $responseDetalles = array_map(function ($d) {
+            return (object) [
+                'id_detalle' => $d['id'],
+                'cantidad'   => $d['cantidad']  . ' (' . $d['unidad'] . ')',
+                'stock'      => $d['stock'],
+                'categoria'  => $d['nombre'],
+                'detalle'    => $d['detalles'],
+                'validado'   => $d['validado'],
+                'id_variante'   => $d['id_variante'],
+
+            ];
+        }, $detalles);
+
+        foreach ($responseDetalles as $d) {
+            $d->proveedor = $inventarioProveedoresModel->obtenerProveedoresPorInventario($d->id_variante);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $responseDetalles,
+            'requisicion' => $dataRequisicion
+        ])->setStatusCode(200);
+    }
+
+
+    /**
+     * Guardar una nueva requisición.
+     *
+     * @return \CodeIgniter\HTTP\Response JSON con el resultado de la operación.
+     */
+
     public function guardar()
     {
         $requisicionesModel = new RequisicionesModel();
@@ -486,9 +705,11 @@ class RequisicionesController extends BaseController
 
         $data = $this->request->getPost();
         $dataInsert = [
-            "id_usuario" => 745,
+            "id_usuario" => $data['id_usuario'],
             "justificacion" => $data['comentarios'],
-            "id_estatus" => 1
+            "id_estatus" => 1,
+            "nombre" => $data['nombre'],
+            "departamento" => $data['departamento'],
         ];
 
         $id_requisicion = $requisicionesModel->insertar($dataInsert);

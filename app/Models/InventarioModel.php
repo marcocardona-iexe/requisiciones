@@ -49,47 +49,97 @@ class InventarioModel extends Model
     }
 
 
-    public function obtenerInventarioDetallesDataTable($search, $orderColumn, $orderDir, $start, $length)
+    /**
+     * Obtener el inventario con paginación y búsqueda.
+     * 
+     * @param int $limit Número de registros por página.
+     * @param int $start Índice de inicio para la paginación.
+     * @param string $search Término de búsqueda.
+     * @param string $order_column Columna para ordenar.
+     * @param string $order_dir Dirección del ordenamiento (ASC o DESC).
+     * @param string $categoria ID de la categoría.
+     * @param string $area ID del área.
+     * @return array Lista de registros filtrados y ordenados.
+     */
+    // Obtener el inventario con paginación y búsqueda.
+    public function getInventario($limit, $start, $search = '', $order_column = 'inventario.id', $order_dir = 'ASC', $categoria = '', $area = '')
     {
-        $builder = $this->db->table('inventario_detalles d')
+        $builder = $this->db->table('inventario')
             ->select('
-                d.id_variante AS id_variante, 
-                d.id_inventario AS id_inventario, 
-                i.nombre AS nombre_general, 
-                GROUP_CONCAT(CONCAT(d.atributo, ": ", d.valor) ORDER BY d.atributo SEPARATOR ", ") AS caracteristicas, 
-                categorias.categoria,
-                SUM(d.stock_individual) AS stock_total
+                inventario.id,
+                inventario_detalles.id_variante,
+                inventario.nombre,
+                GROUP_CONCAT(CONCAT(inventario_detalles.atributo, ": ", inventario_detalles.valor) 
+                ORDER BY inventario_detalles.atributo SEPARATOR ", ") AS caracteristicas,
+                categorias.id AS id_categoria,
+                categorias.categoria AS categoria_nombre,
+                areas.id AS id_area,
+                areas.area AS area_nombre,
+                inventario_detalles.stock,
+                inventario_detalles.stock_minimo
             ')
-            ->join('inventario i', 'd.id_inventario = i.id')
-            ->join('categorias', 'i.id_categoria = categorias.id')
-            ->groupBy('d.id_variante, d.id_inventario');
+            ->join('inventario_detalles', 'inventario.id = inventario_detalles.id_inventario', 'inner')
+            ->join('categorias', 'inventario.id_categoria = categorias.id', 'inner')
+            ->join('areas', 'inventario.id_area = areas.id', 'inner')
+            ->groupBy('inventario_detalles.id_variante');
 
-        // Filtro de búsqueda
+        // Aplicar búsqueda
         if (!empty($search)) {
             $builder->groupStart()
-                ->like('i.nombre', $search)
-                ->orLike('d.atributo', $search)
-                ->orLike('d.valor', $search)
+                ->like('inventario.nombre', $search)
                 ->orLike('categorias.categoria', $search)
+                ->orLike('area.area', $search)
                 ->groupEnd();
         }
 
-        // Ordenación
-        if (!empty($orderColumn) && !empty($orderDir)) {
-            $builder->orderBy($orderColumn, $orderDir);
+        // Filtros por categoría y área (Se filtra por ID)
+        if (!empty($categoria)) {
+            $builder->where('inventario.id_categoria', $categoria);
+        }
+        if (!empty($area)) {
+            $builder->where('inventario.id_area', $area);
         }
 
-        // Paginación
-        if ($length > 0) {
-            $builder->limit($length, $start);
-        }
+        // Aplicar ordenamiento y paginación
+        $builder->orderBy($order_column, $order_dir)
+            ->limit($limit, $start);
 
         return $builder->get()->getResultArray();
     }
 
-    public function contarFilasTotalesDataTable()
+    /**
+     * Obtener el total de registros en la tabla inventario.
+     * 
+     * @param string $search Término de búsqueda.
+     * @param string $categoria ID de la categoría.
+     * @param string $area ID del área.
+     * @return int Total de registros.
+     */
+    // Obtener el total de registros en la tabla inventario.
+    public function getTotalInventario($search = '', $categoria = '', $area = '')
     {
-        return $this->db->table('inventario_detalles')->countAll();
+        $builder = $this->db->table('inventario')
+            ->select('COUNT(DISTINCT inventario.id) as total')
+            ->join('inventario_detalles', 'inventario.id = inventario_detalles.id_inventario', 'inner')
+            ->join('categorias', 'inventario.id_categoria = categorias.id', 'inner')
+            ->join('areas', 'inventario.id_area = areas.id', 'inner');
+
+        if (!empty($search)) {
+            $builder->groupStart()
+                ->like('inventario.nombre', $search)
+                ->orLike('categorias.categoria', $search)
+                ->orLike('areas.area', $search)
+                ->groupEnd();
+        }
+
+        if (!empty($categoria)) {
+            $builder->where('inventario.id_categoria', $categoria);
+        }
+        if (!empty($area)) {
+            $builder->where('inventario.id_area', $area);
+        }
+
+        return $builder->get()->getRow()->total;
     }
 
     /**
@@ -104,54 +154,35 @@ class InventarioModel extends Model
         return $this->where($where)->set($data)->update();
     }
 
-    public function contarFilasFiltradasDataTable($search)
-    {
-        $builder = $this->db->table('inventario_detalles d')
-            ->join('inventario i', 'd.id_inventario = i.id')
-            ->join('categorias', 'i.id_categoria = categorias.id');
 
-        if (!empty($search)) {
-            $builder->groupStart()
-                ->like('i.nombre', $search)
-                ->orLike('d.atributo', $search)
-                ->orLike('d.valor', $search)
-                ->orLike('categorias.categoria', $search)
-                ->groupEnd();
-        }
-
-        return $builder->countAllResults();
-    }
-
-    public function buscarProducto($producto)
-    {
-        $builder = $this->db->table('inventario');
-        $builder->where('LOWER(nombre)', strtolower($producto));
-        $resultado = $builder->countAllResults();
-
-        return $resultado > 0 ? 1 : 0;
-    }
+    /**
+     * Búsqueda para Select2 con AJAX.
+     * 
+     * @param string $q Término de búsqueda ingresado por el usuario.
+     * @return array Lista de resultados coincidentes para el término de búsqueda.
+     */
 
     public function buscar_inventario($q)
     {
         // Utilizando el Query Builder para realizar la consulta
         $builder = $this->db->table('inventario_detalles d'); // Seleccionamos la tabla 'inventario_detalles' con alias 'd'
-        
+
         // Seleccionamos las columnas que queremos en la consulta
         $builder->select('d.id_variante AS id');
         $builder->select('GROUP_CONCAT(CONCAT(i.nombre, " - ", d.atributo, ": ", d.valor) SEPARATOR ", ") AS caracteristicas');
-        
+
         // Realizamos el JOIN con la tabla 'inventario' usando el alias 'i'
         $builder->join('inventario i', 'd.id_inventario = i.id');
-        
+
         // Agrupamos por la columna 'd.id_inventario'
-        $builder->groupBy('d.id_inventario');
-        
+        $builder->groupBy('d.id_variante');
+
         // Aplicamos la condición HAVING con LIKE para filtrar los resultados
         $builder->having('GROUP_CONCAT(CONCAT(i.nombre, " - ", d.atributo, ": ", d.valor) SEPARATOR ", ") LIKE', '%' . $q . '%');
-        
+
         // Ejecutamos la consulta
         $query = $builder->get();
-        
+
         // Devolvemos los resultados de la consulta
         return $query->getResult(); // Devuelve un arreglo de resultados
     }

@@ -1,8 +1,10 @@
+let base_url = window.env.API_URL;
+
 $("#tbl_requisicones").DataTable({
     processing: true,
     serverSide: true,
     ajax: {
-        url: "data-table", // Asegura que la URL es correcta
+        url: base_url + "requisiciones/data-table", // Asegura que la URL es correcta
         type: "POST",
         error: function (xhr, error, thrown) {
             console.error("Error en DataTables AJAX:", xhr.responseText);
@@ -14,7 +16,7 @@ $("#tbl_requisicones").DataTable({
         },
         {
             data: "created_at",
-            className: "dt-left",
+            className: "dt-center",
         },
         {
             data: null,
@@ -24,7 +26,7 @@ $("#tbl_requisicones").DataTable({
                 let labelstatus = "";
                 switch (data.id_estatus) {
                     case "1":
-                        labelstatus = `<span class="badge bg-warning text-dark">Nueva</span>`;
+                        labelstatus = `<span class="badge bg-warning ">Nueva</span>`;
                         break;
                     case "2":
                         labelstatus = `<span class="badge bg-primary">Validado Parcial</span>`;
@@ -44,6 +46,9 @@ $("#tbl_requisicones").DataTable({
         },
         {
             data: "justificacion",
+        },
+        {
+            data: "departamento",
         },
         {
             data: "comentario_estatus",

@@ -49,6 +49,7 @@
                                                     <th>Fecha de solicitud</th>
                                                     <th>Status</th>
                                                     <th>Justificación</th>
+                                                    <th>Departamento</th>
                                                     <th>Comentario de seguimiento</th>
                                                     <th></th>
                                                 </tr>

@@ -1,6 +1,6 @@
 window.envs = {
     development: {
-        API_URL: "http://127.0.0.1:8080/requisiciones/",
+        API_URL: "http://127.0.0.1/requisiciones/",
     },
     production: {
         API_URL: "",

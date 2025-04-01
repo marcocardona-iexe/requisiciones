@@ -10,11 +10,14 @@ class RequisicionesModel extends Model
     protected $primaryKey = 'id'; // Llave primaria de la tabla
     protected $allowedFields = [
         'id_usuario',
+        'nombre',
         'justificacion',
         'id_estatus',
+        'departamento',
         'comentario_estatus',
         'fecha_entregado',
-        'fecha_entrega'
+        'fecha_entrega',
+        'fecha_arribo'
     ]; // Campos permitidos para operaciones de inserción y actualización
     protected $useTimestamps = true; // Utilizar campos de timestamp automáticos
     protected $returnType = 'object';
@@ -93,7 +96,7 @@ class RequisicionesModel extends Model
                 ->orLike('fecha_entregado', $search)
                 ->orLike('fecha_entrega', $search)
                 ->groupEnd();
-        } 
+        }
 
         // Ordenación
         if (!empty($order_column)) {

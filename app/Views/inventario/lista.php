@@ -9,7 +9,12 @@
     data-template="vertical-menu-template-free">
 
 <?= $head; ?>
+<style>
+tbody {
+    font-size: 12px;
+}   
 
+</style>
 <body>
 
     <!-- Layout wrapper -->
@@ -30,30 +35,67 @@
                     <!-- Content -->
 
                     <div class="container-xxl flex-grow-1 container-p-y">
-                        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventarios /</span> Productos</h4>
+                        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventario /</span> Lista</h4>
 
                         <!-- Basic Bootstrap Table -->
                         <div class="card">
                             <div class="container">
+                                <div class="row align-items-center mt-3">
+                                    <div class="col-md-3">
+                                        <label for="terminal" class="form-label">Area</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bx bx-map"></i></span>
+                                            <select class="form-select" id="filtroArea">
+                                                <option value="0">Seleccione un area</option>
+                                                <?php foreach ($areas as $area) : ?>
+                                                    <option value="<?= $area->id; ?>"><?= $area->area; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="terminal" class="form-label">Categorias</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bx bx-map"></i></span>
+                                            <select class="form-select" id="filtroCategoria">
+                                                <option value="0">Seleccione una categoria</option>
+                                                <?php foreach ($categorias as $categoria) : ?>
+                                                    <option value="<?= $categoria->id; ?>"><?= $categoria->categoria; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón de búsqueda -->
+                                    <div class=" col-auto mt-4">
+                                        <button class="btn btn-info btn-sm" id="btnFiltrar">
+                                            <i class='bx bx-search-alt'></i> Buscar
+                                        </button>
+                                    </div>
+                                    <div class=" col-auto mt-4">
+                                        <button class="btn btn-info btn-sm" id="reiniciar">
+                                            <i class='bx bx-select-multiple'></i> Ver todo
+                                        </button>
+                                    </div>
+                                </div>
                                 <div class="row justify-content-end align-items-center mt-3">
                                     <div class="col-auto">
                                         <button class="btn btn-info btn-sm btn-modal" id="agregarProducto"><i class='bx bx-plus-circle'></i>Agregar productos</button>
                                     </div>
                                     <div class="col-md-12">
-                                        <table class="table table-sm" id="tbl_requisicon">
+                                        <table class="table table-sm table-striped table-hover table-bordered" id="tablaInventario">
                                             <thead>
                                                 <tr>
-                                                    <th>ID Variante</th>
-                                                    <th>Nombre General</th>
+                                                    <th>ID</th>
+                                                    <th>Nombre</th>
                                                     <th>Características</th>
                                                     <th>Categoría</th>
-                                                    <th>Stock Total</th>
+                                                    <th>Área</th>
+                                                    <th>Stock</th>
+                                                    <th>Stock Mínimo</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="table-border-bottom-0 table-striped table-hover">
-
-                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -82,41 +124,44 @@
     </div>
     <?= $js; ?>
     <script>
-
-        let ventanaProductosInventario = null;
-        let proovedores = "";
-
         $(document).ready(function() {
-            $('#tbl_requisicon').DataTable({
+
+            let ventanaProductosInventario = null;
+            let proovedores = "";
+
+            var tabla = $('#tablaInventario').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: 'data-table',
-                    type: 'POST',
-                    dataSrc: 'data',
-                    error: function(xhr, error, thrown) {
-                        console.error('Error en DataTables AJAX:', xhr.responseText);
+                    url: "get-inventario-table",
+                    type: "POST",
+                    data: function(d) {
+                        d.categoria = $('#filtroCategoria').val(); // Se envía el ID de la categoría seleccionada
+                        d.area = $('#filtroArea').val(); // Se envía el ID del área seleccionada
                     }
                 },
+                order: [
+                    [0, "asc"]
+                ],
                 columns: [{
-                        data: 'id_variante'
-                    },
-                    {
-                        data: 'nombre_general'
-                    },
-                    {
-                        data: 'caracteristicas'
-                    },
-                    {
-                        data: 'categoria'
-                    },
-                    {
-                        data: 'stock_total'
+                        data: "id_variante",
+                    }, {
+                        data: "nombre",
+                    }, {
+                        data: "caracteristicas",
+                    }, {
+                        data: "categoria_nombre",
+                    }, {
+                        data: "area_nombre",
+                    }, {
+                        data: "stock",
+                    }, {
+                        data: "stock_minimo",
                     },
                     {
                         data: null,
                         className: "text-center",
-                        render: function (data, type, row) {
+                        render: function(data, type, row) {
 
                             return `
                                 <div class="btn-group" role="group">
@@ -125,24 +170,61 @@
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                         <li class="ver_solicitud"><a class="dropdown-item proovedores" href="#" data-proovedores="${row.id_variante}" ><i class='bx bx-list-ul'></i> Proovedores</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class='bx bx-trash'></i> Asignaciones</a></li>
                                     </ul>
                                 </div>
                             `;
 
                         }
                     }
-                ]
+                ],
+                language: {
+                    processing: "Procesando...",
+                    search: "Buscar:",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "No hay registros disponibles",
+                    infoFiltered: "(filtrado de _MAX_ registros en total)",
+                    loadingRecords: "Cargando...",
+                    zeroRecords: "No se encontraron resultados",
+                    emptyTable: "No hay datos disponibles en la tabla",
+                    paginate: {
+                        first: "Primero",
+                        previous: "Anterior",
+                        next: "Siguiente",
+                        last: "Último",
+                    },
+                }
             });
+
+            // Al hacer clic en "Buscar", se guardan los valores seleccionados y se recarga la tabla
+            $('#btnFiltrar').on("click", function() {
+                $('#filtroCategoria').data('selected', $('#filtroCategoria').val());
+                $('#filtroArea').data('selected', $('#filtroArea').val());
+                tabla.ajax.reload();
+            });
+
+
+            $('#reiniciar').on("click", function() {
+                $('#filtroCategoria').data('selected', '').val('0');
+                $('#filtroArea').data('selected', '').val('0');
+                tabla.ajax.reload();
+            });
+
+
         });
+
+
+
+        // Al hacer clic en "Ver todo", se eliminan los filtros y se recarga la tabla sin filtros
+
 
         $("#agregarProducto").on("click", function(event) {
 
             ventanaProductosInventario = $.confirm({
-            title: false,
-            boxWidth: '600px',
-            useBootstrap: false,
-            content: `
+                title: false,
+                boxWidth: '600px',
+                useBootstrap: false,
+                content: `
 
             <style>
 
@@ -286,34 +368,34 @@
 
             </div>
             `,
-            buttons: false,
-            onContentReady: function () {
-                
-                $.ajax({
-                    url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTipoInventario",
-                    type: "GET",
-                    success: function(articulosInventario) {
+                buttons: false,
+                onContentReady: function() {
 
-                        if(articulosInventario.status == "success"){
+                    $.ajax({
+                        url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTipoInventario",
+                        type: "GET",
+                        success: function(articulosInventario) {
 
-                            if (Array.isArray(articulosInventario.data)) {
-                                articulosInventario.data.forEach(function(articulo) {
-                                    $("#nombreProducto").append(`
+                            if (articulosInventario.status == "success") {
+
+                                if (Array.isArray(articulosInventario.data)) {
+                                    articulosInventario.data.forEach(function(articulo) {
+                                        $("#nombreProducto").append(`
                                         <option value="${articulo.id}">${articulo.nombre}</option>
                                     `);
-                                });
+                                    });
+                                }
+
+                            } else {
+
+                                alert("Error en base de datos");
+
                             }
-
-                        }else{
-
-                            alert("Error en base de datos");
-                            
                         }
-                    }
-                });
+                    });
 
-            }
-            });    
+                }
+            });
 
         });
 
@@ -326,18 +408,18 @@
             $("#tablaProductos tr").each(function() {
                 let caracteristicas = $(this).find("td:eq(0)").text().trim();
 
-                if(caracteristicasProducto.toLowerCase() == caracteristicas.toLowerCase()){
+                if (caracteristicasProducto.toLowerCase() == caracteristicas.toLowerCase()) {
                     alert("El producto ya existe ...");
-                    verificaProducto = true; 
+                    verificaProducto = true;
                 }
 
             });
 
-            if(verificaProducto == true){
+            if (verificaProducto == true) {
                 return;
             }
 
-            if(caracteristicasProducto != "" && valorProducto != ""){
+            if (caracteristicasProducto != "" && valorProducto != "") {
 
                 $("#tablaProductos").append(`
                     <tr>
@@ -352,7 +434,7 @@
                 $("#caracteristicasProducto").val("");
                 $("#valorProducto").val("");
 
-            }else{
+            } else {
                 alert("Error el campo caracteristicas o el campo valor esta vacio ...");
             }
 
@@ -378,7 +460,10 @@
                 let valor = $(this).find("td:eq(1)").text().trim();
 
                 if (caracteristicas && valor) {
-                    datosProductos.push({ caracteristicas: caracteristicas, valor: valor });
+                    datosProductos.push({
+                        caracteristicas: caracteristicas,
+                        valor: valor
+                    });
                 }
 
             });
@@ -390,12 +475,12 @@
                 consumo: consumo
             });
 
-            if(nombreProducto == ""){
+            if (nombreProducto == "") {
                 alert("El nombre del producto esta vacio ..");
                 return false;
             }
 
-            if(categoria == ""){
+            if (categoria == "") {
                 alert("El nombre de la categoria esta vacio ...");
                 return false;
             }
@@ -422,7 +507,7 @@
                 contentType: "application/json",
                 success: function(respuesta) {
 
-                    if(respuesta == true){
+                    if (respuesta == true) {
                         $(".sProductos").html(`
                             <div style="padding-top: 15px;position: relative;" class="RespuestaFinal">
                                 <div style="padding-top: 4px;">Datos cargados correctamente</div>
@@ -432,7 +517,7 @@
                             </div>
                         `);
                         $(".RespuestaFinal").fadeOut(10000);
-                    }else{
+                    } else {
                         $(".sProductos").html(`<div style="padding-top: 15px;" class="RespuestaFinal">Los datos no fueron cargados correctamente ... </div>`);
                         $(".RespuestaFinal").fadeOut(10000);
 
@@ -458,10 +543,10 @@
                 url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerCategoria/" + idInventario,
                 type: "GET",
                 success: function(respuesta) {
-                    
-                    if(respuesta.status == "success"){
+
+                    if (respuesta.status == "success") {
                         $("#categoria").val(respuesta.data.categoria);
-                    }else{
+                    } else {
                         alert("Error en la base de datos");
                     }
 
@@ -470,13 +555,13 @@
 
         });
 
-        $(document).on('click', '.btn-warning', function () {
+        $(document).on('click', '.btn-warning', function() {
 
             $(this).closest('tr').remove();
 
         });
 
-        $(document).on('click', '#agregarInventario', function () {
+        $(document).on('click', '#agregarInventario', function() {
 
             if (ventanaProductosInventario) {
                 ventanaProductosInventario.close();
@@ -484,10 +569,10 @@
             }
 
             $.confirm({
-            title: false,
-            boxWidth: '600px',
-            useBootstrap: false,
-            content: `
+                title: false,
+                boxWidth: '600px',
+                useBootstrap: false,
+                content: `
 
             <div class="container-fluid py-3">
 
@@ -535,37 +620,37 @@
             </div>
 
             `,
-            buttons: false,
-            onContentReady: function () {
+                buttons: false,
+                onContentReady: function() {
 
-                $.ajax({
-                url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTodasCategorias/",
-                type: "GET",
-                success: function(respuesta) {
-                    
-                    respuesta.data.forEach(function(elemento) {
-                        $("#categoriaProductoAgregarInventario").append('<option value="' + elemento.id + '">' + elemento.categoria + '</option>');
+                    $.ajax({
+                        url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTodasCategorias/",
+                        type: "GET",
+                        success: function(respuesta) {
+
+                            respuesta.data.forEach(function(elemento) {
+                                $("#categoriaProductoAgregarInventario").append('<option value="' + elemento.id + '">' + elemento.categoria + '</option>');
+                            });
+
+                        }
                     });
 
                 }
-                });
-
-            }
             });
 
         });
 
-        $(document).on('click', '#guardarInventario', function () {
+        $(document).on('click', '#guardarInventario', function() {
 
             let nombreProductoAgregarInventario = $("#nombreProductoAgregarInventario").val().trim();
             let categoriaProductoAgregarInventario = $("#categoriaProductoAgregarInventario").val();
-            
-            if(nombreProductoAgregarInventario == ""){
+
+            if (nombreProductoAgregarInventario == "") {
                 alert("El nombre del producto esta vacio ..");
                 return false;
             }
 
-            if(categoriaProductoAgregarInventario == ""){
+            if (categoriaProductoAgregarInventario == "") {
                 alert("El nombre de la categoria esta vacio ..");
                 return false;
             }
@@ -579,31 +664,31 @@
             $("#categoriaProductoAgregarInventario").val("");
 
             $.ajax({
-            url: "http://127.0.0.1:8080/requisiciones/inventario/buscarProducto",
-            type: "POST",
-            dataType: "json",
-            data: {
-                producto: nombreProductoAgregarInventario
-            },
-            success: function(respuesta) {
+                url: "http://127.0.0.1:8080/requisiciones/inventario/buscarProducto",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    producto: nombreProductoAgregarInventario
+                },
+                success: function(respuesta) {
 
-                if(respuesta.status == "error"){
-                    alert("El producto ya existe ...");
+                    if (respuesta.status == "error") {
+                        alert("El producto ya existe ...");
+                    }
+
                 }
-
-            }
             });
 
         });
 
-        $(document).on('click', '#agregarCategoria', function () {
+        $(document).on('click', '#agregarCategoria', function() {
 
             $("#bloque-categoria").hide();
             $("#bloque-AgregarCategoria").show();
 
         });
 
-        $(document).on('click', '#guardarCategoria', function () {
+        $(document).on('click', '#guardarCategoria', function() {
 
             $("#bloque-categoria").show();
             $("#bloque-AgregarCategoria").hide();
@@ -623,7 +708,7 @@
 
         });
 
-        $(document).on('click', '.proovedores', function () {
+        $(document).on('click', '.proovedores', function() {
 
             proovedores = $(this).data("proovedores");
 
@@ -693,7 +778,7 @@
 
                 `,
                 buttons: false,
-                onContentReady: function () {
+                onContentReady: function() {
 
                     setTimeout(function() {
                         $('#loader').show();
@@ -710,25 +795,33 @@
                                 "type": "GET",
                                 "dataSrc": "data"
                             },
-                            "columns": [
-                                { "data": "proveedor" },
-                                { "data": "precio",
-                                  "render": function(data, type, row) {
-                                    return '<input type="text" class="form-control precio-input" value="' + data + '" style="width: 300px;">';
-                                  }
+                            "columns": [{
+                                    "data": "proveedor"
                                 },
-                                { "data": "chec",
+                                {
+                                    "data": "precio",
+                                    "render": function(data, type, row) {
+                                        return '<input type="text" class="form-control precio-input" value="' + data + '" style="width: 300px;">';
+                                    }
+                                },
+                                {
+                                    "data": "chec",
                                     "render": function(data, type, row) {
                                         var checked = data == 1 ? "checked" : "";
                                         return '<div class="form-check text-center">' +
                                             '<input class="form-check-input checkbox-proveedor" type="checkbox" ' + checked + ' data-proveedor="' + row.id_proveedor + '">';
-                                            '</div>';
+                                        '</div>';
                                     }
                                 }
                             ],
-                            "columnDefs": [
-                                { "width": "200px", "targets": 0 },
-                                { "className": "text-center", "targets": 2 }
+                            "columnDefs": [{
+                                    "width": "200px",
+                                    "targets": 0
+                                },
+                                {
+                                    "className": "text-center",
+                                    "targets": 2
+                                }
                             ],
                             "initComplete": function(settings, json) {
                                 console.log("Datos recibidos:", json);
@@ -743,7 +836,7 @@
 
         });
 
-        $(document).on('change', '.checkbox-proveedor', function () {
+        $(document).on('change', '.checkbox-proveedor', function() {
 
             proovedores
             let proveedor = $(this).data("proveedor");
@@ -752,7 +845,7 @@
             let data = {
                 proovedores: proovedores,
                 proveedor: proveedor,
-                estado: isChecked ? 1 : 0 
+                estado: isChecked ? 1 : 0
             };
 
             let jsonData = JSON.stringify(data);
@@ -760,7 +853,6 @@
             console.log(jsonData);
 
         });
-
     </script>
 </body>
 

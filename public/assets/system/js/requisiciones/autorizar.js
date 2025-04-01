@@ -36,7 +36,10 @@ $(document).on("click", ".autorizar", function () {
                     content: `
                     <div class="container">
                         <div class="row">
-                            
+                            <div class="col-md-12">
+                                <label for="nombre"><b>Nombre: </b>${response.requisicion.nombre}</label><br>
+                                <label for="departamento"><b>Area: </b>${response.requisicion.departamento}</label><br><br>
+                            </div>
                             <div class="col-md-12">
                                 <div id="alertMessage" class="alert alert-danger d-none"></div>
                                 <table class="table table-striped table-bordered table-sm">

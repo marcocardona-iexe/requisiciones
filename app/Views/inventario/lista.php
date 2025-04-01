@@ -606,6 +606,24 @@ tbody {
                             </div>
                         </div>
 
+                        <div class="pt-3 pb-3">
+                            <label for="" style="margin-right: 10px;">Unidad</label>
+                            <div class="form-group" style="display: flex; align-items: center;">
+                                <select class="form-control" id="unidad" style="margin-right: 10px;">
+                                    <option value="">Seleccione una unidad</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="" style="margin-right: 10px;">Area</label>
+                            <div class="form-group" style="display: flex; align-items: center;">
+                                <select class="form-control" id="area" style="margin-right: 10px;">
+                                    <option value="">Seleccione una area</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 

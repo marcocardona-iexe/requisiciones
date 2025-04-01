@@ -16,7 +16,8 @@ class AreasModel extends Model
     // Campos permitidos para inserción y actualización
     protected $allowedFields = [
         'id',       // ID del área
-        'area'      // Nombre del área (debe coincidir con la columna en la base de datos)
+        'area',      // Nombre del área (debe coincidir con la columna en la base de datos)
+        'status', // Estado del área (debe coincidir con la columna en la base de datos)
     ];
 
     // Habilitar el uso de timestamps (created_at y updated_at)

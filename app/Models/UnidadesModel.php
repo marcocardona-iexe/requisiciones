@@ -5,18 +5,18 @@ namespace App\Models;
 use CodeIgniter\Model;
 
 // Modelo para manejar la tabla "areas"
-class AreasModel extends Model
+class UnidadesModel extends Model
 {
     // Nombre de la tabla asociada en la base de datos
-    protected $table = 'areas';
+    protected $table = 'unidades';
 
     // Nombre de la llave primaria de la tabla
     protected $primaryKey = 'id';
 
     // Campos permitidos para inserción y actualización
     protected $allowedFields = [
-        'id',       // ID del área
-        'area'      // Nombre del área (debe coincidir con la columna en la base de datos)
+        'unidades',     // Nombre del área (debe coincidir con la columna en la base de datos)
+        'descripcion' // Descripción del área (debe coincidir con la columna en la base de datos)
     ];
 
     // Habilitar el uso de timestamps (created_at y updated_at)

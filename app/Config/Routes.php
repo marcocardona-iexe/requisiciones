@@ -19,12 +19,38 @@ $routes->post('inventario/get-inventario-table', 'InventarioController::get_inve
 
 
 #Rutas para las requisiciones
-$routes->get('requisiciones/lista', 'RequisicionesController::lista');
-#Peticiones AJAX
-$routes->post('requisiciones/data-table', 'RequisicionesController::obtenerRequisiciones');
-$routes->post('requisiciones/obtener-detalle-requisicion/(:num)', 'RequisicionesController::obtener_detalle_requisicion/$1');
-$routes->post('requisiciones/obtener-detalle-requisicion-parcial/(:num)', 'RequisicionesController::obtener_detalle_requisicion_parcial/$1');
 
+
+$routes->group('requisiciones', function ($routes) {
+
+    $routes->get('lista', 'RequisicionesController::lista');
+    #Peticiones AJAX
+    $routes->post('data-table', 'RequisicionesController::obtenerRequisiciones');
+    $routes->post('obtener-detalle-requisicion/(:num)', 'RequisicionesController::obtener_detalle_requisicion/$1');
+    $routes->post('obtener-detalle-requisicion-parcial/(:num)', 'RequisicionesController::obtener_detalle_requisicion_parcial/$1');
+    $routes->post('validar-parcialmente/(:num)', 'RequisicionesController::validar_parcialmente/$1');
+    $routes->post('rechazar/(:num)', 'RequisicionesController::rechazar/$1');
+    $routes->post('validar-compra/(:num)', 'RequisicionesController::validar_compra/$1');
+    $routes->post('obtener-compra-requisicion/(:num)', 'RequisicionesController::obtener_compra_requisicion/$1');
+    $routes->post('realizar-compra/(:num)', 'RequisicionesController::realizar_compra/$1');
+    $routes->post('guardar', 'RequisicionesController::guardar');
+});
+
+#Rutas para las Areas
+$routes->group('areas', function ($routes) {
+    $routes->get('lista', 'AreasController::lista');
+    #Peticiones AJAX
+    $routes->post('obtener', 'AreasController::obtener');
+});
+
+
+#Rutas para las unidades
+
+$routes->group('unidades', function ($routes) {
+    $routes->get('lista', 'UnidadesController::lista');
+    #Peticiones AJAX
+    $routes->post('obtener', 'UnidadesController::obtener');
+});
 
 
 
@@ -39,12 +65,7 @@ $routes->get('inventario/get_proveedores-inventario/(:num)', 'InventarioControll
 
 
 
-$routes->post('requisiciones/validar-parcialmente/(:num)', 'RequisicionesController::validar_parcialmente/$1');
-$routes->post('requisiciones/rechazar/(:num)', 'RequisicionesController::rechazar/$1');
-$routes->post('requisiciones/validar-compra/(:num)', 'RequisicionesController::validar_compra/$1');
-$routes->post('requisiciones/obtener-compra-requisicion/(:num)', 'RequisicionesController::obtener_compra_requisicion/$1');
-$routes->post('requisiciones/realizar-compra/(:num)', 'RequisicionesController::realizar_compra/$1');
-$routes->post('requisiciones/guardar', 'RequisicionesController::guardar');
+
 
 
 #Rutas para las requisiciones

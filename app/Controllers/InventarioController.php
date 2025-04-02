@@ -12,6 +12,13 @@ use App\Models\InventarioProveedoresModel;
 class InventarioController extends BaseController
 {
 
+    protected $inventarioProveedoresModel;
+
+
+    public function __construct()
+    {
+        $this->inventarioProveedoresModel = new InventarioProveedoresModel();
+    }
 
 
     public function lista()
@@ -103,6 +110,39 @@ class InventarioController extends BaseController
             'recordsFiltered' => $total_filtered,
             'data' => $inventario
         ]);
+    }
+
+
+
+    public function asignar_proveedor()
+    {
+        $data = $this->request->getJSON();
+
+
+        $id_proveedor = $data->id_proveedor;
+        $id_inventario = $data->id_inventario;
+        $precio = $data->precio;
+
+        $this->inventarioProveedoresModel->insertar([
+            'id_proveedor' => $id_proveedor,
+            'id_inventario' => $id_inventario,
+            'precio' => $precio
+        ]);
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Proveedor asignado exitosamente.',
+        ])->setStatusCode(200);
+    }
+
+    public function get_proveedores_inventario($id_inventario)
+    {
+        $dataProveedores = $this->inventarioProveedoresModel->getProveedoresConInventario($id_inventario);
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $dataProveedores,
+        ])->setStatusCode(200);
     }
 
 
@@ -218,16 +258,5 @@ class InventarioController extends BaseController
         } else {
             echo false;
         }
-    }
-
-    public function get_proveedores_inventario($id_inventario)
-    {
-        $inventarioProveedoresModel = new InventarioProveedoresModel();
-        $dataProveedores = $inventarioProveedoresModel->getProveedoresConInventario($id_inventario);
-        return $this->response->setJSON([
-            'status'  => 'success',
-            'message' => 'Datos obtenidos exitosamente.',
-            'data'    => $dataProveedores,
-        ])->setStatusCode(200);
     }
 }

@@ -71,30 +71,14 @@ class InventarioProveedoresModel extends Model
             ->findAll();
     }
 
-
     public function getProveedoresConInventario($id_inventario = 101)
     {
-        // Consulta SQL directa
-        $sql = "
-            SELECT 
-                proveedores.id AS id_proveedor, 
-                proveedores.proveedor, 
-                COALESCE(inventario_proveedores.precio, 0) AS precio, 
-                CASE 
-                    WHEN inventario_proveedores.id_proveedor IS NOT NULL THEN 1 
-                    ELSE 0 
-                END AS chec
-            FROM 
-                proveedores
-            LEFT JOIN 
-                inventario_proveedores 
-                ON proveedores.id = inventario_proveedores.id_proveedor
-                AND inventario_proveedores.id_inventario = ?
-            ORDER BY 
-                proveedores.proveedor ASC;
-        ";
-
-        // Ejecutar la consulta SQL
-        return $this->db->query($sql, [$id_inventario])->getResultArray();
+        return $this->db->table('proveedores')
+            ->select('proveedores.id AS id_proveedor, proveedores.proveedor, COALESCE(inventario_proveedores.precio, 0) AS precio')
+            ->select('CASE WHEN inventario_proveedores.id_proveedor IS NOT NULL THEN 1 ELSE 0 END AS chec', false)
+            ->join('inventario_proveedores', 'proveedores.id = inventario_proveedores.id_proveedor AND inventario_proveedores.id_inventario = ' . $this->db->escape($id_inventario), 'left')
+            ->orderBy('proveedores.proveedor', 'ASC')
+            ->get()
+            ->getResultArray();
     }
 }

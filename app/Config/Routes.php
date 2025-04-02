@@ -53,13 +53,22 @@ $routes->group('unidades', function ($routes) {
 });
 
 
+$routes->group('categorias', function ($routes) {
+    $routes->get('lista', 'CategoriasController::lista');
+    #Peticiones AJAX
+    $routes->post('obtener', 'CategoriasController::obtener');
+});
+
+
 # Agrupación de rutas para inventario
 $routes->group('inventario', function ($routes) {
     $routes->post('guardar', 'InventarioController::guardar');
     $routes->get('obtenerTipoInventario', 'InventarioController::obtenerTipoInventario');
     $routes->get('obtenerCategoria/(:any)', 'InventarioController::obtenerCategoria/$1');
-    $routes->get('obtenerTodasCategorias', 'InventarioController::obtenerTodasCategorias');
     $routes->post('buscarProducto', 'InventarioController::buscarProducto');
+
+    #Peticiones AJAX
+    $routes->post('asignar-proveedor', 'InventarioController::asignar_proveedor');
     $routes->get('get_proveedores-inventario/(:num)', 'InventarioController::get_proveedores_inventario/$1');
 });
 

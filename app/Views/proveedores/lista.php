@@ -161,7 +161,7 @@
                 useBootstrap: false,
                 content: `
 
-            <style>
+                <style>
 
                 .container-proveedor{
                     font-family: Arial, sans-serif;
@@ -224,7 +224,7 @@
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">RFC <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control form-control-sm" id="AgregarFormProveRFC" placeholder="Ingrese el RFC" autocomplete="off" required>
-                            <p class="help-text">Formato para rfc AAAA######AAA /AAA######AAA</p>
+                            <p class="help-text">Formato para rfc AAAA######AAA</p>
                         </div>
                     </div>
 
@@ -232,15 +232,15 @@
 
                 <div class="row">
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Codigo postal <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control form-control-sm" id="AgregarFormProveCodigoPostal" placeholder="Ingrese codigo postal" autocomplete="off" required>
                             <p class="help-text">Ingrese numero de codigo postal</p>
                         </div>
-                   </div>
+                    </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Pais <span style="color: #d60b52;">*</span></label>
                             <select class="form-control form-control-sm" id="AgregarFormProvePais" required>
@@ -499,16 +499,16 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Teléfono <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control form-control-sm" id="AgregarFormProveTelefono" placeholder="Ingrese numero telefonico" autocomplete="off" required>
                         </div>
                     </div>
+
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -517,16 +517,16 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="row">
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Contacto <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control form-control-sm" id="AgregarFormProveContacto" placeholder="Ingrese correo contacto" autocomplete="off" required>
                         </div>
                     </div>
+
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -535,10 +535,6 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="row">
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Correo contacto <span style="color: #d60b52;">*</span></label>
@@ -546,15 +542,16 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="rfc" class="camposFormulario">Cuenta <span style="color: #d60b52;">*</span></label>
                             <input type="text" class="form-control form-control-sm" id="AgregarFormProveCuenta" placeholder="Ingrese numero de cuenta" autocomplete="off" required>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -563,6 +560,10 @@
                         </div>
                     </div>
 
+                </div>
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono" class="camposFormulario">Clave <span style="color: #d60b52;">*</span></label>
@@ -570,9 +571,6 @@
                         </div>
                     </div>
                     
-                </div>
-
-                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -580,6 +578,10 @@
                             <input type="text" class="form-control form-control-sm" id="AgregarFormProveCodigo" placeholder="Ingrese codigo" autocomplete="off" required>
                         </div>
                     </div>
+
+                </div>
+
+                <div class="row">
 
                     <div class="col-md-6">
                         <div class="form-group">

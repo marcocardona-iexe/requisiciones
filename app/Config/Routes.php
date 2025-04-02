@@ -53,15 +53,15 @@ $routes->group('unidades', function ($routes) {
 });
 
 
-
-$routes->post('inventario/guardar', 'InventarioController::guardar');
-$routes->get('inventario/obtenerTipoInventario', 'InventarioController::obtenerTipoInventario');
-$routes->get('inventario/obtenerCategoria/(:any)', 'InventarioController::obtenerCategoria/$1');
-$routes->get('inventario/obtenerTodasCategorias', 'InventarioController::obtenerTodasCategorias');
-$routes->post('inventario/buscarProducto', 'InventarioController::buscarProducto');
-$routes->get('inventario/get_proveedores-inventario/(:num)', 'InventarioController::get_proveedores_inventario/$1');
-
-
+# Agrupación de rutas para inventario
+$routes->group('inventario', function ($routes) {
+    $routes->post('guardar', 'InventarioController::guardar');
+    $routes->get('obtenerTipoInventario', 'InventarioController::obtenerTipoInventario');
+    $routes->get('obtenerCategoria/(:any)', 'InventarioController::obtenerCategoria/$1');
+    $routes->get('obtenerTodasCategorias', 'InventarioController::obtenerTodasCategorias');
+    $routes->post('buscarProducto', 'InventarioController::buscarProducto');
+    $routes->get('get_proveedores-inventario/(:num)', 'InventarioController::get_proveedores_inventario/$1');
+});
 
 
 
@@ -83,4 +83,3 @@ $routes->post('orden-de-compra/imprimir-previo', 'OrdenCompraController::imprimi
 
 #Rutas para el consumo de iexe one
 $routes->post('inventario/obtener-inventario', 'InventarioController::obtener_inventario');
-

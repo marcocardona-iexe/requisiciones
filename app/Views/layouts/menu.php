@@ -20,7 +20,7 @@
              <span class="menu-header-text">Administracion</span>
          </li>
          <li class="menu-item">
-             <a href="<?= base_url('inventario/lista') ?>" class="menu-link">
+             <a href="<?= base_url('usuarios/lista') ?>" class="menu-link">
                  <i class='menu-icon bx bx-user'></i>
                  <div data-i18n="Accordion">Usuarios</div>
              </a>

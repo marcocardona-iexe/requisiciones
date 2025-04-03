@@ -207,7 +207,7 @@ class InventarioController extends BaseController
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
         $categoriasModel = new CategoriasModel();
-        $categoria = $categoriasModel->obtenerTodasCategorias();
+        $categoria = $categoriasModel->obtenerTodos();
 
         if (!empty($categoria)) {
 

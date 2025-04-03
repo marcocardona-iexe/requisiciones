@@ -41,4 +41,25 @@ class CategoriasModel extends Model
     {
         return $this->findAll(); // Devuelve todos los registros de la tabla
     }
+
+    public function obtenerCategoria($idInventario)
+    {
+        $response = $this->db->table('inventario')
+                     ->select('id_categoria')
+                     ->where('id', $idInventario)
+                     ->get()
+                     ->getRow();
+
+        if ($response) { 
+            $idCategoria = $response->id_categoria;
+
+            $categoria = $this->db->table('categorias')
+                                  ->where('id', $idCategoria)
+                                  ->get()
+                                  ->getResult();
+
+            return $categoria[0]->categoria;
+        }
+
+    }
 }

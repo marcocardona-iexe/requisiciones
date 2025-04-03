@@ -28,7 +28,11 @@ class InventarioController extends BaseController
         $categorias = $categoriasModel->obtenerPorWhere(['status' => 1]);
         $areas = $areasModel->obtenerPorWhere(['status' => 1]);
 
-
+        $datajs = [
+            'scripts' => [
+                'public/assets/system/js/inventario/inventario.js'
+            ]
+        ];
 
         $data = [
             'categorias' => $categorias,
@@ -37,7 +41,7 @@ class InventarioController extends BaseController
             'head' => view('layouts/head'),
             'nav' => view('layouts/nav'),
             'footer' => view('layouts/footer'),
-            'js' => view('layouts/js'),
+            'js' => view('layouts/js', $datajs),
         ];
 
         return view('inventario/lista', $data);
@@ -203,7 +207,7 @@ class InventarioController extends BaseController
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
         $categoriasModel = new CategoriasModel();
-        $categoria = $categoriasModel->obtenerTodasCategorias();
+        $categoria = $categoriasModel->obtenerTodos();
 
         if (!empty($categoria)) {
 

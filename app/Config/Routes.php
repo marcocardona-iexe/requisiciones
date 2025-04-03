@@ -15,7 +15,7 @@ $routes->get('template', 'TemplateController::lista');
 $routes->get('inventario/lista', 'InventarioController::lista');
 #Peticiones AJAX
 $routes->post('inventario/get-inventario-table', 'InventarioController::get_inventario_table');
-
+$routes->get('inventario/obtenerTodasCategorias', 'InventarioController::obtenerTodasCategorias');
 
 $routes->group('usuarios', function ($routes) {
     $routes->get('lista', 'UsuariosController::lista');

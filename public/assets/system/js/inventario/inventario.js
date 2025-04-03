@@ -1,96 +1,88 @@
-$(document).ready(function() {
+let base_url = window.env.API_URL;
 
-    let ventanaProductosInventario = null;
-    let proovedores = "";
+let ventanaProductosInventario = null;
+let proovedores = "";
 
-    var tabla = $('#tablaInventario').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "get-inventario-table",
-            type: "POST",
-            data: function(d) {
-                d.categoria = $('#filtroCategoria').val(); // Se envía el ID de la categoría seleccionada
-                d.area = $('#filtroArea').val(); // Se envía el ID del área seleccionada
-            }
-        },
-        order: [
-            [0, "asc"]
-        ],
-        columns: [{
-                data: "id_variante",
-            }, {
-                data: "nombre",
-            }, {
-                data: "caracteristicas",
-            }, {
-                data: "categoria_nombre",
-            }, {
-                data: "area_nombre",
-            }, {
-                data: "stock",
-            }, {
-                data: "stock_minimo",
-            },
-            {
-                data: null,
-                className: "text-center",
-                render: function(data, type, row) {
-
-                    return `
-                        <div class="btn-group" role="group">
-                            <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class='bx bxs-paste'></i> Acciones
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                <li class="ver_solicitud"><a class="dropdown-item proovedores" href="#" data-proovedores="${row.id_variante}" ><i class='bx bx-list-ul'></i> Proovedores</a></li>
-                            </ul>
-                        </div>
-                    `;
-
-                }
-            }
-        ],
-        language: {
-            processing: "Procesando...",
-            search: "Buscar:",
-            lengthMenu: "Mostrar _MENU_ registros",
-            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros en total)",
-            loadingRecords: "Cargando...",
-            zeroRecords: "No se encontraron resultados",
-            emptyTable: "No hay datos disponibles en la tabla",
-            paginate: {
-                first: "Primero",
-                previous: "Anterior",
-                next: "Siguiente",
-                last: "Último",
-            },
+var tabla = $('#tablaInventario').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: "get-inventario-table",
+        type: "POST",
+        data: function(d) {
+            d.categoria = $('#filtroCategoria').val(); // Se envía el ID de la categoría seleccionada
+            d.area = $('#filtroArea').val(); // Se envía el ID del área seleccionada
         }
-    });
+    },
+    order: [
+        [0, "asc"]
+    ],
+    columns: [{
+            data: "id_variante",
+        }, {
+            data: "nombre",
+        }, {
+            data: "caracteristicas",
+        }, {
+            data: "categoria_nombre",
+        }, {
+            data: "area_nombre",
+        }, {
+            data: "stock",
+        }, {
+            data: "stock_minimo",
+        },
+        {
+            data: null,
+            className: "text-center",
+            render: function(data, type, row) {
 
-    // Al hacer clic en "Buscar", se guardan los valores seleccionados y se recarga la tabla
-    $('#btnFiltrar').on("click", function() {
-        $('#filtroCategoria').data('selected', $('#filtroCategoria').val());
-        $('#filtroArea').data('selected', $('#filtroArea').val());
-        tabla.ajax.reload();
-    });
+                return `
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class='bx bxs-paste'></i> Acciones
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                            <li class="ver_solicitud"><a class="dropdown-item proovedores" href="#" data-proovedores="${row.id_variante}" ><i class='bx bx-list-ul'></i> Proovedores</a></li>
+                        </ul>
+                    </div>
+                `;
 
+            }
+        }
+    ],
+    language: {
+        processing: "Procesando...",
+        search: "Buscar:",
+        lengthMenu: "Mostrar _MENU_ registros",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        infoFiltered: "(filtrado de _MAX_ registros en total)",
+        loadingRecords: "Cargando...",
+        zeroRecords: "No se encontraron resultados",
+        emptyTable: "No hay datos disponibles en la tabla",
+        paginate: {
+            first: "Primero",
+            previous: "Anterior",
+            next: "Siguiente",
+            last: "Último",
+        },
+    }
+});
 
-    $('#reiniciar').on("click", function() {
-        $('#filtroCategoria').data('selected', '').val('0');
-        $('#filtroArea').data('selected', '').val('0');
-        tabla.ajax.reload();
-    });
-
-
+// Al hacer clic en "Buscar", se guardan los valores seleccionados y se recarga la tabla
+$('#btnFiltrar').on("click", function() {
+    $('#filtroCategoria').data('selected', $('#filtroCategoria').val());
+    $('#filtroArea').data('selected', $('#filtroArea').val());
+    tabla.ajax.reload();
 });
 
 
-
-// Al hacer clic en "Ver todo", se eliminan los filtros y se recarga la tabla sin filtros
-
+$('#reiniciar').on("click", function() {
+    $('#filtroCategoria').data('selected', '').val('0');
+    $('#filtroArea').data('selected', '').val('0');
+    tabla.ajax.reload();
+});
 
 $("#agregarProducto").on("click", function(event) {
 
@@ -246,7 +238,7 @@ $("#agregarProducto").on("click", function(event) {
         onContentReady: function() {
 
             $.ajax({
-                url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTipoInventario",
+                url: base_url + "inventario/obtenerTipoInventario",
                 type: "GET",
                 success: function(articulosInventario) {
 
@@ -375,7 +367,7 @@ $(document).on("click", "#guardar", function() {
     `);
 
     $.ajax({
-        url: "http://127.0.0.1:8080/requisiciones/inventario/guardar",
+        url: base_url + "inventario/guardar",
         type: "POST",
         data: datosEnviar,
         contentType: "application/json",
@@ -414,12 +406,12 @@ $(document).on("change", "#nombreProducto", function() {
     let idInventario = $(this).val();
 
     $.ajax({
-        url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerCategoria/" + idInventario,
+        url: base_url + "inventario/obtenerCategoria/" + idInventario,
         type: "GET",
         success: function(respuesta) {
 
             if (respuesta.status == "success") {
-                $("#categoria").val(respuesta.data.categoria);
+                $("#categoria").val(respuesta.data);
             } else {
                 alert("Error en la base de datos");
             }
@@ -516,7 +508,7 @@ $(document).on('click', '#agregarInventario', function() {
         onContentReady: function() {
 
             $.ajax({
-                url: "http://127.0.0.1:8080/requisiciones/inventario/obtenerTodasCategorias/",
+                url: base_url + "inventario/obtenerTodasCategorias/",
                 type: "GET",
                 success: function(respuesta) {
 
@@ -528,7 +520,7 @@ $(document).on('click', '#agregarInventario', function() {
             });
 
             $.ajax({
-                url: "http://127.0.0.1/requisiciones/unidades/obtener",
+                url: base_url + "unidades/obtener",
                 type: "POST",
                 dataType: "json",
                 success: function(responseUniades) {
@@ -541,7 +533,7 @@ $(document).on('click', '#agregarInventario', function() {
             });
 
             $.ajax({
-                url: "http://127.0.0.1/requisiciones/areas/obtener",
+                url: base_url + "areas/obtener",
                 type: "POST",
                 dataType: "json",
                 success: function(responseAreas) {
@@ -582,7 +574,7 @@ $(document).on('click', '#guardarInventario', function() {
     $("#categoriaProductoAgregarInventario").val("");
 
     $.ajax({
-        url: "http://127.0.0.1:8080/requisiciones/inventario/buscarProducto",
+        url: base_url + "inventario/buscarProducto",
         type: "POST",
         dataType: "json",
         data: {
@@ -709,7 +701,7 @@ $(document).on('click', '.proovedores', function() {
 
                 $('#Proveedores').DataTable({
                     "ajax": {
-                        "url": "http://127.0.0.1/requisiciones/inventario/get_proveedores-inventario/" + proovedores,
+                        "url": base_url + "inventario/get_proveedores-inventario/" + proovedores,
                         "type": "GET",
                         "dataSrc": "data"
                     },

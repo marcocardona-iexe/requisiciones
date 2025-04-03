@@ -513,7 +513,7 @@ $(document).on('click', '#agregarInventario', function() {
                 success: function(respuesta) {
 
                     respuesta.data.forEach(function(elemento) {
-                        $("#categoriaProductoAgregarInventario").append('<option value="' + elemento.id + '">' + elemento.categoria + '</option>');
+                        $("#categoriaProductoAgregarInventario").append('<option value="' + elemento.id + '">'+elemento.categoria+'</option>');
                     });
 
                 }

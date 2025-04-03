@@ -9,11 +9,14 @@ $('#tabla_usuarios').DataTable({
     columns: [
         { data: 'id' },
         { data: 'nombre' },
-        { data: 'username' },
+        { 
+          data: 'username',
+          width: '700px' 
+        },
         {
             data: null,
             render: function(data, type, row) {
-                return '<button class="btn btn-primary">Ver</button>';
+                return '<button class="btn btn-primary"><i class="bx bx-show"></i> Ver</button>';
             }
         }
     ]

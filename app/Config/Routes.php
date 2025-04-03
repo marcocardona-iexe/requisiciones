@@ -19,6 +19,8 @@ $routes->post('inventario/get-inventario-table', 'InventarioController::get_inve
 
 $routes->group('usuarios', function ($routes) {
     $routes->get('lista', 'UsuariosController::lista');
+    #Peticiones AJAX
+    $routes->post('obtener-usuarios', 'UsuariosController::obtenerUsuarios');
 });
 
 #Rutas para las requisiciones
@@ -36,7 +38,7 @@ $routes->group('requisiciones', function ($routes) {
     $routes->post('validar-compra/(:num)', 'RequisicionesController::validar_compra/$1');
     $routes->post('obtener-compra-requisicion/(:num)', 'RequisicionesController::obtener_compra_requisicion/$1');
     $routes->post('realizar-compra/(:num)', 'RequisicionesController::realizar_compra/$1');
-    $routes->post('get-compra/(:num)', 'RequisicionesController::get-compra/$1');
+    $routes->post('get-compra/(:num)', 'RequisicionesController::get_compra/$1');
     $routes->post('guardar', 'RequisicionesController::guardar');
 });
 

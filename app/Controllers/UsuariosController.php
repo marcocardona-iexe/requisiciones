@@ -27,4 +27,10 @@ class UsuariosController extends BaseController
 
         return view('usuarios/lista', $data);
     }
+
+    public function obtenerUsuarios()
+    {
+        $dataUsuarios = $this->usuariosModel->obtenerTodos();
+        return $this->response->setJSON($dataUsuarios);
+    }
 }

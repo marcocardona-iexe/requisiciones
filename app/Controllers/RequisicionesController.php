@@ -658,6 +658,33 @@ class RequisicionesController extends BaseController
         }
     }
 
+    public function get_compra($id_requisicion)
+    {
+        $ventasModel = new VentasModel();
+        $ordenCompraModel = new OrdenCompraModel();
+        $ordenProdcutosModel = new OrdenProdcutosModel();
+
+        $dataVenta = $ventasModel->obtenerPorWhere(['id_requisicion' => $id_requisicion]);
+
+        $dataInsertOrdenes = $ordenCompraModel->obtenerPorWhere(['id_venta' => $dataVenta[0]->id]);
+        $productos = [];
+        foreach ($dataInsertOrdenes as $orden) {
+            $productos[] = $ordenProdcutosModel->obtenerPorWhere(['id_orden' => $orden->id]);
+        }
+
+        $data = [
+            "venta" => $dataVenta,
+            "ordenes" => $dataInsertOrdenes,
+            "productos" => $productos
+        ];
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Datos obtenidos exitosamente.',
+            'data'    => $data,
+        ])->setStatusCode(200);
+    }
+
 
     public function ver_compra_realizada()
     {

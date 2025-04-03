@@ -53,6 +53,19 @@ class OrdenCompraModel extends Model
         return $this->delete($id);
     }
 
+    /**
+    Obtener ventas por condición WHERE
+     *
+     * @param array $where
+     * @return array|null
+     */
+    public function obtenerPorWhere($where)
+    {
+        // Consulta para obtener registros según la condición WHERE
+        return $this->where($where)->findAll();
+    }
+
+
 
     public function obtenerUltimoCodigoVenta($idProveedor)
     {

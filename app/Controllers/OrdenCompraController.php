@@ -141,4 +141,41 @@ class OrdenCompraController extends BaseController
         echo $dompdf->output();
         exit();
     }
+
+
+    public function validar()
+    {
+        // Cargar los helpers necesarios
+        helper('xml');
+
+        // Obtener el archivo XML desde el input
+        $archivo = $this->request->getFile('xml');
+
+        // Verificar que el archivo sea válido
+        if (!$archivo->isValid()) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => '❌ Error al cargar el archivo. No es válido.'
+            ]);
+        }
+
+        // Mover el archivo XML a un directorio temporal
+        $nombreArchivo = $archivo->getRandomName();
+        $rutaXML = WRITEPATH . 'uploads/' . $nombreArchivo;
+        $archivo->move(WRITEPATH . 'uploads', $nombreArchivo);
+
+        // Ruta de los XSDs
+        $rutaXSD = APPPATH . 'ThirdParty/cfdv40.xsd';
+        $rutaXSDTimbre = APPPATH . 'ThirdParty/TimbreFiscalDigital.xsd'; // XSD de Timbre Fiscal Digital
+
+
+        // Validar el XML con ambos XSDs
+        $resultado = validarXMLConXSD($rutaXML, $rutaXSD, $rutaXSDTimbre);
+
+        // Retornar la respuesta en formato JSON
+        return $this->response->setJSON([
+            'status' => $resultado['status'] ? 'success' : 'error',
+            'message' => $resultado['mensaje']
+        ]);
+    }
 }

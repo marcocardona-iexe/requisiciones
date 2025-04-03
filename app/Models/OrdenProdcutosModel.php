@@ -49,4 +49,9 @@ class OrdenProdcutosModel extends Model
     {
         return $this->delete($id);
     }
+
+    public function obtenerPorWhere($where)
+    {
+        return $this->where($where)->findAll();
+    }
 }

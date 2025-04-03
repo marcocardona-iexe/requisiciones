@@ -40,6 +40,18 @@
                         <!-- Basic Bootstrap Table -->
                         <div class="card">
                             <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12 p-3">
+                                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                            <button type="button" class="btn btn-warning btn-sm">Nuevas<span class="badge bg-danger">4</span></button>
+                                            <button type="button" class="btn btn-primary btn-sm">A. Parciales</button>
+                                            <button type="button" class="btn btn-info btn-sm">Autorizadas</button>
+                                            <button type="button" class="btn btn-success btn-sm">Compradas</button>
+                                            <button type="button" class="btn btn-secondary btn-sm">Finalizada</button>
+                                            <button type="button" class="btn btn-danger btn-sm">Canceladas</button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row justify-content-end align-items-center mt-3">
                                     <div class="col-md-12">
                                         <table class="table table-sm" id="tbl_requisicones">

@@ -92,8 +92,10 @@ $routes->post('proveedores/guardar', 'ProveedoresController::guardar');
 
 
 
-
-$routes->post('orden-de-compra/imprimir-previo', 'OrdenCompraController::imprimir_previo');
+$routes->group('orden-de-compra', function ($routes) {
+    $routes->post('imprimir-previo', 'OrdenCompraController::imprimir_previo');
+    $routes->post('validar-xml', 'OrdenCompraController::validar');
+});
 
 
 #Rutas para el consumo de iexe one

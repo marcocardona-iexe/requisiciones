@@ -85,7 +85,7 @@ $("#tbl_requisicones").DataTable({
                         return `<button type="button" class="btn btn-success btn-sm realizar_compra" data-id='${data.id}'><i class='bx bx-cart-alt' ></i> Comprar</button>`;
                         break;
                     case "4":
-                        return `<button type="button" class="btn btn-secondary btn-sm"><i class='bx bx-list-ul' ></i> Ver compra</button>`;
+                        return `<button type="button" class="btn btn-secondary btn-sm ver_compra_realizada" data-id='${data.id}'><i class='bx bx-list-ul' ></i> Ver compra</button>`;
                         break;
                     case "5":
                         return `<button type="button" class="btn btn-secondary btn-sm"><i class='bx bx-list-ul' ></i> Ver detalle</button>`;

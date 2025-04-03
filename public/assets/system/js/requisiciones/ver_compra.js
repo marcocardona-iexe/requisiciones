@@ -1,7 +1,7 @@
 $(document).on("click", ".realizar_compra", function () {
     let id_requisicion = $(this).attr("data-id");
     $.ajax({
-        url: "obtener-compra-requisicion/" + id_requisicion,
+        url: "obtener-compra-requisicions/" + id_requisicion,
         dataType: "json",
         method: "POST",
         success: function (response) {

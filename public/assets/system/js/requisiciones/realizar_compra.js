@@ -44,8 +44,8 @@ $(document).on("click", ".realizar_compra", function () {
                                 ${options}
                             </select>
                         </td>
-                        <td><input type="date" class="form-control fecha_entrega" value="" id="fecha_entrega_${p.id_detalle}" data-id=${p.id_detalle}></td>
-                        <td>${p.cantidad}</td>
+                        <td><input type="date" class="form-control form-control-sm fecha_entrega" value="" id="fecha_entrega_${p.id_detalle}" data-id=${p.id_detalle} readonly></td>
+                        <td id="cantidad_${p.id_detalle}" data-cantidad=${p.cantidad}>${p.cantidad}</td>
                         <td>
                             <div class="input-group input-group-sm has-validation">
                                 <span class="input-group-text" id="inputGroupPrepend">$</span>
@@ -432,6 +432,8 @@ $(document).on("click", ".realizar_compra", function () {
                             if (precio != 0) {
                                 $(`#pu_${id_detalle}`).val(precio).removeAttr("readonly");
                                 $(`#du_${id_detalle}`).removeAttr("readonly");
+                                $(`#fecha_entrega_${id_detalle}`).removeAttr("readonly");
+
                                 const item = items_venta.find((item) => item.id_detalle === id_detalle);
                                 if (item) {
                                     item.id_provedor = id_proveedor; // Total del producto
@@ -447,18 +449,24 @@ $(document).on("click", ".realizar_compra", function () {
                             console.log(items_venta);
                             if (id_proveedor !== "0") {
                                 let total = parseFloat($(`#total_${id_detalle}`).val()).toFixed(2);
-
+                                let cantidad = $("#cantidad_" + id_detalle).attr("data-cantidad");
                                 agregarOrdenCompra(
                                     id_proveedor,
                                     nombreProveedor,
                                     id_detalle,
-                                    1,
+                                    cantidad,
                                     precio,
                                     descuento,
-                                    total
+                                    total,
+                                    (fecha_entrega = $(`#fecha_entrega_${id_detalle}`).val())
                                 );
                             } else {
+                                console.log("Eliminando producto de la orden de compra");
                                 eliminarProductoDeOrden(id_detalle); // Elimina si el proveedor es "0"
+                                $(`#pu_${id_detalle}`).val("0.00").attr("readonly", true);
+                                $(`#du_${id_detalle}`).val("0.00").attr("readonly", true);
+                                $(`#total_${id_detalle}`).val("0.00").attr("readonly", true);
+                                $(`#fecha_entrega_${id_detalle}`).attr("readonly", true);
                             }
                             console.log(ordenes_compra);
                         });
@@ -471,7 +479,8 @@ $(document).on("click", ".realizar_compra", function () {
                             cantidad,
                             precio,
                             descuento,
-                            total
+                            total,
+                            fecha_entrega
                         ) => {
                             // Verificar si el idProducto ya existe en otro proveedor y eliminarlo
                             Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
@@ -505,6 +514,7 @@ $(document).on("click", ".realizar_compra", function () {
                                 precio: precio,
                                 descuento: descuento,
                                 total: total,
+                                fecha_entrega: fecha_entrega,
                             });
 
                             actualizarTablaOrdenes();
@@ -602,19 +612,30 @@ $(document).on("click", ".realizar_compra", function () {
                                 console.log(ordenes_compra);
 
                                 // Buscar en qué proveedor está el producto y eliminarlo
-                                Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
-                                    let index = proveedor.productos.findIndex((p) => p.idProducto === id_detalle);
-                                    if (index !== -1) {
-                                        let total_producto = item.cantidad * precio_u - item.cantidad * descuento;
-                                        console.log(total_producto);
-                                        console.log("*************");
-                                        proveedor.productos[index].total = total_producto;
-                                        console.log(proveedor.productos[index]);
-                                        proveedor.productos[index].precio = precio_u; // Reemplaza NUEVO_PRECIO con el valor deseado
-                                        console.log(`Precio actualizado para idProducto ${id_detalle}`);
-                                        console.log(proveedor.productos[index]); // Muestra el producto actualizado
+                                // Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                //     let index = proveedor.productos.findIndex((p) => p.idProducto === id_detalle);
+                                //     if (index !== -1) {
+                                //         let total_producto = item.cantidad * precio_u - item.cantidad * descuento;
+                                //         console.log(total_producto);
+                                //         console.log("*************");
+                                //         proveedor.productos[index].total = total_producto;
+                                //         console.log(proveedor.productos[index]);
+                                //         proveedor.productos[index].precio = precio_u; // Reemplaza NUEVO_PRECIO con el valor deseado
+                                //         console.log(`Precio actualizado para idProducto ${id_detalle}`);
+                                //         console.log(proveedor.productos[index]); // Muestra el producto actualizado
+                                //     }
+                                // });
+                                // console.log(ordenes_compra);
+
+                                let id_proveedor = $("#prove_" + id_detalle).val();
+                                ordenes_compra[id_proveedor].productos.forEach((producto) => {
+                                    if (producto.idProducto === id_detalle) {
+                                        producto.total = parseFloat($(`#total_${id_detalle}`).val()).toFixed(2);
+
+                                        producto.precio = precio_u;
                                     }
                                 });
+                                console.log("-----------");
                                 console.log(ordenes_compra);
                             }
                         });
@@ -629,18 +650,28 @@ $(document).on("click", ".realizar_compra", function () {
                                 item.pu = precio_u; // Precio unitario
                                 item.du = descuento; // Descuento unitario
                                 calculos(item, precio_u, descuento);
+                                console.log("**********");
                                 console.log(ordenes_compra);
                                 // Buscar en qué proveedor está el producto y eliminarlo
-                                Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
-                                    let index = proveedor.productos.findIndex((p) => p.idProducto === id_detalle);
-                                    if (index !== -1) {
-                                        let total_producto = item.cantidad * precio_u - item.cantidad * descuento;
-                                        proveedor.productos[index].total = total_producto;
-                                        proveedor.productos[index].descuento = descuento; // Reemplaza NUEVO_PRECIO con el valor deseado
-                                        console.log(`Precio actualizado para idProducto ${id_detalle}`);
-                                        console.log(proveedor.productos[index]); // Muestra el producto actualizado
+                                // Object.entries(ordenes_compra).forEach(([id, proveedor]) => {
+                                //     let index = proveedor.productos.findIndex((p) => p.idProducto === id_detalle);
+                                //     if (index !== -1) {
+                                //         let total_producto = item.cantidad * precio_u - item.cantidad * descuento;
+                                //         proveedor.productos[index].total = total_producto;
+                                //         proveedor.productos[index].descuento = descuento; // Reemplaza NUEVO_PRECIO con el valor deseado
+                                //         console.log(`Precio actualizado para idProducto ${id_detalle}`);
+                                //         console.log(proveedor.productos[index]); // Muestra el producto actualizado
+                                //     }
+                                // });
+
+                                let id_proveedor = $("#prove_" + id_detalle).val();
+                                ordenes_compra[id_proveedor].productos.forEach((producto) => {
+                                    if (producto.idProducto === id_detalle) {
+                                        producto.total = parseFloat($(`#total_${id_detalle}`).val()).toFixed(2);
+                                        producto.descuento = descuento;
                                     }
                                 });
+                                console.log("-----------");
                                 console.log(ordenes_compra);
                             }
                         });
@@ -651,7 +682,19 @@ $(document).on("click", ".realizar_compra", function () {
                             const item = items_venta.find((item) => item.id_detalle === id_detalle);
                             if (item) {
                                 item.fecha_entrega = fecha_entrega; // Fecha de entrega
-                                console.log(items_venta);
+                                let id_proveedor = $("#prove_" + id_detalle).val();
+                                ordenes_compra[id_proveedor].productos.forEach((producto) => {
+                                    if (producto.idProducto === id_detalle) {
+                                        producto.fecha_entrega = fecha_entrega;
+                                    }
+                                });
+
+                                Object.keys(ordenes_compra).forEach((id_proveedor) => {
+                                    ordenes_compra[id_proveedor].fecha = fecha_entrega;
+                                });
+                                console.log(ordenes_compra);
+
+                                actualizarTablaOrdenes(); // Refrescar la tabla con los nuevos valores
                             }
                         });
 

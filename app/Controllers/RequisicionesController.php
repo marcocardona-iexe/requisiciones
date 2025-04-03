@@ -9,11 +9,16 @@ use App\Models\InventarioProveedoresModel;
 use App\Models\VentasModel;
 use App\Models\OrdenCompraModel;
 use App\Models\ProveedoresModel;
+use App\Models\OrdenProdcutosModel;
 
 class RequisicionesController extends BaseController
 {
+    protected $ordenProdcutosModel;
 
-
+    public function __construct()
+    {
+        $this->ordenProdcutosModel = new OrdenProdcutosModel();
+    }
     /**
      * Cargar la vista de la lista de requisiciones.
      *
@@ -513,14 +518,16 @@ class RequisicionesController extends BaseController
 
     public function realizar_compra($id)
     {
-        $requisicionesInventarioDetalleModel = new RequisicionesInventarioDetalleModel();
         $requisicionesModel = new RequisicionesModel();
         $ventasModel = new VentasModel();
         $proveedorModel = new ProveedoresModel();
         $ordenCompraModel = new OrdenCompraModel();
 
 
+
+
         $data = $this->request->getPost();
+
         try {
             // Obtener el último ID de venta desde el modelo
             $ultimoCodigo = $ventasModel->obtenerUltimoCodigoVenta(); // Método que debes implementar en el modelo
@@ -547,32 +554,42 @@ class RequisicionesController extends BaseController
 
             $idVenta = $ventasModel->insertar($dataInsertVenta); // Método que debes implementar en el modelo
 
+
             foreach ($data['ordenes'] as $o => $orden) {
                 $aplicar_iva = $orden['iva'] == true ? 1 : 0;
+                $fecha_entrega = $orden['fecha'];
 
                 $total = 0;
                 $subtotal = 0;
                 $descuento = 0;
                 foreach ($orden['productos'] as $p) {
+
                     $subtotal += $p['total'];
                     $descuento += $p['descuento'];
                 }
-
                 $total = ($aplicar_iva) ?  ($subtotal - $descuento) * .16 : $subtotal - $descuento;
                 $iva_aplicado = ($aplicar_iva) ? $subtotal * .16 : 0;
 
                 $dataProveedor = $proveedorModel->obtenerPorId($o);
 
                 // Obtener el último ID de venta desde el modelo
-                $ultimoCodigo = $ventasModel->obtenerUltimoCodigoVenta(); // Método que debes implementar en el modelo
-                // Generar el código en el formato V-000001
+                $ultimoCodigo = $ordenCompraModel->obtenerUltimoCodigoVenta($dataProveedor->id); // Obtener el último código usado por el proveedor
+
                 if ($ultimoCodigo === NULL) {
-                    $codigo = $dataProveedor . "-000001"; // Si no hay registros, comienza con el primer código
+                    $codigo = $dataProveedor->codigo . "-000001"; // Si no hay registros previos, comienza con el primer código
                 } else {
-                    // Extraer el número del código (asumiendo el formato "V-XXXXXX")
-                    $numero = (int) substr($ultimoCodigo, 2); // Quita el prefijo "V-" y convierte a entero
-                    $codigo = $dataProveedor->codigo . str_pad($numero + 1, 6, "0", STR_PAD_LEFT); // Generar el consecutivo
+                    // Extraer el número del código (asumiendo el formato "XXXX-XXXXXX")
+                    $partes = explode("-", $ultimoCodigo); // Dividir el código en partes usando "-"
+
+                    if (isset($partes[1])) {
+                        $numero = (int) $partes[1]; // Convertir la segunda parte a número entero
+                        $codigo = $dataProveedor->codigo . "-" . str_pad($numero + 1, 6, "0", STR_PAD_LEFT); // Generar el nuevo código
+                    } else {
+                        // Si el formato del código no es el esperado, reiniciar la numeración
+                        $codigo = $dataProveedor->codigo . "-000001";
+                    }
                 }
+
 
 
                 $dataInsertOrden = [
@@ -583,10 +600,28 @@ class RequisicionesController extends BaseController
                     'subtotal' => $subtotal,
                     'total' => $total,
                     'descuento' => $descuento,
-                    'codigo' => $codigo
+                    'codigo' => $codigo,
+                    'fecha_entrega' => $fecha_entrega
 
                 ];
-                $ordenCompraModel->insertar($dataInsertOrden);
+                $idOrden = $ordenCompraModel->insertar($dataInsertOrden);
+                // Ahora, incluir el id_orden en cada producto
+                foreach ($orden['productos'] as $p) {
+                    // echo "<pre>";
+                    // print_r($p);
+                    // echo "</pre>";
+                    $dataInsert = [
+                        "id_orden" => $idOrden, // Se agrega el id_orden generado
+                        "id_requisicion_inventario" => $p['idProducto'],
+                        "cantidad" => $p['cantidad'],
+                        "precio_unitario" => $p['precio'],
+                        "descuento" => $p['descuento'],
+                        "total" => $p['total']
+                    ];
+
+                    // Aquí puedes insertar en la base de datos, por ejemplo:
+                    $this->ordenProdcutosModel->insertar($dataInsert);
+                }
             }
 
 

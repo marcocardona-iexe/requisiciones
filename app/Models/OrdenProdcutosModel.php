@@ -4,20 +4,17 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class OrdenCompraModel extends Model
+class OrdenProdcutosModel extends Model
 {
-    protected $table = 'ordenes_compra'; // Nombre de la tabla
+    protected $table = 'ordenes_productos'; // Nombre de la tabla
     protected $primaryKey = 'id'; // Llave primaria
     protected $allowedFields = [
-        'id_venta',
-        'id_proveedor',
-        'iva_aplicado',
-        'codigo',
-        'iva',
-        'subtotal',
-        'total',
+        'id_orden',
+        'id_requisicion_inventario',
+        'cantidad',
+        'precio_unitario',
         'descuento',
-        'fecha_entrega'
+        'total'
     ]; // Campos permitidos para inserción/actualización
     protected $returnType = 'object'; // Tipo de retorno (objeto)
     protected $useTimestamps = true; // Habilitar timestamps (created_at, updated_at)
@@ -51,19 +48,5 @@ class OrdenCompraModel extends Model
     public function eliminar($id)
     {
         return $this->delete($id);
-    }
-
-
-    public function obtenerUltimoCodigoVenta($idProveedor)
-    {
-        // Consulta para obtener el último código de la tabla de ventas filtrado por id_proveedor
-        $resultado = $this->select('codigo')
-            ->where('id_proveedor', $idProveedor) // Filtrar por id_proveedor
-            ->orderBy('id', 'DESC') // Ordenar por ID descendente para obtener el último registro
-            ->limit(1)
-            ->get()
-            ->getRow();
-
-        return $resultado ? $resultado->codigo : null; // Retorna el código o null si no hay registros
     }
 }

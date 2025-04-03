@@ -16,13 +16,19 @@ class UsuariosController extends BaseController
 
     public function lista()
     {
+        
+        $datajs = [
+            'scripts' => [
+                '/public/assets/system/js/usuarios/usuarios.js'
+            ]
+        ];
 
         $data = [
             'menu' => view('layouts/menu'),
             'head' => view('layouts/head'),
             'nav' => view('layouts/nav'),
             'footer' => view('layouts/footer'),
-            'js' => view('layouts/js'),
+            'js' => view('layouts/js',$datajs),
         ];
 
         return view('usuarios/lista', $data);
@@ -30,7 +36,7 @@ class UsuariosController extends BaseController
 
     public function obtenerUsuarios()
     {
-        $dataUsuarios = $this->usuariosModel->obtenerTodos();
-        return $this->response->setJSON($dataUsuarios);
+        $dataUsuarios = $this->usuariosModel->obtenerTodos();        
+        return $this->response->setJSON(['data' => $dataUsuarios]);
     }
 }

@@ -51,13 +51,12 @@
                                         <button class="btn btn-info btn-sm btn-modal" id="agregar_proveedor"><i class='bx bx-plus-circle'></i>Agregar proveedor</button>
                                     </div>
                                     <div class="col-md-12">
-                                        <table class="table table-sm table-striped table-hover table-bordered" id="tabla_proveedores">
+                                        <table class="table table-sm table-striped table-hover table-bordered" id="tabla_usuarios">
                                             <thead>
                                                 <tr>
-                                                    <th>Proveedor</th>
-                                                    <th>Código</th>
-                                                    <th>RFC</th>
-                                                    <th>Estatus</th>
+                                                    <th style="text-align: left;">No</th>
+                                                    <th>Nombre</th>
+                                                    <th>Usuario</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>

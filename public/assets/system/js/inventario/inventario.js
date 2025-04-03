@@ -664,7 +664,7 @@ $(document).on('click', '.proovedores', function() {
             </style>
 
             <div style="text-align: center;">
-                <h6 style="margin-top: 5px;">Lista de Proveedores</h6>
+                <h5 style="margin-top: 5px;">Lista de Proveedores</h5>
             </div>
 
             <div id="loader" style="text-align: center;margin-top: 35px;">
@@ -705,6 +705,7 @@ $(document).on('click', '.proovedores', function() {
                         "type": "GET",
                         "dataSrc": "data"
                     },
+                    "pageLength": 6,
                     "columns": [{
                             "data": "proveedor"
                         },

@@ -13,12 +13,18 @@ class ProveedoresController extends BaseController
     public function lista()
     {
 
+        $datajs = [
+            'scripts' => [
+                'public/assets/system/js/proveedores/proveedores.js',
+            ]
+        ];
+
         $data = [
             'menu' => view('layouts/menu'),
             'head' => view('layouts/head'),
             'nav' => view('layouts/nav'),
             'footer' => view('layouts/footer'),
-            'js' => view('layouts/js'),
+            'js' => view('layouts/js',$datajs)
         ];
 
         return view('proveedores/lista', $data);

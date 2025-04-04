@@ -121,7 +121,7 @@ $(document).on('click', '#agregar_proveedor', function() {
 
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="telefono" class="camposFormulario">Vende <span style="color: #d60b52;">*</span></label>
+                    <label for="telefono" class="camposFormulario">¿Qué vende? <span style="color: #d60b52;">*</span></label>
                     <input type="text" class="form-control form-control-sm" id="AgregarFormProveVende" placeholder="Ingrese nombre de lo que vende" autocomplete="off" required>
                 </div>
             </div>

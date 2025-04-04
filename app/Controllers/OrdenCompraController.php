@@ -172,6 +172,16 @@ class OrdenCompraController extends BaseController
         // Validar el XML con ambos XSDs
         $resultado = validarXMLConXSD($rutaXML, $rutaXSD, $rutaXSDTimbre);
 
+
+        // Eliminar el archivo XML temporal
+        if (file_exists($rutaXML)) {
+            unlink($rutaXML);
+        }
+        
+
+
+
+
         // Retornar la respuesta en formato JSON
         return $this->response->setJSON([
             'status' => $resultado['status'] ? 'success' : 'error',

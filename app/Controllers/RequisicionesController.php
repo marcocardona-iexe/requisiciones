@@ -548,7 +548,8 @@ class RequisicionesController extends BaseController
                 'iva' => $data['venta']['iva'],
                 'subtotal' => $data['venta']['subtotal'],
                 'total' => $data['venta']['total'],
-                'descuento' => $data['venta']['descuento_total']
+                'descuento' => $data['venta']['descuento_total'],
+                'id_requisicion' => $id,
                 // Otros atributos que necesites agregar
             ];
 
@@ -623,10 +624,6 @@ class RequisicionesController extends BaseController
                     $this->ordenProdcutosModel->insertar($dataInsert);
                 }
             }
-
-
-
-
 
             // $data = $this->request->getPost();
 

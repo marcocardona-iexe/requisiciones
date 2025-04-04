@@ -684,7 +684,14 @@ $(document).on('click', '.proovedores', function() {
                 </tbody>
             </table>
 
-            <small class="form-text text-muted">Seleccion nombre del proveedor en la tabla</small>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <small class="form-text text-muted">Seleccion nombre del proveedor en la tabla</small>
+
+                <div id="loader-individual" style="display: flex; align-items: center; gap: 5px;display: none;margin-right: 20px;">
+                    <img src="http://127.0.0.1/requisiciones/public/assets/img/Dual.gif" width="25" height="25"/>
+                    <span>Cargando</span>
+                </div>
+            </div>
 
         `,
         buttons: false,
@@ -712,7 +719,7 @@ $(document).on('click', '.proovedores', function() {
                         {
                             "data": "precio",
                             "render": function(data, type, row) {
-                                return '<input type="text" class="form-control precio-input" value="' + data + '" style="width: 300px;">';
+                                return '<input type="text" class="form-control precio" value="' + data + '" style="width: 300px;">';
                             }
                         },
                         {
@@ -749,18 +756,36 @@ $(document).on('click', '.proovedores', function() {
 
 $(document).on('change', '.checkbox-proveedor', function() {
 
-    proovedores
+    $("#loader-individual").show();
+
     let proveedor = $(this).data("proveedor");
     let isChecked = $(this).prop('checked');
 
+    let fila = $(this).closest('tr');
+
+    let precio = fila.find('.precio').val();
+
     let data = {
-        proovedores: proovedores,
-        proveedor: proveedor,
+        id_proveedor: proovedores,
+        id_inventario: proveedor,
+        precio: precio,
         estado: isChecked ? 1 : 0
     };
 
-    let jsonData = JSON.stringify(data);
+    let datosProveedor = JSON.stringify(data);
 
-    console.log(jsonData);
+    $.ajax({
+        url: base_url + "inventario/asignar-proveedor",
+        type: "POST",
+        data: datosProveedor,
+        success: function(response) {
+            
+            $("#loader-individual").hide();
+
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
 
 });

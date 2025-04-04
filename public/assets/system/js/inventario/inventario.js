@@ -756,7 +756,7 @@ $(document).on('click', '.proovedores', function() {
 
 $(document).on('change', '.checkbox-proveedor', function() {
 
-    $("#loader-individual").show();
+    //$("#loader-individual").show();
 
     let proveedor = $(this).data("proveedor");
     let isChecked = $(this).prop('checked');
@@ -780,7 +780,7 @@ $(document).on('change', '.checkbox-proveedor', function() {
         data: datosProveedor,
         success: function(response) {
             
-            $("#loader-individual").hide();
+            //$("#loader-individual").hide();
 
         },
         error: function(xhr, status, error) {
